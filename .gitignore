@@ -1,8 +1,5 @@
-# ignore .vs file
-/.vs
-
-# ignore bin file
+# ignore bin folder
 /bin
 
-# ignore obj file
+# ignore obj folder
 /obj
