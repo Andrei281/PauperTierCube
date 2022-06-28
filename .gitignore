@@ -1,0 +1,8 @@
+# ignore .vs file
+..vs
+
+# ignore bin file
+.bin
+
+# ignore obj file
+.obj
