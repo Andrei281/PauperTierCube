@@ -1,0 +1,224 @@
+﻿++Solution 'Pauper Tier Cube' ‎(1 of 1 project)
+i:{00000000-0000-0000-0000-000000000000}:Pauper Tier Cube.sln
+++Pauper Tier Cube
+i:{00000000-0000-0000-0000-000000000000}:Pauper Tier Cube
+++Connected Services 
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:>457
+++Dependencies
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:>456
+++Properties
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\properties\
+++wwwroot
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\
+++Controllers
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\controllers\
+++Models
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\
+++Views
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\
+++Home
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\home\
+++FilterPopUp.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\home\filterpopup.cshtml
+++Index.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\home\index.cshtml
+++List.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\home\list.cshtml
+++PackPopUp.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\home\packpopup.cshtml
+++Privacy.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\home\privacy.cshtml
+++Stats.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\home\stats.cshtml
+++Themes.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\home\themes.cshtml
+++Shared
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\shared\
+++_ViewImports.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\_viewimports.cshtml
+++_ViewStart.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\_viewstart.cshtml
+++appsettings.json
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\appsettings.json
+++appsettings.Development.json
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\appsettings.development.json
+++package-lock.json
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\package-lock.json
+++Program.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\program.cs
+++Readme.txt
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\readme.txt
+++No service dependencies discovered
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:>458
+++Analyzers
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:analyzers
+++Frameworks
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:frameworks
+++Packages
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:packages
+++launchSettings.json
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\properties\launchsettings.json
+++css
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\css\
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\
+++js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\js\
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\js\
+++lib
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\
+++favicon.ico
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\favicon.ico
+++DataController.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\controllers\datacontroller.cs
+++HomeController.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\controllers\homecontroller.cs
+++ScryfallAPIController.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\controllers\scryfallapicontroller.cs
+++Card.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\card.cs
+++CardsInCube.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\cardsincube.cs
+++CardsInDecksJoinTable.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\cardsindecksjointable.cs
+++CubeStatsContext.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\cubestatscontext.cs
+++Deck.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\deck.cs
+++DraftedCard.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\draftedcard.cs
+++ErrorViewModel.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\errorviewmodel.cs
+++ReverseDraftCardsReceived.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\reversedraftcardsreceived.cs
+++UpdatesTable.cs
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\models\updatestable.cs
+++_Layout.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\shared\_layout.cshtml
+++_ValidationScriptsPartial.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\shared\_validationscriptspartial.cshtml
+++Error.cshtml
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\views\shared\error.cshtml
+++Microsoft.AspNetCore.Analyzers
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\sdk\6.0.203\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.analyzers.dll
+++Microsoft.AspNetCore.App.Analyzers
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\6.0.5\analyzers\dotnet\cs\microsoft.aspnetcore.app.analyzers.dll
+++Microsoft.AspNetCore.App.CodeFixes
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\6.0.5\analyzers\dotnet\cs\microsoft.aspnetcore.app.codefixes.dll
+++Microsoft.AspNetCore.Components.Analyzers
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\sdk\6.0.203\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.components.analyzers.dll
+++Microsoft.AspNetCore.Mvc.Analyzers
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\sdk\6.0.203\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.mvc.analyzers.dll
+++Microsoft.AspNetCore.Razor.SourceGenerator.Tooling.Internal
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\sdk\6.0.203\sdks\microsoft.net.sdk.razor\source-generators\microsoft.aspnetcore.razor.sourcegenerator.tooling.internal.dll
+++Microsoft.CodeAnalysis.CSharp.NetAnalyzers
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\sdk\6.0.203\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
+++Microsoft.CodeAnalysis.NetAnalyzers
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\sdk\6.0.203\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
+++Microsoft.EntityFrameworkCore.Analyzers
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\.nuget\packages\microsoft.entityframeworkcore.analyzers\6.0.6\analyzers\dotnet\cs\microsoft.entityframeworkcore.analyzers.dll
+++Microsoft.Extensions.Logging.Generators
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\6.0.5\analyzers\dotnet\roslyn4.0\cs\microsoft.extensions.logging.generators.dll
+++Microsoft.NET.Sdk.Razor.SourceGenerators
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\sdk\6.0.203\sdks\microsoft.net.sdk.razor\source-generators\microsoft.net.sdk.razor.sourcegenerators.dll
+++System.Text.Json.SourceGeneration
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\6.0.5\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
+++Microsoft.AspNetCore.App
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\microsoft.aspnetcore.app
+++Microsoft.NETCore.App
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\microsoft.netcore.app
+++Microsoft.EntityFrameworkCore.SqlServer (6.0.6)
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:>476
+++Microsoft.EntityFrameworkCore.Tools (6.0.6)
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:>478
+++Newtonsoft.Json (13.0.1)
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:>477
+++site.css
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\css\site.css
+++styles.css
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\css\styles.css
+++site.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\js\site.js
+++bootstrap
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\
+++jquery
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery\
+++jquery-validation
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation\
+++jquery-validation-unobtrusive
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation-unobtrusive\
+++dist
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery\dist\
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation\dist\
+++LICENSE
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\license
+++LICENSE.txt
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery\license.txt
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation-unobtrusive\license.txt
+++LICENSE.md
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation\license.md
+++jquery.validate.unobtrusive.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js
+++jquery.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery\dist\jquery.js
+++additional-methods.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation\dist\additional-methods.js
+++jquery.validate.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation\dist\jquery.validate.js
+++jquery.validate.unobtrusive.min.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js
+++bootstrap.css
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap.css
+++bootstrap-grid.css
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
+++bootstrap-reboot.css
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
+++bootstrap.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\js\bootstrap.js
+++jquery.min.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery\dist\jquery.min.js
+++additional-methods.min.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
+++jquery.validate.min.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
+++bootstrap.css.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
+++bootstrap.min.css
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+++bootstrap-grid.css.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
+++bootstrap-grid.min.css
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
+++bootstrap-reboot.css.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
+++bootstrap-reboot.min.css
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
+++bootstrap.bundle.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
+++bootstrap.js.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
+++bootstrap.min.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
+++jquery.min.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\jquery\dist\jquery.min.map
+++bootstrap.min.css.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
+++bootstrap-grid.min.css.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
+++bootstrap-reboot.min.css.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
+++bootstrap.bundle.js.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
+++bootstrap.bundle.min.js
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
+++bootstrap.min.js.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
+++bootstrap.bundle.min.js.map
+i:{a54ce2b4-ef0f-40c3-84d5-d981ccc17d58}:c:\users\katya\dropbox\pauper tier cube site\pauper tier cube site-32\pauper tier cube\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
+++Script Documents
+++VM5
+++aspnetcore-browser-refresh.js
+++browserLink
+++FilterPopUp
+++Microsoft.Extensions.Configuration.Json (6.0.0)
+++Microsoft.Extensions.Configuration.FileExtensions (6.0.0)

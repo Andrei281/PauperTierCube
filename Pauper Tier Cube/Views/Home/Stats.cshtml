@@ -1,0 +1,161 @@
+﻿@{
+    ViewData["Title"] = "Stats";
+}
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!--<meta charset="utf-8" />-->
+    <title>Stats</title>
+    <style>
+        .outerBox {
+            /*display: flex;
+            flex-direction: row;*/
+            background-color: navy;
+            overflow-x: scroll;
+            margin-left: 10%;
+            margin-top: 100px;
+            margin-right: 10%;
+            height: 400px;
+        }
+
+        .innerBox {
+            float: left;
+            display: flex;
+            flex-direction: row;
+            flex-basis: auto;
+            height: 100%;
+            overflow-y: hidden;
+            background-color: navy;
+            color: white;
+        }
+
+        .fullBarAllocation {
+            margin-left: 20px;
+            margin-bottom: 20px;
+            margin-top: 20px;
+            height: 90%;
+            width: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .halfBarAllocation {
+            margin-left: 0px;
+            margin-right: 0px;
+            padding-left: 0px;
+            padding-right: 0px;
+            height: 50%;
+            width: 100%;
+            position: relative;
+        }
+
+        .topBarLine {
+            bottom: 0;
+            position: absolute;
+            width: 100%;
+        }
+
+        .bottomBarLine {
+            top: 0;
+            position: absolute;
+            width: 100%;
+        }
+
+        .barText {
+            font-family: Arial;
+            font-size: 14px;
+            color: white;
+            transform: rotate(60deg);
+        }
+    </style>
+
+    @*<script type="text/javascript" src="CardScoreData.json"></script>*@
+
+    <script type="text/javascript">
+
+        //let url = './data/all';
+
+        //fetch(url, {
+        //    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        //    headers: { 'Content-Type': 'application/json' },
+        //    mode: 'no-cors', // no-cors, *cors, same-origin
+        //})
+        //    .then(res => {
+        //        if (res.status == 200) {
+        //            return res.json();
+        //        } else {
+        //            throw "Error fetching data: " + res.status;
+        //        }
+        //    })
+        //    .then(data => {
+        //        if (data) {
+
+        //            let innerBox = document.getElementById("innerBox");
+
+        //            // Clear content before rebuilding it
+        //            if (innerBox) {
+        //                while (innerBox.firstChild) {
+        //                    innerBox.removeChild(innerBox.firstChild);
+        //                }
+        //            }
+
+        //            // re-populate with fresh data
+        //            if (!Array.isArray(data)) throw "Server response should be an array of numbers.";
+        //            for (let index = 0; index < data.length; index++) {
+        //                let item = data[index];
+        //                if (!item) throw "Server response array item at index " + index + " is undefined.";
+        //                let cardName = item.cardName;
+        //                let cardScore = item.score;
+
+        //                if (isNaN(cardScore)) throw "Server response array item at index " + index + " contains a score that isn't a number: " + cardScore + ".";
+        //                BuildBarDiv(innerBox, cardName, cardScore * 10);
+        //            }
+
+        //        }
+        //    }).catch(err => {
+        //        if (err) { }
+        //    });
+
+        function BuildBarDiv(parentDiv, barLabel, barHeight) {
+            let fullBar = document.createElement("div");
+            fullBar.className = "fullBarAllocation";
+            parentDiv.appendChild(fullBar);
+
+            let topBar = document.createElement("div");
+            topBar.className = "halfBarAllocation";
+            fullBar.appendChild(topBar);
+
+            let bottomBar = document.createElement("div");
+            bottomBar.className = "halfBarAllocation";
+            fullBar.appendChild(bottomBar);
+
+            if (barHeight != 0) {
+                let valueBar = document.createElement("div");
+                if (barHeight > 0) {
+                    valueBar.className = "topBarLine";
+                    valueBar.style.backgroundColor = "green";
+                    topBar.appendChild(valueBar);
+                    bottomBar.innerText = barLabel;
+                } else if (barHeight < 0) {
+                    barHeight = -barHeight;
+                    valueBar.className = "bottomBarLine";
+                    valueBar.style.backgroundColor = "red";
+                    bottomBar.appendChild(valueBar);
+                    topBar.innerText = barLabel;
+                }
+                valueBar.style.height = barHeight + "px";
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <h2 class="PoppingHeading">STATS</h2>
+    <div class="outerBox">
+        <div id="innerBox" class="innerBox">
+        </div>
+    </div>
+</body>
+</html>
