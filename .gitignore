@@ -1,3 +1,6 @@
+# ignore .vs folder
+.vs/
+
 # ignore bin folder
 bin/
 
