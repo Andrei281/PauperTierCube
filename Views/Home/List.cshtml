@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "List";
+}
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        .FilterDiv {
+            margin-left:25px;
+            width:max-content;
+            float:left;
+        }
+        .CIDiv {
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display:flex;flex-direction:column;align-items:center">
+    <div id="filterContainer" style="padding:20px;padding-left:40px;padding-right:40px;background-color:lightgray;border:3px inset gray;display:grid;z-index:1;width:fit-content;margin-top:5%">
+        <div id="innerFilterContainer" style="display:flex">
+            <div class="FilterDiv" style="margin-left:0px">
+                <label>Primary Filter:</label><br>
+                <div>
+                    <select id="primaryFilterInput">
+                        <option value="none">None</option>
+                        <option value="tier">Tier</option>
+                        <option value="colorIdentity">Color Identity</option>
+                    </select>
+                </div>
+            </div>
+            <div class="FilterDiv" style="width:100px">
+                <label>Name:</label><br>
+                <div>
+                    <input style="width:100%" id="nameFilterInput"/>
+                </div>
+            </div>
+            <div class="FilterDiv">
+                <label>Tier:</label><br>
+                <div id="tierFilterInput">
+                    <input type="checkbox" value="bronze"/>
+                    <label>Bronze</label><br/>
+                    <input type="checkbox" value="silver"/>
+                    <label>Silver</label><br/>
+                    <input type="checkbox" value="gold"/>
+                    <label>Gold</label>
+                </div>
+            </div>
+            <div class="FilterDiv">
+                <label>Color Identity:</label><br>
+                <div id="colorIdentityFilterInput">
+                    <input type="checkbox" value="W"/>
+                    <label>White</label><br/>
+                    <input type="checkbox" value="U"/>
+                    <label>Blue</label><br/>
+                    <input type="checkbox" value="B"/>
+                    <label>Black</label><br/>
+                    <input type="checkbox" value="R"/>
+                    <label>Red</label><br/>
+                    <input type="checkbox" value="G"/>
+                    <label>Green</label><br/>
+                    <input type="checkbox" value="multiple"/>
+                    <label>Multiple</label><br/>
+                    <input type="checkbox" value="colorless"/>
+                    <label>Colorless</label>
+                </div>
+            </div>
+            <div class="FilterDiv" style="width:100px">
+                <label>Mana Value:</label><br>
+                <div>
+                    <label>Min:</label>
+                    <input style="margin-left:10px;width:40%;float:right" id="minManaValueFilterInput"/><br/>
+                    <label>Max:</label>
+                    <input style="margin-left:10px;width:40%;float:right" id="maxManaValueFilterInput"/><br/>
+                </div>
+            </div>
+            <div class="FilterDiv">
+                <label>Type:</label><br>
+                <div id="typeFilterInput">
+                    <input type="checkbox" value="artifact"/>
+                    <label>Artifact</label><br/>
+                    <input type="checkbox" value="creature"/>
+                    <label>Creature</label><br/>
+                    <input type="checkbox" value="enchantment"/>
+                    <label>Enchantment</label><br/>
+                    <input type="checkbox" value="instant"/>
+                    <label>Instant</label><br/>
+                    <input type="checkbox" value="land"/>
+                    <label>Land</label><br/>
+                    <input type="checkbox" value="sorcery"/>
+                    <label>Sorcery</label><br/>
+                    <input type="checkbox" value="artifact creature"/>
+                    <label>Artifact Creature</label><br/>
+                    <input type="checkbox" value="enchantment creature"/>
+                    <label>Enchantment Creature</label><br/>
+                    <input type="checkbox" value="instant creature"/>
+                    <label>Instant Creature</label><br/>
+                    <input type="checkbox" value="sorcery creature"/>
+                    <label>Sorcery Creature</label><br/>
+                    <input type="checkbox" value="artifact land"/>
+                    <label>Artifact Land</label>
+                </div>
+            </div>
+            <div class="FilterDiv">
+                <label>Draftability:</label><br>
+                <div id="draftabilityStatusFilterInput">
+                    <input type="checkbox" value="draftable" checked="checked"/>
+                    <label>Draftable</label><br/>
+                    <input type="checkbox" value="changed">
+                    <label>Changed</label><br/>
+                    <input type="checkbox" value="not draftable"/>
+                    <label>Not Draftable</label>
+                </div>
+            </div>
+            <div class="FilterDiv">
+                <label>Display:</label><br>
+                <div>
+                    <select id="displayFilterInput">
+                        <option value="images">Images</option>    
+                        <option value="text">Text</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <button onclick="GenerateFilteredCubeWindow()" style="margin-top:20px;margin-left:25%;width:50%">Filter</button>
+    </div>
+    <button onclick="GenerateRandomPackWindow()" style="margin-top:5%">Generate Random Pack</button>
+    </div>
+</body>
+</html>

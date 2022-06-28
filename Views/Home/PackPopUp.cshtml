@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Pack Pop Up";
+}
+
+<!-- For future new solutions:
+Scaffold-DbContext "Server=DESKTOP-0Q2ECRN;Database=CubeStats;Integrated Security=false;User Id=sa;Password=`$TRONG123" -Provider Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+-->
+
+@{
+    Layout = "_Layout";
+}
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <style>
+        .tierSection{
+            margin-bottom:20px;
+            border-width:3px;
+            border:groove black;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body onload="GenerateRandomPack()">
+    <div style="width:100vw;text-align:-webkit-center">
+        <div id="bronzeSection" class="tierSection"></div>
+        <div id="silverSection" class="tierSection"></div>
+        <div id="goldSection" class="tierSection"></div>
+    </div>
+</body>
+</html>
+
+
+

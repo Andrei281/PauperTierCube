@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- For future new solutions:
+Scaffold-DbContext "Server=DESKTOP-0Q2ECRN;Database=CubeStats;Integrated Security=false;User Id=sa;Password=`$TRONG123" -Provider Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+-->
+
+@{
+    Layout = "_Layout";
+}
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Overview</title>
+</head>
+<body>
+    <h1 id="myTitle" class="PoppingHeading">PAUPER TIER CUBE</h1>
+    <h2 class="PoppingHeading">What is Pauper Tier Cube?</h2>
+    <p class="MyText">
+        Pauper Tier Cube is a reimagined Magic: The Gathering, cube experience, featuring non-singleton deck building, much like that of 60-card Constructed.
+    </p>
+    <p class="MyText">
+        During draft, packs contain cards separated by tier; Bronze, Silver and Gold. Depending on a card's tier, one can use a certain
+        number of copies of that card in their deck. A Bronze card represents up to 3 available copies of that card, whereas a Silver card represents 2,
+        and a Gold card, 1.
+        <!-- It can't find this image for some reason... -->
+        <img src="/Home/Images/tiers.jpg" alt="">
+    </p>
+    <h2 class="PoppingHeading">Rules</h2>
+    <p class="MyText">
+        Note that the following are not hard "rules," but rather, guidelines. In other words, this is just the way that I myself draft this cube:
+    </p>
+    <ul class="MyText">
+        <li>
+            Each player begins the draft with 1 pack, containing 4 Bronze cards, 10 Silver cards and 6 Gold cards (other variations
+            have been tested, including beginning with 2 half-sized packs, as well as two-player winston).
+        </li>
+        <li>Each player picks one card per pack, per rotation, until all cards have been picked.</li>
+        <li>After drafting, each player constructs a deck of at least 40 cards, with unlimited access to basic lands.</li>
+    </ul>
+    <h2 class="PoppingHeading">Gameplay</h2>
+    <p class="MyText">
+        As the name suggests, this cube is a Pauper cube, meaning every card included has been printed at common-rarity, at one point or another.
+        So naturally, the power-level and speed of each game is toned-down in comparison to Vintage, Legacy, or Modern cubes.
+    </p>
+    <p class="MyText">
+        This provides the perfect environment for synergy-based decks, which is a core component to this cube (see <a href="/home/themes"> Themes</a> for details).
+    </p>
+</body>
+</html>
+
+
+
