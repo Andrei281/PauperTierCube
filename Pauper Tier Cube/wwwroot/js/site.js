@@ -1,82 +1,4 @@
-﻿function GenerateRandomPackWindow() {
-    let height = 0.75 * window.screen.height;
-    let width = 0.60 * window.screen.width;
-    let left = 0.2 * window.screen.width;
-    let top = 0.125 * window.screen.height;
-    window.location.assign('https://localhost:5001/Home/PackPopUp', 'randomPackPopUp', 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes');
-}
-
-function GenerateRandomPack() {
-    let containerDivs = document.getElementsByClassName("container");
-    for (i = 0; i < containerDivs.length; i++) {
-        if (containerDivs[i].parentElement == document.body) {
-            containerDivs[i].setAttribute("style", "margin-left:0px;padding:0px");
-            break;
-        }
-    }
-
-    const cardMargin = 5;
-    const cardWidth = 215;
-    setGeneratedPackDivWidths(cardMargin, cardWidth);
-
-    let cardStyle = 'margin:' + cardMargin + 'px;width:' + cardWidth + 'px;float:unset'
-    let tiers = ["bronze", "silver", "gold"];
-
-    // Fetch 5 random bronzes, 10 random silvers, and 5 random golds
-    for (let i = 0; i < tiers.length; i++) {
-        if (tiers[i] == "bronze") {
-            let bronzeSection = document.getElementById("bronzeSection");
-            FetchRandomPackData(tiers[i], 5, cardStyle, bronzeSection);
-        } else if (tiers[i] == "silver") {
-            let silverSection = document.getElementById("silverSection");
-            FetchRandomPackData(tiers[i], 10, cardStyle, silverSection);
-        } else if (tiers[i] == "gold") {
-            let goldSection = document.getElementById("goldSection");
-            FetchRandomPackData(tiers[i], 5, cardStyle, goldSection);
-        }
-    }
-}
-
-function setGeneratedPackDivWidths(cardMargin, cardWidth) {
-    let cssObj = window.getComputedStyle(document.getElementById("bronzeSection"), null);
-    let divPadding = parseInt(cssObj.getPropertyValue("padding").slice(0, 1));
-    let divBorderWidth = parseInt(cssObj.getPropertyValue("border-width").slice(0, 1));
-    let packDivWidth = 5 * (2 * cardMargin + cardWidth) + 2 * (divPadding + divBorderWidth);
-    
-    document.getElementById("bronzeSection").setAttribute("style", "width:" + packDivWidth + "px;background-color:#EFA67D");
-    document.getElementById("silverSection").setAttribute("style", "width:" + packDivWidth + "px;background-color:#DBDAD9");
-    document.getElementById("goldSection").setAttribute("style", "width:" + packDivWidth + "px;background-color:#F2E979BF;margin-bottom:0px");
-}
-
-function FetchRandomPackData(tier, maxResults, cardStyle, cardDestination) {
-    let url = '/data/LoadRandomPackData?tierFilter=' + tier
-        + '&maxResults=' + maxResults;
-    fetch(url, {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        headers: { 'Content-Type': 'application/json' },
-        mode: 'no-cors', // no-cors, *cors, same-origin
-    })
-        .then(res => {
-            if (res.status == 200) {
-                return res.json();
-            } else { throw "Error fetching data: " + res; }
-        })
-        .then(data => {
-            if (data) {
-                if (!Array.isArray(data.cardsInCube)) {
-                    throw 'data.Cards or data.CardsInCube in server response is not an array.'
-                }
-
-                fillWithImages(data.cardsInCube, cardDestination, cardStyle);
-
-            }
-        }).catch(err => {
-            if (err) { }
-            alert("Error fetching data: " + err);
-        });
-}
-
-function GenerateFilteredCubeWindow() {
+﻿function GenerateFilteredCubeWindow() {
 
     // Get info about filters
     let primaryFilterVal = document.getElementById('primaryFilterInput').value;
@@ -110,7 +32,7 @@ function GenerateFilteredCubeWindow() {
 
     let maxResults = 10000;
 
-    let filterVals = [ primaryFilterVal, nameFilterVal, tierFilterVals, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal, typeFilterVals, draftabilityStatusFilterVals, displayFilterVal, maxResults ];
+    let filterVals = [primaryFilterVal, nameFilterVal, tierFilterVals, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal, typeFilterVals, draftabilityStatusFilterVals, displayFilterVal, maxResults];
 
     // Check browser support
     if (typeof (Storage) !== "undefined") {
@@ -168,7 +90,8 @@ function FetchCardData(
         mode: 'no-cors', // no-cors, *cors, same-origin
     })
         .then(res => {
-            if (res.status == 200) { return res.json();
+            if (res.status == 200) {
+                return res.json();
             } else { throw "Error fetching data: " + res; }
         })
         .then(data => {
@@ -418,33 +341,94 @@ function ToggleColorIdentityDivHighlight(fullColorIdentityColumn, mouseMovement)
     }
 }
 
+function GenerateRandomPackWindow() {
+    let height = 0.75 * window.screen.height;
+    let width = 0.60 * window.screen.width;
+    let left = 0.2 * window.screen.width;
+    let top = 0.125 * window.screen.height;
+    window.location.assign('https://localhost:5001/Home/PackPopUp', 'randomPackPopUp', 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes');
+}
+
+function GenerateRandomPack() {
+    let containerDivs = document.getElementsByClassName("container");
+    for (i = 0; i < containerDivs.length; i++) {
+        if (containerDivs[i].parentElement == document.body) {
+            containerDivs[i].setAttribute("style", "margin-left:0px;padding:0px");
+            break;
+        }
+    }
+
+    const cardMargin = 5;
+    const cardWidth = 215;
+    setGeneratedPackDivWidths(cardMargin, cardWidth);
+
+    let cardStyle = 'margin:' + cardMargin + 'px;width:' + cardWidth + 'px;float:unset'
+    let tiers = ["bronze", "silver", "gold"];
+
+    // Fetch 5 random bronzes, 10 random silvers, and 5 random golds
+    for (let i = 0; i < tiers.length; i++) {
+        if (tiers[i] == "bronze") {
+            let bronzeSection = document.getElementById("bronzeSection");
+            FetchRandomPackData(tiers[i], 5, cardStyle, bronzeSection);
+        } else if (tiers[i] == "silver") {
+            let silverSection = document.getElementById("silverSection");
+            FetchRandomPackData(tiers[i], 10, cardStyle, silverSection);
+        } else if (tiers[i] == "gold") {
+            let goldSection = document.getElementById("goldSection");
+            FetchRandomPackData(tiers[i], 5, cardStyle, goldSection);
+        }
+    }
+}
+
+function setGeneratedPackDivWidths(cardMargin, cardWidth) {
+    let cssObj = window.getComputedStyle(document.getElementById("bronzeSection"), null);
+    let divPadding = parseInt(cssObj.getPropertyValue("padding").slice(0, 1));
+    let divBorderWidth = parseInt(cssObj.getPropertyValue("border-width").slice(0, 1));
+    let packDivWidth = 5 * (2 * cardMargin + cardWidth) + 2 * (divPadding + divBorderWidth);
+
+    document.getElementById("bronzeSection").setAttribute("style", "width:" + packDivWidth + "px;background-color:#EFA67D");
+    document.getElementById("silverSection").setAttribute("style", "width:" + packDivWidth + "px;background-color:#DBDAD9");
+    document.getElementById("goldSection").setAttribute("style", "width:" + packDivWidth + "px;background-color:#F2E979BF;margin-bottom:0px");
+}
+
+function FetchRandomPackData(tier, maxResults, cardStyle, cardDestination) {
+    let url = '/data/LoadRandomPackData?tierFilter=' + tier
+        + '&maxResults=' + maxResults;
+    fetch(url, {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors', // no-cors, *cors, same-origin
+    })
+        .then(res => {
+            if (res.status == 200) {
+                return res.json();
+            } else { throw "Error fetching data: " + res; }
+        })
+        .then(data => {
+            if (data) {
+                if (!Array.isArray(data.cardsInCube)) {
+                    throw 'data.Cards or data.CardsInCube in server response is not an array.'
+                }
+
+                fillWithImages(data.cardsInCube, cardDestination, cardStyle);
+            }
+        }).catch(err => {
+            if (err) { }
+            alert("Error fetching data: " + err);
+        });
+}
+
 function fillWithImages(cards, cardDestinationElement, cardStyle) {
     for (let index = 0; index < cards.length; index++) {
         let card = cards[index];
-        let url = '/scryfallAPI/GetData?cardName=' + encodeURIComponent(card.name);
-        fetch(url, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            mode: 'no-cors', // no-cors, *cors, same-origin
-        })
-            .then(res => {
-                if (res.status == 200) {
-                    return res.json();
-                } else {
-                    throw "Error fetching data: " + res;
-                }
-            })
-            .then(scryfallAPI => {
-                let imageData = scryfallAPI?.imageData;
-                if (imageData) {
-                    let cardImgElement = document.createElement('img');
-                    cardImgElement.setAttribute('style', cardStyle);
-                    cardImgElement.src = 'data:image/jpg;base64,' + imageData;
-                    cardDestinationElement.appendChild(cardImgElement);
-                } else {
-                    throw 'Something went wrong.';
-                }
-            });
+        if (card.image) {
+            let cardImgElement = document.createElement('img');
+            cardImgElement.setAttribute('style', cardStyle);
+            cardImgElement.src = 'data:image/jpg;base64,' + card.image;
+            cardDestinationElement.appendChild(cardImgElement);
+        } else {
+            throw 'Something went wrong.';
+        }
     }
 }
 

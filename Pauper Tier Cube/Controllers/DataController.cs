@@ -154,7 +154,7 @@ public class DataController : Controller
         }
     }
 
-    // Method to create card object to insert
+    // Method to create card object to insert into Cards table (sql)
     // References Scryfall API for data
     public static Card CreateCardObject(string cardName)
     {
@@ -245,8 +245,21 @@ public class DataController : Controller
     {
         string fileName = Path.Combine(pathRoot, SanitizeFileName(cardName)) + ".png";
         if (System.IO.File.Exists(fileName))
-            return System.IO.File.ReadAllBytes(fileName);
+        {
+            byte[] imageBytes = System.IO.File.ReadAllBytes(fileName);
+            if (imageBytes.Length > 0)
+            {
+                // We have a non-empty image file of the correct name
+                return imageBytes;
+            }
+            else
+            {
+                // We have an image file of the correct name, but it's empty
+                System.IO.File.Delete(fileName);
+            }
+        }
 
+        // An image file of the correct name must be created
         byte[] imageData = await LoadImageDataFromScryfall(cardName);
         SaveImageDataToFile(fileName, imageData);
         return imageData;
@@ -279,7 +292,7 @@ public class DataController : Controller
 
     public static void SaveImageDataToFile(string fileName, byte[] imageData)
     {
-       // string fileName = Path.Combine(pathRoot, cardName) + ".png";
+        // string fileName = Path.Combine(pathRoot, cardName) + ".png";
         if (System.IO.File.Exists(fileName)) System.IO.File.Delete(fileName);
         if (!Directory.Exists(pathRoot)) Directory.CreateDirectory(pathRoot);
         System.IO.File.WriteAllBytes(fileName, imageData);

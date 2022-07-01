@@ -19,7 +19,7 @@
 
 <body>
     <div style="display:flex;flex-direction:column;align-items:center">
-    <div id="filterContainer" style="padding:20px;padding-left:40px;padding-right:40px;background-color:lightgray;border:3px inset gray;display:grid;z-index:1;width:fit-content;margin-top:5%">
+    <div id="filterContainer" style="padding:20px;padding-left:40px;padding-right:40px;background-color:lightgray;border:3px inset gray;z-index:1;width:fit-content;margin-top:5%;display:flex;flex-direction:column;align-items:center">
         <div id="innerFilterContainer" style="display:flex">
             <div class="FilterDiv" style="margin-left:0px">
                 <label>Primary Filter:</label><br>
@@ -93,14 +93,14 @@
                     <label>Sorcery</label><br/>
                     <input type="checkbox" value="artifact creature"/>
                     <label>Artifact Creature</label><br/>
+                    <input type="checkbox" value="artifact land"/>
+                    <label>Artifact Land</label><br/>
                     <input type="checkbox" value="enchantment creature"/>
                     <label>Enchantment Creature</label><br/>
                     <input type="checkbox" value="instant creature"/>
                     <label>Instant Creature</label><br/>
                     <input type="checkbox" value="sorcery creature"/>
                     <label>Sorcery Creature</label><br/>
-                    <input type="checkbox" value="artifact land"/>
-                    <label>Artifact Land</label>
                 </div>
             </div>
             <div class="FilterDiv">
@@ -124,7 +124,29 @@
                 </div>
             </div>
         </div>
-        <button onclick="GenerateFilteredCubeWindow()" style="margin-top:20px;margin-left:25%;width:50%">Filter</button>
+        <div id="sortContainer" style="display:flex">
+            <div style="margin:25px">
+                <label>Primary Sort:</label><br>
+                <select id="primarySortInput">
+                    <option value="name">Name</option>    
+                    <option value="colorIdentity">Color Identity</option>
+                    <option value="CMC" selected="selected">Mana Value</option>
+                    <option value="type">Type</option>
+                    <option value="statsW-L">Stats: W - L</option>
+                </select>
+            </div>
+            <div style="margin:25px">
+                <label>Secondary Sort:</label><br>
+                <select id="secondarySortInput">
+                    <option value="name" selected="selected">Name</option>    
+                    <option value="colorIdentity">Color Identity</option>
+                    <option value="CMC">Mana Value</option>
+                    <option value="type">Type</option>
+                    <option value="statsW-L">Stats: W - L</option>
+                </select>
+            </div>
+        </div>
+        <button onclick="GenerateFilteredCubeWindow()" style="margin-top:20px;width:50%">Filter</button>
     </div>
     <button onclick="GenerateRandomPackWindow()" style="margin-top:5%">Generate Random Pack</button>
     </div>

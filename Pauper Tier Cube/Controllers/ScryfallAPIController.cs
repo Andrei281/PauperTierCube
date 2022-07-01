@@ -27,24 +27,6 @@ public class ScryfallAPIController : Controller
     IConfiguration _configuration;
 
     [HttpGet]
-    public async Task<IActionResult> GetData(
-        [FromQuery] string cardName)
-    {
-        {
-            var cards = _cubeStatsContext.Cards.Where(card => card.Name == cardName);
-            if (cards.Count() > 1) throw new Exception($"Found more than one card named {cardName}.");
-            var card = cards.FirstOrDefault();
-
-            if (card == null) throw new Exception($"Card {cardName} not found.");
-
-            var cardWithImage = new CardWithImage(card);
-            cardWithImage.Image = await DataController.LoadImageDataFromFile(card.Name);
-
-            var result = new { imageData = System.Convert.ToBase64String(cardWithImage.Image ?? new byte[0]) };
-            return Ok(Newtonsoft.Json.JsonConvert.SerializeObject(result)); // because Fetch() likes to get json back
-        }
-    }
-
     public static async Task<byte[]> GetImageDataFromSkryfallApi(string cardName)
     {
         try
@@ -59,6 +41,7 @@ public class ScryfallAPIController : Controller
             var result = response.Content.ReadAsStringAsync().Result;
 
             string imageUrl = String.Empty;
+
             JToken cardToken = JToken.Parse(result);
             if (cardToken != null)
             {
@@ -66,11 +49,16 @@ public class ScryfallAPIController : Controller
                 if (imagesToken != null)
                 {
                     JToken imageToken = imagesToken["normal"];
-                    if (imageToken != null)
-                    {
-                        JValue imageValue = (JValue)imageToken;
-                        imageUrl = imageValue?.ToString() ?? String.Empty;
-                    }
+                    JValue imageValue = (JValue)imageToken;
+                    imageUrl = imageValue?.ToString() ?? String.Empty;
+                }
+                else
+                {
+                    // "image_uris" tag may be hidden inside a "card_faces" tag (for double-faced cards)
+                    JToken cardFacesToken = cardToken["card_faces"];
+                    JToken imageToken = cardFacesToken[0]["image_uris"]["normal"];
+                    JValue imageValue = (JValue)imageToken;
+                    imageUrl = imageValue?.ToString() ?? String.Empty;
                 }
             }
             if (!String.IsNullOrWhiteSpace(imageUrl))
