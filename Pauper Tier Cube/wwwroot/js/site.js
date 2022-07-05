@@ -1,46 +1,37 @@
 ﻿function GenerateFilteredCubeWindow() {
-
     // Get info about filters
     let primaryFilterVal = document.getElementById('primaryFilterInput').value;
-
     let nameFilterVal = document.getElementById('nameFilterInput').value;
-
     let tierFilterElement = document.getElementById('tierFilterInput');
     let tierFilterVals = []
         .filter.call(tierFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
         .map(function (childNode) { return childNode.value; });
-
     let colorIdentityFilterElement = document.getElementById('colorIdentityFilterInput');
     let colorIdentityFilterVals = []
         .filter.call(colorIdentityFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
         .map(function (childNode) { return childNode.value; });
-
     let minManaValueFilterVal = document.getElementById('minManaValueFilterInput').value;
     let maxManaValueFilterVal = document.getElementById('maxManaValueFilterInput').value;
-
     let typeFilterElement = document.getElementById('typeFilterInput');
     let typeFilterVals = []
         .filter.call(typeFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
         .map(function (childNode) { return childNode.value; });
-
     let draftabilityStatusFilterElement = document.getElementById('draftabilityStatusFilterInput');
     let draftabilityStatusFilterVals = []
         .filter.call(draftabilityStatusFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
         .map(function (childNode) { return childNode.value; });
-
     let displayFilterVal = document.getElementById('displayFilterInput').value;
-
     let maxResults = 10000;
-
-    let filterVals = [primaryFilterVal, nameFilterVal, tierFilterVals, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal, typeFilterVals, draftabilityStatusFilterVals, displayFilterVal, maxResults];
+    let primarySortVal = document.getElementById("primarySortInput").value;
+    let secondarySortVal = document.getElementById("secondarySortInput").value;
 
     // Check browser support
     if (typeof (Storage) !== "undefined") {
         // Store filter info in browser session
+        let filterVals = [primaryFilterVal, nameFilterVal, tierFilterVals, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal, typeFilterVals, draftabilityStatusFilterVals, displayFilterVal, maxResults, primarySortVal, secondarySortVal];
         for (let i = 0; i < filterVals.length; i++) {
             localStorage.setItem("filterVal" + i, filterVals[i]);
         }
-
         // Navigate to new page
         window.location.assign('https://localhost:5001/Home/FilterPopUp');
     }
@@ -57,8 +48,10 @@ function PrepareFetchCardData() {
     let draftabilityStatusFilterVals = localStorage.getItem('filterVal7');
     let displayFilterVal = localStorage.getItem('filterVal8');
     let maxResults = localStorage.getItem('filterVal9');
+    let primarySortVal = localStorage.getItem('filterVal10');
+    let secondarySortVal = localStorage.getItem('filterVal11');
     FetchCardData(primaryFilterVal, nameFilterVal, tierFilterVals, colorIdentityFilterVals, minManaValueFilterVal,
-        maxManaValueFilterVal, typeFilterVals, draftabilityStatusFilterVals, displayFilterVal, maxResults);
+        maxManaValueFilterVal, typeFilterVals, draftabilityStatusFilterVals, displayFilterVal, maxResults, primarySortVal, secondarySortVal);
 }
 
 function FetchCardData(
@@ -71,7 +64,9 @@ function FetchCardData(
     typeFilter,
     draftabilityStatusFilter,
     displayFilter,
-    maxResults) {
+    maxResults,
+    primarySortVal,
+    secondarySortVal) {
     if (isNaN(maxResults)) throw 'maxResults must be a number';
     if (maxResults < 0) throw 'maxResults must be greater than zero';
     let url = '/data/CubeData?nameFilter=' + encodeURIComponent(nameFilter)
@@ -83,7 +78,8 @@ function FetchCardData(
         + '&draftabilityStatusFilter=' + encodeURIComponent(draftabilityStatusFilter)
         + '&displayFilter=' + encodeURIComponent(displayFilter)
         + '&maxResults=' + maxResults
-        + '&randomizerForPack=false';
+        + '&primarySortVal=' + primarySortVal
+        + '&secondarySortVal=' + secondarySortVal;
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
@@ -240,7 +236,7 @@ function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, da
     cardCountArea.setAttribute('style', 'height:100%;display:flex')
     var cardCountDiv = document.createElement('div');
     cardCountDiv.setAttribute('style', 'width:100%;text-align:center;align-self:center');
-    let colorIdentityFullWord = getFullWord(colorIdentity);
+    let colorIdentityFullWord = getFullColorIdentityWord(colorIdentity);
     cardCountDiv.innerHTML = colorIdentityFullWord + ' - (' + cards.length + ')';
     cardCountArea.appendChild(cardCountDiv);
     cardCountAreaWithColor.appendChild(cardCountArea);
@@ -281,7 +277,7 @@ function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, da
     ToggleColorIdentityDivVisibility(fullColorIdentityColumn);
 }
 
-function getFullWord(colorIdentity) {
+function getFullColorIdentityWord(colorIdentity) {
     if (colorIdentity == 'W') {
         return 'White';
     } else if (colorIdentity == 'U') {

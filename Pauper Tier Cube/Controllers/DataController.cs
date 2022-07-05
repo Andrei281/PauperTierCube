@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace Pauper_Tier_Cube.Controllers;
 public class DataController : Controller
@@ -36,17 +37,19 @@ public class DataController : Controller
         [FromQuery] string maxManaValueFilter,
         [FromQuery] string typeFilter,
         [FromQuery] string draftabilityStatusFilter,
-        [FromQuery] int maxResults)
+        [FromQuery] int maxResults,
+        [FromQuery] string primarySortVal,
+        [FromQuery] string secondarySortVal)
     {
         try
         {
             // Get all the requested cards from the database, without images.
             // The images are stored in the file system, and will be retrieved by
             // matching the image file name with the card name.
-            IQueryable<Card> cards = _cubeStatsContext.Cards;
+            var cards = _cubeStatsContext.Cards.ToArray();
             IQueryable<CardsInCube> cardsInCubeResult = _cubeStatsContext.CardsInCubes;
 
-            // First, we deal with CardsInCube data
+            // First, we deal with the CardsInCube data filters
             if (!String.IsNullOrWhiteSpace(tierFilter))
             {
                 string[] tierFilterElements = tierFilter?.Split(",") ?? new string[0];
@@ -76,7 +79,29 @@ public class DataController : Controller
                     cnn.Open();
 
                     Card cardObject = CreateCardObject(cardInCubeName);
+
                     string sqlInsertStatement = "insert into Cards values ('" + cardObject.Name + "', '" + cardObject.ColorIdentity + "', " + cardObject.Cmc + ", '" + cardObject.CombinedTypes + "');";
+
+                    if (cardObject.Name.Contains('\''))
+                    {
+                        // Replace all instances of an apostrophe with 2 apostrophes in the card's name
+                        List<string> substringsByApostrophe = new List<string>();
+                        int previousSubstringEnd = 0;
+                        for (int charIndex = 0; charIndex < cardObject.Name.Length; charIndex++)
+                        {
+                            if (cardObject.Name[charIndex].Equals('\''))
+                            {
+                                string subString = cardObject.Name.Substring(previousSubstringEnd, charIndex - previousSubstringEnd);
+                                substringsByApostrophe.Add(subString);
+                                previousSubstringEnd = charIndex;
+                            }
+                        }
+                        string lastSubstring = cardObject.Name.Substring(previousSubstringEnd, cardObject.Name.Length - previousSubstringEnd);
+                        substringsByApostrophe.Add(lastSubstring);
+                        string[] arrayOfSubstringsByApostrophe = substringsByApostrophe.ToArray();
+                        string newCardObjectName = string.Join("\'", arrayOfSubstringsByApostrophe);
+                        sqlInsertStatement = "insert into Cards values ('" + newCardObjectName + "', '" + cardObject.ColorIdentity + "', " + cardObject.Cmc + ", '" + cardObject.CombinedTypes + "');";
+                    }
 
                     SqlCommand sqlInsert = new SqlCommand(sqlInsertStatement, cnn);
 
@@ -89,16 +114,16 @@ public class DataController : Controller
                 }
             }
 
-            // Then, we deal with Cards data
+            // Then, we deal with Cards data filters
             if (!String.IsNullOrWhiteSpace(nameFilter))
             {
-                cards = cards.Where(card => card.Name.StartsWith(nameFilter));
+                cards = cards.Where(card => card.Name.StartsWith(nameFilter)).ToArray();
             }
 
             if (!String.IsNullOrWhiteSpace(colorIdentityFilter))
             {
                 string[] colorIdentityFilterElements = colorIdentityFilter?.Split(",") ?? new string[0];
-                cards = cards.Where(card => colorIdentityFilterElements.Contains(card.ColorIdentity));
+                cards = cards.Where(card => colorIdentityFilterElements.Contains(card.ColorIdentity)).ToArray();
             }
 
             if (!String.IsNullOrWhiteSpace(minManaValueFilter))
@@ -107,7 +132,7 @@ public class DataController : Controller
                     throw new ArgumentException($"{minManaValueFilter} isn't a valid integer value for minManaValueFilter.");
                 if (intifiedMinManaValueFilter < 0)
                     throw new ArgumentException($"{minManaValueFilter} isn't a valid minManaValueFilter value. minManaValueFilter must be a positive integer.");
-                cards = cards.Where(card => card.Cmc >= intifiedMinManaValueFilter);
+                cards = cards.Where(card => card.Cmc >= intifiedMinManaValueFilter).ToArray();
             }
 
             if (!String.IsNullOrWhiteSpace(maxManaValueFilter))
@@ -116,17 +141,25 @@ public class DataController : Controller
                     throw new ArgumentException($"{minManaValueFilter} isn't a valid integer value for maxManaValueFilter.");
                 if (intifiedMaxManaValueFilter < 0)
                     throw new ArgumentException($"{maxManaValueFilter} isn't a valid maxManaValueFilter value. maxManaValueFilter must be a positive integer.");
-                cards = cards.Where(card => card.Cmc <= intifiedMaxManaValueFilter);
+                cards = cards.Where(card => card.Cmc <= intifiedMaxManaValueFilter).ToArray();
             }
 
             if (!String.IsNullOrWhiteSpace(typeFilter))
             {
                 string[] typeFilterElements = typeFilter?.Split(",") ?? new string[0];
-                cards = cards.Where(card => typeFilterElements.Contains(card.CombinedTypes));
+                cards = cards.Where(card => typeFilterElements.Contains(card.CombinedTypes)).ToArray();
             }
+
+            // Now that we've applied the filters, we apply sorting
+            Type typeCard = typeof(Card);
+            var propertyInfo1 = typeCard.GetProperty(primarySortVal);
+            var propertyInfo2 = typeCard.GetProperty(secondarySortVal);
+
             cards = cards
-                .OrderBy(card => card.Cmc).ThenBy(card => card.Name)
-                .Take(maxResults);
+                .OrderBy(card => GetValueToCompare(card, propertyInfo1))
+                .ThenBy(card => GetValueToCompare(card, propertyInfo2))
+                .Take(maxResults)
+                .ToArray();
 
             // Convert from data-model without image property to DTO with image property
             var cardsResultsArray = new List<CardWithImage>();
@@ -152,6 +185,49 @@ public class DataController : Controller
         {
             return BadRequest(ex);
         }
+    }
+
+    public static string GetValueToCompare(Card card, PropertyInfo propertyInfo)
+    {
+        object valueObj = propertyInfo.GetValue(card);
+
+        if (propertyInfo.PropertyType == typeof(string))
+        {
+            if (propertyInfo.Name == "ColorIdentity")
+            {
+                // The sorting criteria of interest is color identity
+                // We can't use the sort as is: We want it in WUBRG order
+                return ApplyColorIdentityValue((string)valueObj);
+            }
+
+            // The sorting criteria is card type or name; we can apply regular ASCII compare
+            return (string)valueObj;
+        }
+
+        if (propertyInfo.PropertyType != typeof(int?))
+            throw new Exception($"GetValueToCompare() currently only supports string or int properties - not {propertyInfo.PropertyType.Name}.");
+
+        var nullableValuevalue = (int?)valueObj;
+        var intValue = (nullableValuevalue.HasValue) ? nullableValuevalue.Value : 0;
+        var stringValue = intValue.ToString();
+        var valueLength = stringValue.Length;
+        if (valueLength > 3)
+            throw new Exception($"GetValueToCompare() currently only supports integers up to 3 digits. The following value is too big: {intValue}.");
+
+        var paddingNeeded = 3 - valueLength;
+        stringValue = (paddingNeeded == 0) ? stringValue : new string('0', paddingNeeded) + stringValue;
+        return stringValue;
+    }
+
+    public static string ApplyColorIdentityValue(string colorIdentity)
+    {
+        if (colorIdentity.Equals("W")) return "0";
+        else if (colorIdentity.Equals("U")) return "1";
+        else if (colorIdentity.Equals("B")) return "2";
+        else if (colorIdentity.Equals("R")) return "3";
+        else if (colorIdentity.Equals("G")) return "4";
+        else if (colorIdentity.Equals("Multiple")) return "5";
+        else return "6";
     }
 
     // Method to create card object to insert into Cards table (sql)

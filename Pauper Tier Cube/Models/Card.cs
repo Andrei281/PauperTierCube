@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Pauper_Tier_Cube.Models
 {
-    public partial class CardWithImage : Card // created by manually
+    public partial class CardWithImage : Card // created manually
     {
         public CardWithImage(Card card)
         {

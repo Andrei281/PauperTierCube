@@ -107,7 +107,7 @@ public class ScryfallAPIController : Controller
                 }
                 else
                 {
-                    colorIdentityToken = colorIdentityToken.First().ToString();
+                    colorIdentityToken = colorIdentityToken.Single();
                 }
                 JToken cmcToken = cardToken["cmc"].ToObject<int>();
                 JToken rawTypesToken = cardToken["type_line"];
