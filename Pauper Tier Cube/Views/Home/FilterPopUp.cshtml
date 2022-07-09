@@ -2,10 +2,6 @@
     ViewData["Title"] = "Filter Pop Up";
 }
 
-<!-- For future new solutions:
-Scaffold-DbContext "Server=DESKTOP-0Q2ECRN;Database=CubeStats;Integrated Security=false;User Id=sa;Password=`$TRONG123" -Provider Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
--->
-
 @{
     Layout = "_Layout";
 }
@@ -16,7 +12,7 @@ Scaffold-DbContext "Server=DESKTOP-0Q2ECRN;Database=CubeStats;Integrated Securit
 
 <head>
 </head>
-<body onload="PrepareFetchCardData()">
+<body onload="FetchCardData()">
     <div style="display:flex;flex-direction:column;align-items:center">
         <div id="wrapperDiv" style="width:1215px;top:10%;height:80%;position:absolute;display:flex"></div>
     </div>

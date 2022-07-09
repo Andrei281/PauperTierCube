@@ -132,4 +132,3 @@ public class ScryfallAPIController : Controller
         return new string[0];
     }
 }
-
