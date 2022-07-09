@@ -28,7 +28,7 @@
     // Check browser support
     if (typeof (Storage) !== "undefined") {
         // Store filter info in browser session
-        let filterVals = [primaryFilterVal, nameFilterVal, tierFilterVals, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal, typeFilterVals, draftabilityStatusFilterVals, displayFilterVal, maxResults, primarySortVal, secondarySortVal];
+        let filterVals = [primaryFilterVal, displayFilterVal, nameFilterVal, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal, typeFilterVals, tierFilterVals, draftabilityStatusFilterVals, primarySortVal, secondarySortVal];
         for (let i = 0; i < filterVals.length; i++) {
             localStorage.setItem("filterVal" + i, filterVals[i]);
         }
@@ -37,49 +37,19 @@
     }
 }
 
-function PrepareFetchCardData() {
-    let primaryFilterVal = localStorage.getItem('filterVal0');
-    let nameFilterVal = localStorage.getItem('filterVal1');
-    let tierFilterVals = localStorage.getItem('filterVal2');
-    let colorIdentityFilterVals = localStorage.getItem('filterVal3');
-    let minManaValueFilterVal = localStorage.getItem('filterVal4');
-    let maxManaValueFilterVal = localStorage.getItem('filterVal5');
-    let typeFilterVals = localStorage.getItem('filterVal6');
-    let draftabilityStatusFilterVals = localStorage.getItem('filterVal7');
-    let displayFilterVal = localStorage.getItem('filterVal8');
-    let maxResults = localStorage.getItem('filterVal9');
-    let primarySortVal = localStorage.getItem('filterVal10');
-    let secondarySortVal = localStorage.getItem('filterVal11');
-    FetchCardData(primaryFilterVal, nameFilterVal, tierFilterVals, colorIdentityFilterVals, minManaValueFilterVal,
-        maxManaValueFilterVal, typeFilterVals, draftabilityStatusFilterVals, displayFilterVal, maxResults, primarySortVal, secondarySortVal);
-}
-
-function FetchCardData(
-    primaryFilter,
-    nameFilter,
-    tierFilter,
-    colorIdentityFilter,
-    minManaValueFilter,
-    maxManaValueFilter,
-    typeFilter,
-    draftabilityStatusFilter,
-    displayFilter,
-    maxResults,
-    primarySortVal,
-    secondarySortVal) {
-    if (isNaN(maxResults)) throw 'maxResults must be a number';
-    if (maxResults < 0) throw 'maxResults must be greater than zero';
-    let url = '/data/CubeData?nameFilter=' + encodeURIComponent(nameFilter)
-        + '&tierFilter=' + encodeURIComponent(tierFilter)
-        + '&colorIdentityFilter=' + encodeURIComponent(colorIdentityFilter)
-        + '&minManaValueFilter=' + encodeURIComponent(minManaValueFilter)
-        + '&maxManaValueFilter=' + encodeURIComponent(maxManaValueFilter)
-        + '&typeFilter=' + encodeURIComponent(typeFilter)
-        + '&draftabilityStatusFilter=' + encodeURIComponent(draftabilityStatusFilter)
+function FetchCardData() {
+    let primaryFilter = localStorage.getItem('filterVal0');
+    let displayFilter = localStorage.getItem('filterVal1');
+    let url = '/data/CubeData?nameFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
+        + '&colorIdentityFilter=' + encodeURIComponent(localStorage.getItem('filterVal3'))
+        + '&minManaValueFilter=' + encodeURIComponent(localStorage.getItem('filterVal4'))
+        + '&maxManaValueFilter=' + encodeURIComponent(localStorage.getItem('filterVal5'))
+        + '&typeFilter=' + encodeURIComponent(localStorage.getItem('filterVal6'))
+        + '&tierFilter=' + encodeURIComponent(localStorage.getItem('filterVal7'))
+        + '&draftabilityFilter=' + encodeURIComponent(localStorage.getItem('filterVal8'))
         + '&displayFilter=' + encodeURIComponent(displayFilter)
-        + '&maxResults=' + maxResults
-        + '&primarySortVal=' + primarySortVal
-        + '&secondarySortVal=' + secondarySortVal;
+        + '&primarySortVal=' + localStorage.getItem('filterVal9')
+        + '&secondarySortVal=' + localStorage.getItem('filterVal10');
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
@@ -88,28 +58,28 @@ function FetchCardData(
         .then(res => {
             if (res.status == 200) {
                 return res.json();
-            } else { throw "Error fetching data: " + res; }
+            } else { throw "Error fetching cards: " + res; }
         })
-        .then(data => {
-            if (data) {
-                if (!Array.isArray(data.cards) || !Array.isArray(data.cardsInCube)) throw 'data.Cards or data.CardsInCube in server response is not an array.'
+        .then(cards => {
+            if (cards) {
+                if (!Array.isArray(cards)) throw 'cards in server response is not an array.'
                 if (primaryFilter == 'none') {
                     document.getElementById('wrapperDiv').innerHTML = "";
-                    FillNoneDiv(data, displayFilter);
+                    FillNoneDiv(cards, displayFilter);
                 } else if (primaryFilter == 'tier') {
                     document.getElementById('wrapperDiv').innerHTML = "";
-                    FillTierDiv('Bronze', data, '#EFA67D', true, displayFilter);
-                    FillTierDiv('Silver', data, '#DBDAD9', null, displayFilter);
-                    FillTierDiv('Gold', data, '#F2E979BF', null, displayFilter);
+                    FillTierDiv('Bronze', cards, '#EFA67D', true, displayFilter);
+                    FillTierDiv('Silver', cards, '#DBDAD9', null, displayFilter);
+                    FillTierDiv('Gold', cards, '#F2E979BF', null, displayFilter);
                 } else if (primaryFilter == 'colorIdentity') {
                     document.getElementById('wrapperDiv').innerHTML = "";
-                    FillColorIdentityDiv('#ffff80', '#ffffe6', 'W', data, displayFilter, 'shrunk'); // These are initialized opposite of how they will appear, due to the nature of ToggleColorIdentityDivVisibility()
-                    FillColorIdentityDiv('#99ddff', '#e6ffff', 'U', data, displayFilter, 'shrunk');
-                    FillColorIdentityDiv('#df9fdf', '#f3e6ff', 'B', data, displayFilter, 'shrunk');
-                    FillColorIdentityDiv('#ff8080', '#ffe6e6', 'R', data, displayFilter, 'visible');
-                    FillColorIdentityDiv('#99ff99', '#e6ffe6', 'G', data, displayFilter, 'visible');
-                    FillColorIdentityDiv('#fed793', '#ffe0cc', 'Multiple', data, displayFilter, 'visible');
-                    FillColorIdentityDiv('#DBDAD9', '#e0e0eb', 'Colorless', data, displayFilter, 'visible');
+                    FillColorIdentityDiv('#ffff80', '#ffffe6', 'W', cards, displayFilter, 'shrunk'); // These are initialized opposite of how they will appear, due to the nature of ToggleColorIdentityDivVisibility()
+                    FillColorIdentityDiv('#99ddff', '#e6ffff', 'U', cards, displayFilter, 'shrunk');
+                    FillColorIdentityDiv('#df9fdf', '#f3e6ff', 'B', cards, displayFilter, 'shrunk');
+                    FillColorIdentityDiv('#ff8080', '#ffe6e6', 'R', cards, displayFilter, 'visible');
+                    FillColorIdentityDiv('#99ff99', '#e6ffe6', 'G', cards, displayFilter, 'visible');
+                    FillColorIdentityDiv('#fed793', '#ffe0cc', 'Multiple', cards, displayFilter, 'visible');
+                    FillColorIdentityDiv('#DBDAD9', '#e0e0eb', 'Colorless', cards, displayFilter, 'visible');
                 }
             }
         }).catch(err => {
@@ -118,56 +88,28 @@ function FetchCardData(
         });
 }
 
-function FillNoneDiv(data, displayFilter) {
+function FillNoneDiv(cards, displayFilter) {
     var cardCountHeader = document.createElement('div');
     cardCountHeader.setAttribute('style', 'position:absolute;height:8%;width:100%;background-color:white;border:3px inset gray;border-bottom:none;display:flex');
     var cardCountDestinationElement = document.createElement('div');
     cardCountDestinationElement.setAttribute('style', 'font-weight:bold;font-size:25px;text-align:center;width:100%;align-self:center')
     cardCountHeader.appendChild(cardCountDestinationElement)
-    var cardsInCubeNames = data.cardsInCube.map(function (card) { return card.name; });
-    var cards = data.cards.filter(function (card) {
-        if (cardsInCubeNames.includes(card.name)) return card;
-    });
     cardCountDestinationElement.innerHTML = 'Cards - (' + cards.length + ')';
     wrapperDiv.appendChild(cardCountHeader);
     var cardDestinationElement = document.createElement('div');
     cardDestinationElement.setAttribute('class', 'NoneDiv');
     wrapperDiv.appendChild(cardDestinationElement);
     if (displayFilter == 'text') {
-        for (let index = 0; index < cards.length; index++) {
-            let card = cards[index];
-            let cardElement = document.createElement('div');
-            cardElement.setAttribute('class', 'CardListItem');
-            cardElement.setAttribute('style', 'width:max-content;margin-right:20px;float:left');
-            cardElement.innerHTML = card.name;
-            var timeOut;
-            cardElement.addEventListener("mouseenter", function () {
-                let that = this;
-                timeOut = setTimeout(function () { DisplayToolTip(that) }, 400);
-            });
-            cardElement.addEventListener("mouseleave", function () {
-                clearTimeout(timeOut);
-                VanishToolTip();
-            });
-            cardDestinationElement.appendChild(cardElement);
-        }
+        fillWithText(cards, cardDestinationElement, "width:max-content;margin-right:20px;float:left");
     } else if (displayFilter == 'images') {
         cardDestinationElement.setAttribute('style', 'padding-bottom:0px');
         fillWithImages(cards, cardDestinationElement, 'width:215px;margin-right:10px;margin-bottom:10px;float:left');
     }
 }
 
-function FillTierDiv(tier, data, divColor, firstDivStatus, displayFilter) {
-    // Retrieve card data: filter through cardsInCube table
-    var cardsInCubeNames = data.cardsInCube.map(function (card) { return card.name; });
-    var cardsWithTier = data.cardsInCube.filter(function (card) {
-        if (cardsInCubeNames.includes(card.name)) return card.tier == tier;
-    });
-    // Filter result through cards table
-    var cardsWithTierNames = cardsWithTier.map(function (card) { return card.name; });
-    var cardsWithFullStats = data.cards.filter(function (card) {
-        if (cardsWithTierNames.includes(card.name)) return card;
-    });
+function FillTierDiv(tier, cards, divColor, firstDivStatus, displayFilter) {
+    // We only want cards that fit the specified tier
+    cardsForThisDiv = FilterCardsForSpecificDiv("tier", tier, cards);
 
     // Initialize full tier div
     var cardDestinationWrapper = document.createElement('div');
@@ -180,7 +122,7 @@ function FillTierDiv(tier, data, divColor, firstDivStatus, displayFilter) {
     cardCountArea.setAttribute('style', 'font-weight:bold;text-align:center;height:5%;border:3px inset gray;border-bottom:none;display:flex;background-color:' + divColor);
     let cardCountDiv = document.createElement('div');
     cardCountDiv.setAttribute('style', 'width:100%;text-align:center;align-self:center');
-    cardCountDiv.innerHTML = tier + ' - (' + cardsWithFullStats.length + ')';
+    cardCountDiv.innerHTML = tier + ' - (' + cardsForThisDiv.length + ')';
     cardCountArea.appendChild(cardCountDiv);
     cardDestinationWrapper.appendChild(cardCountArea);
 
@@ -188,25 +130,10 @@ function FillTierDiv(tier, data, divColor, firstDivStatus, displayFilter) {
     let cardDestinationElement = document.createElement('div');
     cardDestinationElement.setAttribute('class', 'TierDiv');
     if (displayFilter == 'text') {
-        for (let index = 0; index < cardsWithFullStats.length; index++) {
-            let card = cardsWithFullStats[index];
-            let cardElement = document.createElement('div');
-            cardElement.setAttribute('class', 'CardListItem');
-            cardElement.innerHTML = card.name;
-            var timeOut;
-            cardElement.addEventListener("mouseenter", function () {
-                let that = this;
-                timeOut = setTimeout(function () { DisplayToolTip(that) }, 400);
-            });
-            cardElement.addEventListener("mouseleave", function () {
-                clearTimeout(timeOut);
-                VanishToolTip();
-            });
-            cardDestinationElement.appendChild(cardElement);
-        }
+        fillWithText(cardsForThisDiv, cardDestinationElement, null);
     } else if (displayFilter == 'images') {
         cardDestinationElement.setAttribute('style', 'padding-bottom:0px')
-        fillWithImages(cardsWithFullStats, cardDestinationElement, 'width:215px;margin-bottom:10px')
+        fillWithImages(cardsForThisDiv, cardDestinationElement, 'width:215px;margin-bottom:10px')
     }
     cardDestinationWrapper.appendChild(cardDestinationElement);
 
@@ -214,12 +141,9 @@ function FillTierDiv(tier, data, divColor, firstDivStatus, displayFilter) {
     wrapperDiv.appendChild(cardDestinationWrapper);
 }
 
-function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, data, cardDisplayFilter, visibility) {
-    // Retrieve card data
-    var cardNames = data.cardsInCube.map(function (card) { return card.name; });
-    var cards = data.cards.filter(function (card) {
-        if (cardNames.includes(card.name)) return card.colorIdentity == colorIdentity;
-    });
+function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, cards, cardDisplayFilter, visibility) {
+    // We only want cards that fit the specified color identity
+    let cardsForThisDiv = FilterCardsForSpecificDiv("colorIdentity", colorIdentity, cards)
 
     // Initialize the color identity column
     var fullColorIdentityColumn = document.createElement('div');
@@ -237,7 +161,7 @@ function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, da
     var cardCountDiv = document.createElement('div');
     cardCountDiv.setAttribute('style', 'width:100%;text-align:center;align-self:center');
     let colorIdentityFullWord = getFullColorIdentityWord(colorIdentity);
-    cardCountDiv.innerHTML = colorIdentityFullWord + ' - (' + cards.length + ')';
+    cardCountDiv.innerHTML = colorIdentityFullWord + ' - (' + cardsForThisDiv.length + ')';
     cardCountArea.appendChild(cardCountDiv);
     cardCountAreaWithColor.appendChild(cardCountArea);
     fullColorIdentityColumn.appendChild(cardCountAreaWithColor);
@@ -248,24 +172,9 @@ function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, da
     var cardArea = document.createElement('div');
     cardArea.setAttribute('style', 'visibility:hidden');
     if (cardDisplayFilter == 'text') {
-        for (let index = 0; index < cards.length; index++) {
-            let card = cards[index];
-            let cardElement = document.createElement('div');
-            cardElement.setAttribute('class', 'CardListItem');
-            cardElement.innerHTML = card.name;
-            var timeOut;
-            cardElement.addEventListener("mouseenter", function () {
-                let that = this;
-                timeOut = setTimeout(function () { DisplayToolTip(that) }, 400);
-            });
-            cardElement.addEventListener("mouseleave", function () {
-                clearTimeout(timeOut);
-                VanishToolTip();
-            });
-            cardArea.appendChild(cardElement);
-        }
+        fillWithText(cardsForThisDiv, cardArea, null);
     } else if (cardDisplayFilter == 'images') {
-        fillWithImages(cards, cardArea, 'width:95%;margin-bottom:10px');
+        fillWithImages(cardsForThisDiv, cardArea, 'width:95%;margin-bottom:10px');
     }
     cardAreaWithColor.appendChild(cardArea);
     fullColorIdentityColumn.appendChild(cardAreaWithColor);
@@ -337,6 +246,16 @@ function ToggleColorIdentityDivHighlight(fullColorIdentityColumn, mouseMovement)
     }
 }
 
+function FilterCardsForSpecificDiv(filterType, filterVal, cards) {
+    let cardsToReturn = [];
+    for (let i = 0; i < cards.length; i++) {
+        if (cards[i][filterType] == filterVal) {
+            cardsToReturn.push(cards[i])
+        }
+    }
+    return cardsToReturn;
+}
+
 function GenerateRandomPackWindow() {
     let height = 0.75 * window.screen.height;
     let width = 0.60 * window.screen.width;
@@ -405,13 +324,34 @@ function FetchRandomPackData(tier, maxResults, cardStyle, cardDestination) {
                 if (!Array.isArray(data.cardsInCube)) {
                     throw 'data.Cards or data.CardsInCube in server response is not an array.'
                 }
-
                 fillWithImages(data.cardsInCube, cardDestination, cardStyle);
             }
         }).catch(err => {
             if (err) { }
             alert("Error fetching data: " + err);
         });
+}
+
+function fillWithText(cards, cardDestinationElement, cardStyle) {
+    for (let i = 0; i < cards.length; i++) {
+        let card = cards[i];
+        let cardElement = document.createElement('div');
+        cardElement.setAttribute('class', 'CardListItem');
+        if (cardStyle) {
+            cardElement.setAttribute('style', cardStyle);
+        }
+        cardElement.innerHTML = card.name;
+        var timeOut;
+        cardElement.addEventListener("mouseenter", function () {
+            let that = this;
+            timeOut = setTimeout(function () { DisplayToolTip(that, card.image) }, 400);
+        });
+        cardElement.addEventListener("mouseleave", function () {
+            clearTimeout(timeOut);
+            VanishToolTip();
+        });
+        cardDestinationElement.appendChild(cardElement);
+    }
 }
 
 function fillWithImages(cards, cardDestinationElement, cardStyle) {
@@ -428,61 +368,39 @@ function fillWithImages(cards, cardDestinationElement, cardStyle) {
     }
 }
 
-function DisplayToolTip(cardTextDiv) {
-    let cardName = cardTextDiv.innerHTML;
-    let url = '/scryfallAPI/GetData?cardName=' + encodeURIComponent(cardName);
+function DisplayToolTip(cardTextDiv, cardImageByteArray) {
+    let toolTipDiv = document.getElementById("toolTipDiv");
+    let cardTextPosition = GetAbsolutePosition(cardTextDiv);
+    let toolTipPadding = 5;
 
-    let data = fetch(url, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        mode: 'no-cors', // no-cors, *cors, same-origin
-    })
-        .then(res => {
-            if (res.status == 200) {
-                return res.json();
-            } else {
-                throw "Error fetching data: " + res;
-            }
-        })
-        .then(scryfallAPI => {
-            let imageData = scryfallAPI?.imageData;
-            if (imageData) {
-                let toolTipDiv = document.getElementById("toolTipDiv");
-                let cardTextPosition = GetAbsolutePosition(cardTextDiv);
-                let toolTipPadding = 5;
+    let imageWidth = 215;
+    let toolTipWidth = imageWidth + (2 * toolTipPadding);
+    let toolTipLeft = ((cardTextPosition.left + cardTextPosition.right) / 2) - (toolTipWidth / 2);
 
-                let imageWidth = 215;
-                let toolTipWidth = imageWidth + (2 * toolTipPadding);
-                let toolTipLeft = ((cardTextPosition.left + cardTextPosition.right) / 2) - (toolTipWidth / 2);
+    let imageHeight = 301;
+    let toolTipHeight = imageHeight + (2 * toolTipPadding);
+    let toolTipTop;
+    if ((cardTextPosition.top - toolTipHeight) < 0) {
+        toolTipTop = cardTextPosition.bottom + toolTipPadding;
+    } else toolTipTop = cardTextPosition.top - toolTipHeight;
 
-                let imageHeight = 301;
-                let toolTipHeight = imageHeight + (2 * toolTipPadding);
-                let toolTipTop;
-                if ((cardTextPosition.top - toolTipHeight) < 0) {
-                    toolTipTop = cardTextPosition.bottom + toolTipPadding;
-                } else toolTipTop = cardTextPosition.top - toolTipHeight;
+    let cardImg = document.createElement('img');
+    cardImg.src = 'data:image/jpg;base64,' + cardImageByteArray;
+    cardImg.setAttribute('style', 'height:' + imageHeight + 'px');
 
-                let cardImg = document.createElement('img');
-                cardImg.src = 'data:image/jpg;base64,' + imageData;
-                cardImg.setAttribute('style', 'height:' + imageHeight + 'px');
+    toolTipDiv.innerHTML = '';
+    toolTipDiv.appendChild(cardImg);
 
-                toolTipDiv.innerHTML = '';
-                toolTipDiv.appendChild(cardImg);
-
-                toolTipDiv.setAttribute('style', 'opacity:0;z-index:3;width:fit-content;position:absolute;padding:' + toolTipPadding + 'px;top:' + toolTipTop + 'px;left:' + toolTipLeft + 'px');
-                let op = 0.1;
-                let timer = setInterval(function () {
-                    toolTipDiv.style.opacity = op;
-                    op += op * 0.1;
-                    if (op >= 1) {
-                        clearInterval(timer);
-                        toolTipDiv.style.opacity = 1;
-                    }
-                }, 10);
-            } else {
-                throw 'Something went wrong.';
-            }
-        });
+    toolTipDiv.setAttribute('style', 'opacity:0;z-index:3;width:fit-content;position:absolute;padding:' + toolTipPadding + 'px;top:' + toolTipTop + 'px;left:' + toolTipLeft + 'px');
+    let op = 0.1;
+    let timer = setInterval(function () {
+        toolTipDiv.style.opacity = op;
+        op += op * 0.1;
+        if (op >= 1) {
+            clearInterval(timer);
+            toolTipDiv.style.opacity = 1;
+        }
+    }, 10);
     return data;
 }
 
