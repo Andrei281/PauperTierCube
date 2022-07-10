@@ -21,7 +21,6 @@
         .filter.call(draftabilityStatusFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
         .map(function (childNode) { return childNode.value; });
     let displayFilterVal = document.getElementById('displayFilterInput').value;
-    let maxResults = 10000;
     let primarySortVal = document.getElementById("primarySortInput").value;
     let secondarySortVal = document.getElementById("secondarySortInput").value;
 
@@ -133,7 +132,7 @@ function FillTierDiv(tier, cards, divColor, firstDivStatus, displayFilter) {
         fillWithText(cardsForThisDiv, cardDestinationElement, null);
     } else if (displayFilter == 'images') {
         cardDestinationElement.setAttribute('style', 'padding-bottom:0px')
-        fillWithImages(cardsForThisDiv, cardDestinationElement, 'width:215px;margin-bottom:10px')
+        fillWithImages(cardsForThisDiv, cardDestinationElement, 'width:80%;margin-bottom:10px')
     }
     cardDestinationWrapper.appendChild(cardDestinationElement);
 
@@ -265,6 +264,7 @@ function GenerateRandomPackWindow() {
 }
 
 function GenerateRandomPack() {
+    // Readjust styling for certain, generated, parent div during runtime
     let containerDivs = document.getElementsByClassName("container");
     for (i = 0; i < containerDivs.length; i++) {
         if (containerDivs[i].parentElement == document.body) {
@@ -273,14 +273,16 @@ function GenerateRandomPack() {
         }
     }
 
+    // Define card-sizing properties
     const cardMargin = 5;
     const cardWidth = 215;
+    let cardStyle = 'margin:' + cardMargin + 'px;width:' + cardWidth + 'px;float:unset'
+
+    // Use ^^ properties to define parent div widths
     setGeneratedPackDivWidths(cardMargin, cardWidth);
 
-    let cardStyle = 'margin:' + cardMargin + 'px;width:' + cardWidth + 'px;float:unset'
-    let tiers = ["bronze", "silver", "gold"];
-
     // Fetch 5 random bronzes, 10 random silvers, and 5 random golds
+    let tiers = ["bronze", "silver", "gold"];
     for (let i = 0; i < tiers.length; i++) {
         if (tiers[i] == "bronze") {
             let bronzeSection = document.getElementById("bronzeSection");
@@ -319,12 +321,12 @@ function FetchRandomPackData(tier, maxResults, cardStyle, cardDestination) {
                 return res.json();
             } else { throw "Error fetching data: " + res; }
         })
-        .then(data => {
-            if (data) {
-                if (!Array.isArray(data.cardsInCube)) {
-                    throw 'data.Cards or data.CardsInCube in server response is not an array.'
+        .then(cards => {
+            if (cards) {
+                if (!Array.isArray(cards)) {
+                    throw 'cards in server response is not an array.'
                 }
-                fillWithImages(data.cardsInCube, cardDestination, cardStyle);
+                fillWithImages(cards, cardDestination, cardStyle);
             }
         }).catch(err => {
             if (err) { }
