@@ -252,59 +252,34 @@ public class DataController : Controller
     {
         try
         {
-            IQueryable<CardsInCube> cardsInCubeResult = _cubeStatsContext.CardsInCubes;
+            // Get a few draftable cards from the database, without images.
+            // The images are stored in the file system, and will be retrieved by
+            // matching the image file name with the card name.
+            string connectionString = _configuration.GetConnectionString("WebApiDatabase");
+            SqlConnection cnn = new SqlConnection(connectionString);
+            cnn.Open();
 
-            cardsInCubeResult = cardsInCubeResult.Where(cardInCube => cardInCube.Tier.Contains(tierFilter));
-            cardsInCubeResult = cardsInCubeResult.Where(cardInCube => cardInCube.Draftability.Equals("Draftable"));
-            var cardsInCubeResultsArray = cardsInCubeResult.ToArray();
+            // Take "maxResults" number of random rows from CardsInCube of certain tier for this div
+            SqlCommand sqlSelectRandomCardsInCube = new SqlCommand("SELECT TOP " + maxResults + " name FROM CardsInCube WHERE draftability = 'Draftable' AND tier = \'" + tierFilter + "\' ORDER BY NEWID();", cnn);
+            SqlDataAdapter adapter = new SqlDataAdapter(sqlSelectRandomCardsInCube);
+            SqlDataReader randomDraftableCardsReader = adapter.SelectCommand.ExecuteReader();
 
-            var cardsInCubeResultList = new List<CardsInCube>();
-
-            Random r = new Random();
-            int rInt = r.Next(0, 0);
-            var rInts = new List<int>();
-
-            for (int i = 0; i < maxResults; i++)
+            // Save them in an list
+            var cardsInCubeResultList = new List<FullCard>();
+            while (randomDraftableCardsReader.Read())
             {
-                if (tierFilter == "silver")
-                {
-                    rInt = r.Next(0, 199);
-                    while (rInts.Contains(rInt))
-                    {
-                        rInt = r.Next(0, 199);
-                    }
-                    rInts.Add(rInt);
-                }
-                else
-                {
-                    rInt = r.Next(0, 99);
-                    while (rInts.Contains(rInt))
-                    {
-                        rInt = r.Next(0, 99);
-                    }
-                    rInts.Add(rInt);
-                }
-                cardsInCubeResultList.Add(cardsInCubeResultsArray[rInt]);
+                FullCard fullCard = new FullCard();
+                fullCard.Name = randomDraftableCardsReader.GetString(0);
+                fullCard.Image = await LoadImageDataFromFile(fullCard.Name);
+                cardsInCubeResultList.Add(fullCard);
             }
 
-            var cardsInCubeImagesArray = new List<CardsInCubeWithImage>();
-            foreach (var cardInCube in cardsInCubeResultList)
-            {
-                try
-                {
-                    var cardInCubeWithImage = new CardsInCubeWithImage(cardInCube);
-                    cardInCubeWithImage.Image = await LoadImageDataFromFile(cardInCube.Name);
-                    cardsInCubeImagesArray.Add(cardInCubeWithImage);
-                }
-                catch (Exception ex)
-                {
-                    if (ex != null) { }
-                }
-            }
+            // Clean up
+            sqlSelectRandomCardsInCube.Dispose();
+            randomDraftableCardsReader.Close();
+            cnn.Close();
 
-            var result = new { CardsInCube = cardsInCubeImagesArray };
-
-            return Ok(result);
+            return Ok(cardsInCubeResultList.ToArray());
         }
         catch (Exception ex)
         {
