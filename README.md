@@ -1,1 +1,1 @@
-# PauperTierCube
+# PauperTierCube-Public
