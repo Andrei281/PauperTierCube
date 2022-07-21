@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Pauper_Tier_Cube.Models;
 using System.IO;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +21,6 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<CubeStatsContext>(
         options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
-
-/*
-                        string connectionString = _configuration.GetSection("ConnectionStrings").GetSection("WebApiDatabase").Value;
-                        SqlConnection cnn = new SqlConnection(connectionString);
-                        cnn.Open();
- */
 
 var app = builder
     .Build();

@@ -80,7 +80,7 @@ public class ScryfallAPIController : Controller
 
     // Method to return a card's color identity, cmc, and types, given its name
     // Used in the process of automatically updating the Cards table in sql database
-    public static async Task<string[]> GetCardDataFromSkryfallApi(string cardName)
+    public static async Task<string[]> GetCardDataFromSkryfallAPI(string cardName)
     {
         try
         {

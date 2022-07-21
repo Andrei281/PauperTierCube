@@ -1,4 +1,5 @@
-﻿function GenerateFilteredCubeWindow() {
+﻿// "Filter" button has been clicked. Prepare and navigate to new page
+function GenerateFilteredCubeWindow() {
     // Get info about filters
     let primaryFilterVal = document.getElementById('primaryFilterInput').value;
     let nameFilterVal = document.getElementById('nameFilterInput').value;
@@ -36,6 +37,7 @@
     }
 }
 
+// New page has loaded. Fetch and display cards
 function FetchCardData() {
     let primaryFilter = localStorage.getItem('filterVal0');
     let displayFilter = localStorage.getItem('filterVal1');
@@ -47,8 +49,8 @@ function FetchCardData() {
         + '&tierFilter=' + encodeURIComponent(localStorage.getItem('filterVal7'))
         + '&draftabilityFilter=' + encodeURIComponent(localStorage.getItem('filterVal8'))
         + '&displayFilter=' + encodeURIComponent(displayFilter)
-        + '&primarySortVal=' + localStorage.getItem('filterVal9')
-        + '&secondarySortVal=' + localStorage.getItem('filterVal10');
+        + '&primarySort=' + localStorage.getItem('filterVal9')
+        + '&secondarySort=' + localStorage.getItem('filterVal10');
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
@@ -63,14 +65,17 @@ function FetchCardData() {
             if (cards) {
                 if (!Array.isArray(cards)) throw 'cards in server response is not an array.'
                 if (primaryFilter == 'none') {
+                    // Default page structure: Display all cards in one div
                     document.getElementById('wrapperDiv').innerHTML = "";
                     FillNoneDiv(cards, displayFilter);
                 } else if (primaryFilter == 'tier') {
+                    // Alternative page structure: Separate cards into different divs by tier
                     document.getElementById('wrapperDiv').innerHTML = "";
                     FillTierDiv('Bronze', cards, '#EFA67D', true, displayFilter);
                     FillTierDiv('Silver', cards, '#DBDAD9', null, displayFilter);
                     FillTierDiv('Gold', cards, '#F2E979BF', null, displayFilter);
                 } else if (primaryFilter == 'colorIdentity') {
+                    // Alternative page structure: Separate cards into different divs by color identity
                     document.getElementById('wrapperDiv').innerHTML = "";
                     FillColorIdentityDiv('#ffff80', '#ffffe6', 'W', cards, displayFilter, 'shrunk'); // These are initialized opposite of how they will appear, due to the nature of ToggleColorIdentityDivVisibility()
                     FillColorIdentityDiv('#99ddff', '#e6ffff', 'U', cards, displayFilter, 'shrunk');
@@ -185,18 +190,24 @@ function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, ca
     ToggleColorIdentityDivVisibility(fullColorIdentityColumn);
 }
 
+// For color identity div card-count-area: convert color char to string
 function getFullColorIdentityWord(colorIdentity) {
     if (colorIdentity == 'W') {
         return 'White';
-    } else if (colorIdentity == 'U') {
+    }
+    else if (colorIdentity == 'U') {
         return 'Blue';
-    } else if (colorIdentity == 'B') {
+    }
+    else if (colorIdentity == 'B') {
         return 'Black';
-    } else if (colorIdentity == 'R') {
+    }
+    else if (colorIdentity == 'R') {
         return 'Red';
-    } else if (colorIdentity == 'G') {
+    }
+    else if (colorIdentity == 'G') {
         return 'Green';
-    } else {
+    }
+    else {
         return colorIdentity;
     }
 }

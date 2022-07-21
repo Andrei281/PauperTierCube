@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
+using System.Reflection.Metadata;
+using Microsoft.EntityFrameworkCore;
 
 namespace Pauper_Tier_Cube.Controllers;
 public class DataController : Controller
@@ -37,171 +39,138 @@ public class DataController : Controller
         [FromQuery] string typeFilter,
         [FromQuery] string tierFilter,
         [FromQuery] string draftabilityFilter,
-        [FromQuery] string primarySortVal,
-        [FromQuery] string secondarySortVal)
+        [FromQuery] string primarySort,
+        [FromQuery] string secondarySort)
     {
         try
         {
-            // Get all the requested cards from the database, without images.
-            // The images are stored in the file system, and will be retrieved by
-            // matching the image file name with the card name.
-            string connectionString = _configuration.GetConnectionString("WebApiDatabase");
-            SqlConnection cnn = new SqlConnection(connectionString);
-            cnn.Open();
-
-            // First, check if we have Cards rows for each CardsInCube row
-            SqlCommand sqlCheckCardsForEachCardsInCube = new SqlCommand("SELECT name FROM CardsInCube WHERE name NOT IN (SELECT name FROM Cards);", cnn);
-            SqlDataAdapter adapter = new SqlDataAdapter(sqlCheckCardsForEachCardsInCube);
-            SqlDataReader cardsMissingReader = adapter.SelectCommand.ExecuteReader();
-            while (cardsMissingReader.Read())
+            // For developmental use: only turn on to update the Cards table in SQL
+            // To make sure there are is a Cards row corresponding to every CardsInCube row
+            bool updateCardsTableSwitch = false;
+            if (updateCardsTableSwitch)
             {
-                // Check if card name contains apostrophes
-                string cardName = cardsMissingReader.GetString(0);
-                Card cardObject = CreateCardObject(cardName);
-                SqlCommand sqlInsertIntoCards;
-                if (cardObject.Name.Contains('\''))
+                // Initialize list of card names in Cards table
+                var cardNames = new List<string>();
+                foreach (Card card in _cubeStatsContext.Cards)
                 {
-                    // Replace all instances of an apostrophe with 2 apostrophes for card name
-                    List<string> substringsByApostrophe = new List<string>();
-                    int previousSubstringEnd = 0;
-                    for (int charIndex = 0; charIndex < cardObject.Name.Length; charIndex++)
+                    cardNames.Add(card.Name);
+                }
+
+                // Check if the list contains a name for each CardsInCube row
+                SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("WebApiDatabase"));
+                connection.Open();
+                foreach (CardsInCube cardInCube in _cubeStatsContext.CardsInCubes)
+                {
+                    if (!cardNames.Contains(cardInCube.Name))
                     {
-                        if (cardObject.Name[charIndex].Equals('\''))
+                        // No corresponding Cards name for this CardsInCube row. Let's create one
+                        Card card = CreateCardObject(cardInCube.Name);
+
+                        // Insert new Cards row into Cards table in db
+                        SqlTransaction transaction = connection.BeginTransaction();
+                        try
                         {
-                            string subString = cardObject.Name.Substring(previousSubstringEnd, charIndex - previousSubstringEnd);
-                            substringsByApostrophe.Add(subString);
-                            previousSubstringEnd = charIndex;
+                            _cubeStatsContext.Add(card);
+                            transaction.Commit();
                         }
+                        catch (Exception ex) { }
                     }
-                    // Insert statement
-                    string lastSubstring = cardObject.Name.Substring(previousSubstringEnd, cardObject.Name.Length - previousSubstringEnd);
-                    substringsByApostrophe.Add(lastSubstring);
-                    string[] arrayOfSubstringsByApostrophe = substringsByApostrophe.ToArray();
-                    string newCardObjectName = string.Join("\'", arrayOfSubstringsByApostrophe);
-                    sqlInsertIntoCards = new SqlCommand("INSERT INTO Cards VALUES ('" + newCardObjectName + "', '" + cardObject.ColorIdentity + "', " + cardObject.Cmc + ", '" + cardObject.CombinedTypes + "');", cnn);
+                }
+                _cubeStatsContext.SaveChanges();
+            }
+
+            // Initialize filters
+            string nameValue = "";
+            if (!string.IsNullOrEmpty(nameFilter))
+            {
+                nameValue = nameFilter;
+            }
+            string[] colorIdentityValues = { "W", "U", "B", "R", "G", "multiple", "colorless" };
+            if (!string.IsNullOrEmpty(colorIdentityFilter))
+            {
+                colorIdentityValues = colorIdentityFilter.Split(',');
+            }
+            int minManaValue = 0;
+            if (int.TryParse(minManaValueFilter, out int minRes))
+            {
+                minManaValue = minRes;
+            }
+            int maxManaValue = 100;
+            if (int.TryParse(maxManaValueFilter, out int maxRes))
+            {
+                maxManaValue = maxRes;
+            }
+            string[] typeValues = { "artifact", "creature", "enchantment", "instant", "land", "sorcery", "artifact creature", "artifact land", "enchantment creature", "instant creature", "sorcery creature" };
+            if (!string.IsNullOrEmpty(typeFilter))
+            {
+                typeValues = typeFilter.Split(',');
+            }
+            string[] tierValues = { "bronze", "silver", "gold" };
+            if (!string.IsNullOrEmpty(tierFilter))
+            {
+                tierValues = tierFilter.Split(',');
+            }
+            string[] draftabilityValues = { "draftable", "changed", "not draftable" };
+            if (!string.IsNullOrEmpty(draftabilityFilter))
+            {
+                draftabilityValues = draftabilityFilter.Split(',');
+            }
+
+            // Apply filters
+            var cardsResult = from fullCard in _cubeStatsContext.FullCards
+                              where fullCard.Name.Contains(nameValue)
+                              && colorIdentityValues.Contains(fullCard.ColorIdentity)
+                              && fullCard.Cmc >= minManaValue && fullCard.Cmc <= maxManaValue
+                              && typeValues.Contains(fullCard.CombinedTypes)
+                              && tierValues.Contains(fullCard.Tier)
+                              && draftabilityValues.Contains(fullCard.Draftability)
+                              select fullCard;
+
+            // Initialize sorts
+            PropertyInfo primarySortProperty = typeof(FullCard).GetProperty(primarySort);
+            PropertyInfo secondarySortProperty = typeof(FullCard).GetProperty(secondarySort);
+
+            // Apply sorts
+            var cardsResultList = cardsResult.ToList().OrderBy(fullCard =>
+            // Handle primarySort
+            {
+                if (primarySort.Equals(nameof(FullCard.ColorIdentity)))
+                {
+                    // For sort: apply custom values for color identity: order is W, U, B, R, G, Multiple, Colorless
+                    return ApplyColorIdentityValue(fullCard.ColorIdentity);
                 }
                 else
                 {
-                    // Card name contains no apostrophes. Regular insert statement
-                    sqlInsertIntoCards = new SqlCommand("INSERT INTO Cards VALUES ('" + cardObject.Name + "', '" + cardObject.ColorIdentity + "', " + cardObject.Cmc + ", '" + cardObject.CombinedTypes + "');", cnn);
+                    // For sort: use each card's value associated with primarySort
+                    var primarySortValue = primarySortProperty?.GetValue(fullCard)?.ToString();
+                    return primarySortValue;
                 }
-                adapter.InsertCommand = sqlInsertIntoCards;
-                adapter.InsertCommand.ExecuteNonQuery();
-                sqlInsertIntoCards.Dispose();
-            }
-            sqlCheckCardsForEachCardsInCube.Dispose();
-            cardsMissingReader.Close();
+            })
+                // Handle secondarySort
+                .ThenBy(fullCard =>
+                {
+                    if (secondarySort.Equals(nameof(FullCard.ColorIdentity)))
+                    {
+                        // For sort: apply custom values for color identity: order is W, U, B, R, G, Multiple, Colorless
+                        return ApplyColorIdentityValue(fullCard.ColorIdentity);
+                    }
+                    else
+                    {
+                        // For sort: use each card's value associated with secondarySort
+                        var secondarySortValue = secondarySortProperty?.GetValue(fullCard)?.ToString();
+                        return secondarySortValue;
+                    }
+                })
+                    // In case secondarySort is not "Name", finally sort by name
+                    .ThenBy(fullCard => fullCard.Name);
 
-            // Now, we construct a single sql query that gets info from both Cards and CardsInCube based on our filters
-            string sqlSelectStatement = "SELECT c.name, c.colorIdentity, c.CMC, c.combinedTypes, u.tier, u.draftability";
-            sqlSelectStatement += " FROM Cards c";
-            sqlSelectStatement += " INNER JOIN CardsInCube u";
-            sqlSelectStatement += " ON c.name = u.name";
-
-            // Add the "WHERE" clause based on our filters
-            if (!(string.IsNullOrWhiteSpace(nameFilter) && string.IsNullOrWhiteSpace(tierFilter) && string.IsNullOrWhiteSpace(colorIdentityFilter) && minManaValueFilter is null && maxManaValueFilter is null && string.IsNullOrWhiteSpace(typeFilter) && string.IsNullOrWhiteSpace(draftabilityFilter)))
+            // Give each card an associated image
+            foreach (var fullCard in cardsResultList)
             {
-                sqlSelectStatement += " WHERE";
-                if (!string.IsNullOrWhiteSpace(nameFilter))
-                    sqlSelectStatement += " c.name LIKE %" + nameFilter + "% AND";
-                if (!string.IsNullOrWhiteSpace(colorIdentityFilter))
-                {
-                    string[] colorIdentityFilterElements = colorIdentityFilter?.Split(",") ?? new string[0];
-                    sqlSelectStatement += AddSpecificsToFilterStatement(" colorIdentity IN (", colorIdentityFilterElements);
-                }
-                if (!string.IsNullOrWhiteSpace(minManaValueFilter))
-                    sqlSelectStatement += " c.CMC >= " + minManaValueFilter + " AND";
-                if (!string.IsNullOrWhiteSpace(maxManaValueFilter))
-                    sqlSelectStatement += " c.CMC <= " + maxManaValueFilter + " AND";
-                if (!string.IsNullOrWhiteSpace(typeFilter))
-                {
-                    string[] typeFilterElements = typeFilter?.Split(",") ?? new string[0];
-                    sqlSelectStatement += AddSpecificsToFilterStatement(" combinedTypes IN (", typeFilterElements);
-                }
-                if (!string.IsNullOrWhiteSpace(tierFilter))
-                {
-                    string[] tierFilterElements = tierFilter?.Split(",") ?? new string[0];
-                    sqlSelectStatement += AddSpecificsToFilterStatement(" tier IN (", tierFilterElements);
-                }
-                if (!String.IsNullOrWhiteSpace(draftabilityFilter))
-                {
-                    string[] draftabilityFilterElements = draftabilityFilter?.Split(",") ?? new string[0];
-                    sqlSelectStatement += AddSpecificsToFilterStatement(" draftability IN (", draftabilityFilterElements);
-                }
-                if (sqlSelectStatement.Substring(sqlSelectStatement.Length - 4, 4).Equals(" AND"))
-                    sqlSelectStatement = sqlSelectStatement.Remove(sqlSelectStatement.Length - 4);
+                fullCard.Image = await LoadImageDataFromFile(fullCard.Name);
             }
 
-            // Add the "GROUP BY" clause
-            sqlSelectStatement += " GROUP BY c.name, c.colorIdentity, c.CMC, c.combinedTypes, u.tier, u.draftability";
-
-            // Add the "ORDER BY" clause based on our sorting
-            if (!(primarySortVal.Equals("Tier") || primarySortVal.Equals("Draftability")))
-            {
-                if (primarySortVal.Equals("ColorIdentity"))
-                {
-                    // Letting SQL know we want custom sorting for color identity
-                    sqlSelectStatement += " ORDER BY (CASE c.ColorIdentity WHEN 'W' THEN 0 WHEN 'U' THEN 1 WHEN 'B' THEN 2 WHEN 'R' THEN 3 WHEN 'G' THEN 4 WHEN 'Multiple' THEN 5 WHEN 'Colorless' THEN 6 END),";
-                }
-                else
-                {
-                    sqlSelectStatement += " ORDER BY c." + primarySortVal + ",";
-                }
-            }
-            else
-            {
-                sqlSelectStatement += " ORDER BY u." + primarySortVal + ",";
-            }
-            if (!(secondarySortVal.Equals("Tier") || secondarySortVal.Equals("Draftability")))
-            {
-                if (secondarySortVal.Equals("ColorIdentity"))
-                {
-                    // Letting SQL know we want custom sorting for color identity
-                    sqlSelectStatement += " (CASE c.ColorIdentity WHEN 'W' THEN 0 WHEN 'U' THEN 1 WHEN 'B' THEN 2 WHEN 'R' THEN 3 WHEN 'G' THEN 4 WHEN 'Multiple' THEN 5 WHEN 'Colorless' THEN 6 END)";
-                }
-                else
-                {
-                    sqlSelectStatement += " c." + secondarySortVal;
-                }
-            }
-            else
-            {
-                sqlSelectStatement += " u." + secondarySortVal;
-            }
-
-            // Store filtered sql rows in a SqlDataReader
-            SqlCommand sqlSelectCommand = new SqlCommand(sqlSelectStatement, cnn);
-            adapter.SelectCommand = sqlSelectCommand;
-            SqlDataReader cardsFilteredAndSortedReader = adapter.SelectCommand.ExecuteReader();
-
-            // Construct card objects with properties from both Cards and CardsInCube, as well as an image
-            List<FullCard> fullCards = new List<FullCard>();
-            while (cardsFilteredAndSortedReader.Read())
-            {
-                try
-                {
-                    FullCard fullCard = new FullCard();
-                    fullCard.Name = cardsFilteredAndSortedReader.GetString(0);
-                    fullCard.ColorIdentity = cardsFilteredAndSortedReader.GetString(1);
-                    fullCard.Cmc = cardsFilteredAndSortedReader.GetInt32(2);
-                    fullCard.CombinedTypes = cardsFilteredAndSortedReader.GetString(3);
-                    fullCard.Tier = cardsFilteredAndSortedReader.GetString(4);
-                    fullCard.Draftability = cardsFilteredAndSortedReader.GetString(5);
-                    fullCard.Image = await LoadImageDataFromFile(fullCard.Name);
-                    fullCards.Add(fullCard);
-                }
-                catch (Exception ex)
-                {
-                    if (ex != null) { }
-                }
-            }
-
-            // Clean up
-            sqlSelectCommand.Dispose();
-            cardsFilteredAndSortedReader.Close();
-            cnn.Close();
-
-            return Ok(fullCards.ToArray());
+            return Ok(cardsResultList.ToArray());
         }
         catch (Exception ex)
         {
@@ -209,6 +178,7 @@ public class DataController : Controller
         }
     }
 
+    // When sorting by color identity, apply this custom sort
     public static string ApplyColorIdentityValue(string colorIdentity)
     {
         if (colorIdentity.Equals("W")) return "0";
@@ -220,24 +190,11 @@ public class DataController : Controller
         else return "6";
     }
 
-    public static string AddSpecificsToFilterStatement(string queryBeginning, string[] filterSpecifics)
-    {
-        string returnString = queryBeginning;
-        for (int i = 0; i < filterSpecifics.Length; i++)
-        {
-            returnString += "\'" + filterSpecifics[i] + "\', ";
-        }
-        returnString = returnString.Remove(returnString.Length - 2);
-        returnString += ") AND";
-        return returnString;
-    }
-
     // Method to create card object to insert into Cards table (sql)
     // References Scryfall API for data
     public static Card CreateCardObject(string cardName)
     {
-        string[] cardInfo = ScryfallAPIController.GetCardDataFromSkryfallApi(cardName).Result;
-
+        string[] cardInfo = ScryfallAPIController.GetCardDataFromSkryfallAPI(cardName).Result;
         Card card = new Card();
         card.Name = cardName;
         card.ColorIdentity = cardInfo[0];
@@ -287,13 +244,9 @@ public class DataController : Controller
         }
     }
 
-    /// <summary>
-    /// Try and load the image for the specified card from the file system.
-    /// If the image doesn't exist in the file shystem, download it from Scryfall API,
-    /// and save it to the file system for next time.
-    /// </summary>
-    /// <param name="cardName"></param>
-    /// <returns></returns>
+    // Try and load the image for the specified card from the file system.
+    // If the image doesn't exist in the file shystem, download it from Scryfall API,
+    // and save it to the file system for next time.
     public static async Task<byte[]> LoadImageDataFromFile(string cardName)
     {
         string fileName = Path.Combine(pathRoot, SanitizeFileName(cardName)) + ".png";
@@ -352,5 +305,5 @@ public class DataController : Controller
     }
 
     // we are hard=coding the file location for now...
-    public const string pathRoot = @"C:\Users\katya\Dropbox\CardImages";
+    public const string pathRoot = @"C:\Users\{path}";
 }
