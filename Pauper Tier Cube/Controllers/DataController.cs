@@ -39,6 +39,10 @@ public class DataController : Controller
         [FromQuery] string typeFilter,
         [FromQuery] string tierFilter,
         [FromQuery] string draftabilityFilter,
+        [FromQuery] string minGamesPlayedFilter,
+        [FromQuery] string maxGamesPlayedFilter,
+        [FromQuery] string minWinRateFilter,
+        [FromQuery] string maxWinRateFilter,
         [FromQuery] string primarySort,
         [FromQuery] string secondarySort)
     {
@@ -46,8 +50,8 @@ public class DataController : Controller
         {
             // For developmental use: only turn on to update the Cards table in SQL
             // To make sure there are is a Cards row corresponding to every CardsInCube row
-            bool updateCardsTableSwitch = false;
-            if (updateCardsTableSwitch)
+            bool updateCardsTable = false;
+            if (updateCardsTable)
             {
                 // Initialize list of card names in Cards table
                 var cardNames = new List<string>();
@@ -64,12 +68,17 @@ public class DataController : Controller
                     if (!cardNames.Contains(cardInCube.Name))
                     {
                         // No corresponding Cards name for this CardsInCube row. Let's create one
+                        if (cardInCube.Name == "Monastery Swiftspear")
+                        {
+                            string x = "Now!";
+                        }
                         Card card = CreateCardObject(cardInCube.Name);
 
                         // Insert new Cards row into Cards table in db
                         SqlTransaction transaction = connection.BeginTransaction();
                         try
                         {
+                            // System.InvalidOperationException: 'Unable to track an instance of type 'Card' because it does not have a primary key. Only entity types with a primary key may be tracked.'
                             _cubeStatsContext.Add(card);
                             transaction.Commit();
                         }
@@ -79,7 +88,7 @@ public class DataController : Controller
                 _cubeStatsContext.SaveChanges();
             }
 
-            // Initialize filters
+            // Initialize base filters
             string nameValue = "";
             if (!string.IsNullOrEmpty(nameFilter))
             {
@@ -91,14 +100,14 @@ public class DataController : Controller
                 colorIdentityValues = colorIdentityFilter.Split(',');
             }
             int minManaValue = 0;
-            if (int.TryParse(minManaValueFilter, out int minRes))
+            if (int.TryParse(minManaValueFilter, out int minMVRes))
             {
-                minManaValue = minRes;
+                minManaValue = minMVRes;
             }
             int maxManaValue = 100;
-            if (int.TryParse(maxManaValueFilter, out int maxRes))
+            if (int.TryParse(maxManaValueFilter, out int maxMVRes))
             {
-                maxManaValue = maxRes;
+                maxManaValue = maxMVRes;
             }
             string[] typeValues = { "artifact", "creature", "enchantment", "instant", "land", "sorcery", "artifact creature", "artifact land", "enchantment creature", "instant creature", "sorcery creature" };
             if (!string.IsNullOrEmpty(typeFilter))
@@ -116,32 +125,122 @@ public class DataController : Controller
                 draftabilityValues = draftabilityFilter.Split(',');
             }
 
-            // Apply filters
-            var cardsResult = from fullCard in _cubeStatsContext.FullCards
-                              where fullCard.Name.Contains(nameValue)
-                              && colorIdentityValues.Contains(fullCard.ColorIdentity)
-                              && fullCard.Cmc >= minManaValue && fullCard.Cmc <= maxManaValue
-                              && typeValues.Contains(fullCard.CombinedTypes)
-                              && tierValues.Contains(fullCard.Tier)
-                              && draftabilityValues.Contains(fullCard.Draftability)
-                              select fullCard;
+            // Apply base filters
+            IQueryable<FullCard> cardsResultByBaseStats = from fullCard in _cubeStatsContext.FullCards
+                                                          where fullCard.Name.Contains(nameValue)
+                                                          && colorIdentityValues.Contains(fullCard.ColorIdentity)
+                                                          && fullCard.Cmc >= minManaValue && fullCard.Cmc <= maxManaValue
+                                                          && typeValues.Contains(fullCard.CombinedTypes)
+                                                          && tierValues.Contains(fullCard.Tier)
+                                                          && draftabilityValues.Contains(fullCard.Draftability)
+                                                          select (fullCard);
+
+            // Initialize statistics filters
+            int minGames = 0;
+            if (int.TryParse(minGamesPlayedFilter, out int minGamesRes))
+            {
+                minGames = minGamesRes;
+            }
+            int maxGames = 99999;
+            if (int.TryParse(maxGamesPlayedFilter, out int maxGamesRes))
+            {
+                maxGames = maxGamesRes;
+            }
+            double minWinRate = 0;
+            if (double.TryParse(minWinRateFilter, out double minWinRateRes))
+            {
+                minWinRate = minWinRateRes;
+            }
+            double maxWinRate = 100;
+            if (double.TryParse(maxWinRateFilter, out double maxWinRateRes))
+            {
+                maxWinRate = maxWinRateRes;
+            }
+
+            // Apply statistics filters
+            List<FullCard> cardsResultFull = new List<FullCard>();
+            // Cards played 0 times may have a NULL value for GamesPlayed
+            // Automatically, the card will have a NULL value for WinRatePercentage
+            // We want to add these cards to our final result if minGames = 0
+            if (minGames == 0)
+            {
+                foreach (FullCard fullCard in cardsResultByBaseStats)
+                {
+                    if (fullCard.GamesPlayed is null)
+                    {
+                        // Card GamesPlayed val is NULL
+                        // WinRatePercentage is ignored. Otherwise, this card can't be displayed
+                        // This card is valid for being played in at least 0 games
+                        cardsResultFull.Add(fullCard);
+                    }
+                    if (fullCard.GamesPlayed >= minGames)
+                    {
+                        if (fullCard.GamesPlayed <= maxGames)
+                        {
+                            // Card has been played nonzero times
+                            // This card falls within the games-played range
+                            // Though WinRatePercentage is not NULL, it is ignored. This is consistent with cards with NULL WinRatePercentages
+                            cardsResultFull.Add(fullCard);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Filter cards that have been played at least once
+                // Cards have non-NULL WinRatePercentage
+                foreach (FullCard fullCard in cardsResultByBaseStats)
+                {
+                    // Check if card falls under games-played range
+                    if (fullCard.GamesPlayed >= minGames)
+                    {
+                        if (fullCard.GamesPlayed <= maxGames)
+                        {
+                            // Card falls under games-played range
+                            // Check if card falls under WinRatePercentage range
+                            if (fullCard.WinRatePercentage >= minWinRate)
+                            {
+                                if (fullCard.WinRatePercentage <= maxWinRate)
+                                {
+                                    // Card falls under both games-played and WinRatePercentage ranges
+                                    // Card is valid
+                                    cardsResultFull.Add(fullCard);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             // Initialize sorts
             PropertyInfo primarySortProperty = typeof(FullCard).GetProperty(primarySort);
             PropertyInfo secondarySortProperty = typeof(FullCard).GetProperty(secondarySort);
 
-            // Apply sorts
-            var cardsResultList = cardsResult.ToList().OrderBy(fullCard =>
+            // TODO: Sorting by WinRatePercentage goes 0 => bottom then top => 0.
+            // TODO: If minGamesPlayed = 0, WinRatePercentage should not be ordered by. This should be handled in the "gray-out" feature.
+
             // Handle primarySort
+            cardsResultFull = cardsResultFull.OrderBy(fullCard =>
             {
+                // Apply custom values for color identity sort: order is W, U, B, R, G, Multiple, Colorless
                 if (primarySort.Equals(nameof(FullCard.ColorIdentity)))
                 {
-                    // For sort: apply custom values for color identity: order is W, U, B, R, G, Multiple, Colorless
                     return ApplyColorIdentityValue(fullCard.ColorIdentity);
                 }
+                // Order by descending for GamesPlayed or WinRatePercentage
+                else if (primarySort.Equals(nameof(FullCard.GamesPlayed)) || primarySort.Equals(nameof(FullCard.WinRatePercentage)))
+                {
+                    double primarySortValue = 0;
+                    if (double.TryParse(primarySortProperty?.GetValue(fullCard)?.ToString(), out double primarySortVal))
+                    {
+                        primarySortValue = primarySortVal;
+                    }
+                    string returnString = (10000 - primarySortValue).ToString(); // Ensures order by descending
+                    return returnString;
+                }
+                // Use each card's value associated with primarySort
                 else
                 {
-                    // For sort: use each card's value associated with primarySort
                     var primarySortValue = primarySortProperty?.GetValue(fullCard)?.ToString();
                     return primarySortValue;
                 }
@@ -149,28 +248,37 @@ public class DataController : Controller
                 // Handle secondarySort
                 .ThenBy(fullCard =>
                 {
+                    // Apply custom values for color identity sort: order is W, U, B, R, G, Multiple, Colorless
                     if (secondarySort.Equals(nameof(FullCard.ColorIdentity)))
                     {
-                        // For sort: apply custom values for color identity: order is W, U, B, R, G, Multiple, Colorless
                         return ApplyColorIdentityValue(fullCard.ColorIdentity);
                     }
+                    // Order by descending for GamesPlayed or WinRatePercentage
+                    else if (secondarySort.Equals(nameof(FullCard.GamesPlayed)) || secondarySort.Equals(nameof(FullCard.WinRatePercentage)))
+                    {
+                        double secondarySortValue = 0;
+                        if (double.TryParse(secondarySortProperty?.GetValue(fullCard)?.ToString(), out double secondarySortVal))
+                        {
+                            secondarySortValue = secondarySortVal;
+                        }
+                        return (1000 - secondarySortValue).ToString();
+                    }
+                    // Use each card's value associated with secondarySort
                     else
                     {
-                        // For sort: use each card's value associated with secondarySort
                         var secondarySortValue = secondarySortProperty?.GetValue(fullCard)?.ToString();
                         return secondarySortValue;
                     }
                 })
-                    // In case secondarySort is not "Name", finally sort by name
-                    .ThenBy(fullCard => fullCard.Name);
+                    .ToList();
 
             // Give each card an associated image
-            foreach (var fullCard in cardsResultList)
+            foreach (var fullCard in cardsResultFull)
             {
                 fullCard.Image = await LoadImageDataFromFile(fullCard.Name);
             }
 
-            return Ok(cardsResultList.ToArray());
+            return Ok(cardsResultFull.ToArray());
         }
         catch (Exception ex)
         {

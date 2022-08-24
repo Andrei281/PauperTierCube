@@ -22,6 +22,7 @@ namespace Pauper_Tier_Cube.Models
         public virtual DbSet<FullCard> FullCards { get; set; } = null!;
         public virtual DbSet<ReverseDraftCardsReceived> ReverseDraftCardsReceiveds { get; set; } = null!;
         public virtual DbSet<UpdatesTable> UpdatesTables { get; set; } = null!;
+        public virtual DbSet<WinScore> WinScores { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -49,10 +50,6 @@ namespace Pauper_Tier_Cube.Models
                     .HasMaxLength(40)
                     .IsUnicode(false)
                     .HasColumnName("combinedTypes");
-
-                entity.Property(e => e.Image)
-                    .HasColumnType("image")
-                    .HasColumnName("image");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(40)
@@ -87,8 +84,6 @@ namespace Pauper_Tier_Cube.Models
             {
                 entity.HasNoKey();
 
-                entity.Property(e => e.CopiesAvailable).HasColumnName("copiesAvailable");
-
                 entity.Property(e => e.CopiesUsed).HasColumnName("copiesUsed");
 
                 entity.Property(e => e.DeckId)
@@ -100,6 +95,11 @@ namespace Pauper_Tier_Cube.Models
                     .HasMaxLength(40)
                     .IsUnicode(false)
                     .HasColumnName("name");
+
+                entity.Property(e => e.Tier)
+                    .HasMaxLength(40)
+                    .IsUnicode(false)
+                    .HasColumnName("tier");
             });
 
             modelBuilder.Entity<Deck>(entity =>
@@ -194,8 +194,6 @@ namespace Pauper_Tier_Cube.Models
             {
                 entity.HasNoKey();
 
-                entity.ToView("FullCards");
-
                 entity.Property(e => e.Cmc).HasColumnName("CMC");
 
                 entity.Property(e => e.ColorIdentity)
@@ -213,6 +211,8 @@ namespace Pauper_Tier_Cube.Models
                     .IsUnicode(false)
                     .HasColumnName("draftability");
 
+                entity.Property(e => e.GamesPlayed).HasColumnName("gamesPlayed");
+
                 entity.Property(e => e.Image)
                     .HasColumnType("image")
                     .HasColumnName("image");
@@ -221,6 +221,8 @@ namespace Pauper_Tier_Cube.Models
                     .HasMaxLength(40)
                     .IsUnicode(false)
                     .HasColumnName("name");
+
+                entity.Property(e => e.WinRatePercentage).HasColumnName("winRatePercentage");
 
                 entity.Property(e => e.Tier)
                     .HasMaxLength(40)
@@ -297,6 +299,34 @@ namespace Pauper_Tier_Cube.Models
                 entity.Property(e => e.StartDate)
                     .HasColumnType("date")
                     .HasColumnName("startDate");
+
+                entity.Property(e => e.Tier)
+                    .HasMaxLength(40)
+                    .IsUnicode(false)
+                    .HasColumnName("tier");
+            });
+
+            modelBuilder.Entity<WinScore>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("WinScores");
+
+                entity.Property(e => e.Draftability)
+                    .HasMaxLength(40)
+                    .IsUnicode(false)
+                    .HasColumnName("draftability");
+
+                entity.Property(e => e.GamesPlayed).HasColumnName("gamesPlayed");
+
+                entity.Property(e => e.GamesWon).HasColumnName("gamesWon");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(40)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.WinRatePercentage).HasColumnName("winRatePercentage");
 
                 entity.Property(e => e.Tier)
                     .HasMaxLength(40)
