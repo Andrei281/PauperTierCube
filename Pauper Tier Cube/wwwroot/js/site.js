@@ -22,13 +22,21 @@ function GenerateFilteredCubeWindow() {
         .filter.call(draftabilityStatusFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
         .map(function (childNode) { return childNode.value; });
     let displayFilterVal = document.getElementById('displayFilterInput').value;
+
+    let minWinRateFilterVal = document.getElementById('minWinRateFilterInput').value;
+    let maxWinRateFilterVal = document.getElementById('maxWinRateFilterInput').value;
+    let minGamesPlayedFilterVal = document.getElementById('minGamesPlayedFilterInput').value;
+    let maxGamesPlayedFilterVal = document.getElementById('maxGamesPlayedFilterInput').value;
+
     let primarySortVal = document.getElementById("primarySortInput").value;
     let secondarySortVal = document.getElementById("secondarySortInput").value;
 
     // Check browser support
     if (typeof (Storage) !== "undefined") {
         // Store filter info in browser session
-        let filterVals = [primaryFilterVal, displayFilterVal, nameFilterVal, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal, typeFilterVals, tierFilterVals, draftabilityStatusFilterVals, primarySortVal, secondarySortVal];
+        let filterVals = [primaryFilterVal, displayFilterVal, nameFilterVal, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal,
+            typeFilterVals, tierFilterVals, draftabilityStatusFilterVals, minWinRateFilterVal, maxWinRateFilterVal, minGamesPlayedFilterVal,
+            maxGamesPlayedFilterVal, primarySortVal, secondarySortVal];
         for (let i = 0; i < filterVals.length; i++) {
             localStorage.setItem("filterVal" + i, filterVals[i]);
         }
@@ -49,8 +57,12 @@ function FetchCardData() {
         + '&tierFilter=' + encodeURIComponent(localStorage.getItem('filterVal7'))
         + '&draftabilityFilter=' + encodeURIComponent(localStorage.getItem('filterVal8'))
         + '&displayFilter=' + encodeURIComponent(displayFilter)
-        + '&primarySort=' + localStorage.getItem('filterVal9')
-        + '&secondarySort=' + localStorage.getItem('filterVal10');
+        + '&minWinRateFilter=' + localStorage.getItem('filterVal9')
+        + '&maxWinRateFilter=' + localStorage.getItem('filterVal10')
+        + '&minGamesPlayedFilter=' + localStorage.getItem('filterVal11')
+        + '&maxGamesPlayedFilter=' + localStorage.getItem('filterVal12')
+        + '&primarySort=' + localStorage.getItem('filterVal13')
+        + '&secondarySort=' + localStorage.getItem('filterVal14');
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
@@ -354,10 +366,12 @@ function fillWithText(cards, cardDestinationElement, cardStyle) {
             cardElement.setAttribute('style', cardStyle);
         }
         cardElement.innerHTML = card.name;
+        // Apply tooltip capabilities
         var timeOut;
         cardElement.addEventListener("mouseenter", function () {
             let that = this;
-            timeOut = setTimeout(function () { DisplayToolTip(that, card.image) }, 400);
+            //timeOut = setTimeout(function () { DisplayToolTip(that, card.image) }, 400);
+            timeOut = setTimeout(function () { DisplayToolTip(that, card) }, 400);
         });
         cardElement.addEventListener("mouseleave", function () {
             clearTimeout(timeOut);
@@ -374,6 +388,17 @@ function fillWithImages(cards, cardDestinationElement, cardStyle) {
             let cardImgElement = document.createElement('img');
             cardImgElement.setAttribute('style', cardStyle);
             cardImgElement.src = 'data:image/jpg;base64,' + card.image;
+            // Apply tooltip capabilities
+            var timeOut;
+            cardImgElement.addEventListener("mouseenter", function () {
+                let that = this;
+                //timeOut = setTimeout(function () { DisplayToolTip(that, card.image) }, 400);
+                timeOut = setTimeout(function () { DisplayToolTip(that, card) }, 400);
+            });
+            cardImgElement.addEventListener("mouseleave", function () {
+                clearTimeout(timeOut);
+                VanishToolTip();
+            });
             cardDestinationElement.appendChild(cardImgElement);
         } else {
             throw 'Something went wrong.';
@@ -381,30 +406,53 @@ function fillWithImages(cards, cardDestinationElement, cardStyle) {
     }
 }
 
-function DisplayToolTip(cardTextDiv, cardImageByteArray) {
+function DisplayToolTip(cardElement, fullCard) {
+    let cardElementPosition = GetAbsolutePosition(cardElement);
+    let imageWidth = 250;
+    let imageHeight = imageWidth * 1.4;
+
+    // Initialize tooltip properties
     let toolTipDiv = document.getElementById("toolTipDiv");
-    let cardTextPosition = GetAbsolutePosition(cardTextDiv);
     let toolTipPadding = 5;
-
-    let imageWidth = 215;
     let toolTipWidth = imageWidth + (2 * toolTipPadding);
-    let toolTipLeft = ((cardTextPosition.left + cardTextPosition.right) / 2) - (toolTipWidth / 2);
+    let toolTipLeft = ((cardElementPosition.left + cardElementPosition.right) / 2) - (toolTipWidth / 2);
 
-    let imageHeight = 301;
+    // If too high on screen, position tooltip below cursor
     let toolTipHeight = imageHeight + (2 * toolTipPadding);
-    let toolTipTop;
-    if ((cardTextPosition.top - toolTipHeight) < 0) {
-        toolTipTop = cardTextPosition.bottom + toolTipPadding;
-    } else toolTipTop = cardTextPosition.top - toolTipHeight;
+    let toolTipTop = cardElementPosition.top - toolTipHeight;
+    if (toolTipTop < 0) {
+        toolTipTop = cardElementPosition.bottom + toolTipPadding;
+    }
 
+    // Create image
     let cardImg = document.createElement('img');
-    cardImg.src = 'data:image/jpg;base64,' + cardImageByteArray;
-    cardImg.setAttribute('style', 'height:' + imageHeight + 'px');
+    cardImg.src = 'data:image/jpg;base64,' + fullCard.image;
+    cardImg.setAttribute('style', 'width:' + imageWidth + 'px');
 
+    // Create stats div
+    let statsDiv = document.createElement('div');
+    statsDiv.setAttribute('style', 'font-size:18px;height:fit-content;background-color:lightgray;margin-left:10px;padding:10px;border-radius:10px;border:solid;display:flex;flex-direction:column;align-items:center');
+    let tierDiv = document.createElement('div');
+    tierDiv.innerHTML = "Tier - " + fullCard.tier;
+    statsDiv.appendChild(tierDiv);
+    let gamesPlayedStatsDiv = document.createElement('div');
+    gamesPlayedStatsDiv.innerHTML = "Games Played - " + fullCard.gamesPlayed;
+    statsDiv.appendChild(gamesPlayedStatsDiv);
+    // Only attempt to show win rate percentage if it exists
+    let winRatePercentageStatsDiv = document.createElement('div');
+    if (fullCard.winRatePercentage != null) {
+        winRatePercentageStatsDiv.innerHTML = "Win Rate - " + fullCard.winRatePercentage.toFixed(2) + "%";
+    } else {
+        winRatePercentageStatsDiv.innerHTML = "Win Rate - N/A";
+    }
+    statsDiv.appendChild(winRatePercentageStatsDiv);
+
+    // Insert image and stats into tooltip
     toolTipDiv.innerHTML = '';
     toolTipDiv.appendChild(cardImg);
+    toolTipDiv.appendChild(statsDiv);
 
-    toolTipDiv.setAttribute('style', 'opacity:0;z-index:3;width:fit-content;position:absolute;padding:' + toolTipPadding + 'px;top:' + toolTipTop + 'px;left:' + toolTipLeft + 'px');
+    toolTipDiv.setAttribute('style', 'opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:' + toolTipPadding + 'px;top:' + toolTipTop + 'px;left:' + toolTipLeft + 'px');
     let op = 0.1;
     let timer = setInterval(function () {
         toolTipDiv.style.opacity = op;
@@ -414,7 +462,6 @@ function DisplayToolTip(cardTextDiv, cardImageByteArray) {
             toolTipDiv.style.opacity = 1;
         }
     }, 10);
-    return data;
 }
 
 function VanishToolTip() {

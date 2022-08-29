@@ -48,7 +48,7 @@ public class DataController : Controller
     {
         try
         {
-            // For developmental use: only turn on to update the Cards table in SQL
+            // For developmental use: only set to "true" to update the Cards table in SQL
             // To make sure there are is a Cards row corresponding to every CardsInCube row
             bool updateCardsTable = false;
             if (updateCardsTable)
@@ -68,17 +68,16 @@ public class DataController : Controller
                     if (!cardNames.Contains(cardInCube.Name))
                     {
                         // No corresponding Cards name for this CardsInCube row. Let's create one
-                        if (cardInCube.Name == "Monastery Swiftspear")
+                        if (cardInCube.Name == "Knight\'s Pledge")
                         {
-                            string x = "Now!";
+                            string x = "Stop!";
                         }
                         Card card = CreateCardObject(cardInCube.Name);
 
                         // Insert new Cards row into Cards table in db
-                        SqlTransaction transaction = connection.BeginTransaction();
                         try
                         {
-                            // System.InvalidOperationException: 'Unable to track an instance of type 'Card' because it does not have a primary key. Only entity types with a primary key may be tracked.'
+                            SqlTransaction transaction = connection.BeginTransaction();
                             _cubeStatsContext.Add(card);
                             transaction.Commit();
                         }
@@ -413,5 +412,5 @@ public class DataController : Controller
     }
 
     // we are hard=coding the file location for now...
-    public const string pathRoot = @"C:\Users\{path}";
+    public const string pathRoot = @"C:\Users\katya\Dropbox\CardImages";
 }
