@@ -211,65 +211,74 @@ public class DataController : Controller
                 }
             }
 
+            // TODO: Sort by int, not string. If primarySort is manaValue and secondarySort is winRate, cards of the same MV will be ordered incorrectly.
+            // It goes something like this: 80% -> 67% -> 33% -> 27% -> 100%
+
             // Initialize sorts
             PropertyInfo primarySortProperty = typeof(FullCard).GetProperty(primarySort);
             PropertyInfo secondarySortProperty = typeof(FullCard).GetProperty(secondarySort);
 
-            // TODO: Sorting by WinRatePercentage goes 0 => bottom then top => 0.
-            // TODO: If minGamesPlayed = 0, WinRatePercentage should not be ordered by. This should be handled in the "gray-out" feature.
-
-            // Handle primarySort
-            cardsResultFull = cardsResultFull.OrderBy(fullCard =>
+            // Handle sorting
+            if (primarySort.Equals(nameof(FullCard.ColorIdentity)))
             {
-                // Apply custom values for color identity sort: order is W, U, B, R, G, Multiple, Colorless
-                if (primarySort.Equals(nameof(FullCard.ColorIdentity)))
+                // For primary sort: Apply custom values for color identity sort: order is W, U, B, R, G, Multiple, Colorless
+                if (secondarySort.Equals(nameof(FullCard.GamesPlayed)) || secondarySort.Equals(nameof(FullCard.WinRatePercentage)))
                 {
-                    return ApplyColorIdentityValue(fullCard.ColorIdentity);
+                    // For secondary sort: Apply descending ordering for games played or win rate
+                    cardsResultFull = cardsResultFull.OrderBy(fullCard => ApplyColorIdentityValue(fullCard.ColorIdentity))
+                        .ThenByDescending(fullCard => secondarySortProperty?.GetValue(fullCard)).ToList();
                 }
-                // Order by descending for GamesPlayed or WinRatePercentage
-                else if (primarySort.Equals(nameof(FullCard.GamesPlayed)) || primarySort.Equals(nameof(FullCard.WinRatePercentage)))
-                {
-                    double primarySortValue = 0;
-                    if (double.TryParse(primarySortProperty?.GetValue(fullCard)?.ToString(), out double primarySortVal))
-                    {
-                        primarySortValue = primarySortVal;
-                    }
-                    string returnString = (10000 - primarySortValue).ToString(); // Ensures order by descending
-                    return returnString;
-                }
-                // Use each card's value associated with primarySort
                 else
                 {
-                    var primarySortValue = primarySortProperty?.GetValue(fullCard)?.ToString();
-                    return primarySortValue;
+                    // For secondary sort: Apply regular ordering
+                    cardsResultFull = cardsResultFull.OrderBy(fullCard => ApplyColorIdentityValue(fullCard.ColorIdentity))
+                        .ThenBy(fullCard => secondarySortProperty?.GetValue(fullCard)?.ToString()).ToList();
                 }
-            })
-                // Handle secondarySort
-                .ThenBy(fullCard =>
+            }
+            else if (primarySort.Equals(nameof(FullCard.GamesPlayed)) || primarySort.Equals(nameof(FullCard.WinRatePercentage)))
+            {
+                // For primary sort: Apply descending ordering for games played or win rate
+                if (secondarySort.Equals(nameof(FullCard.GamesPlayed)) || secondarySort.Equals(nameof(FullCard.WinRatePercentage)))
                 {
-                    // Apply custom values for color identity sort: order is W, U, B, R, G, Multiple, Colorless
-                    if (secondarySort.Equals(nameof(FullCard.ColorIdentity)))
-                    {
-                        return ApplyColorIdentityValue(fullCard.ColorIdentity);
-                    }
-                    // Order by descending for GamesPlayed or WinRatePercentage
-                    else if (secondarySort.Equals(nameof(FullCard.GamesPlayed)) || secondarySort.Equals(nameof(FullCard.WinRatePercentage)))
-                    {
-                        double secondarySortValue = 0;
-                        if (double.TryParse(secondarySortProperty?.GetValue(fullCard)?.ToString(), out double secondarySortVal))
-                        {
-                            secondarySortValue = secondarySortVal;
-                        }
-                        return (1000 - secondarySortValue).ToString();
-                    }
-                    // Use each card's value associated with secondarySort
-                    else
-                    {
-                        var secondarySortValue = secondarySortProperty?.GetValue(fullCard)?.ToString();
-                        return secondarySortValue;
-                    }
-                })
-                    .ToList();
+                    // For secondary sort: Apply descending ordering for games played or win rate
+                    cardsResultFull = cardsResultFull.OrderByDescending(fullCard => primarySortProperty?.GetValue(fullCard))
+                        .ThenByDescending(fullCard => secondarySortProperty?.GetValue(fullCard)).ToList();
+                }
+                else if (secondarySort.Equals(nameof(FullCard.ColorIdentity)))
+                {
+                    // For secondary sort: Apply custom values for color identity sort: order is W, U, B, R, G, Multiple, Colorless
+                    cardsResultFull = cardsResultFull.OrderByDescending(fullCard => primarySortProperty?.GetValue(fullCard))
+                        .ThenBy(fullCard => ApplyColorIdentityValue(fullCard.ColorIdentity)).ToList();
+                }
+                else
+                {
+                    // For secondary sort: Apply regular ordering
+                    cardsResultFull = cardsResultFull.OrderByDescending(fullCard => primarySortProperty?.GetValue(fullCard))
+                        .ThenBy(fullCard => secondarySortProperty?.GetValue(fullCard)?.ToString()).ToList();
+                }
+            }
+            else
+            {
+                // For primary sort: Apply regular ordering
+                if (secondarySort.Equals(nameof(FullCard.GamesPlayed)) || secondarySort.Equals(nameof(FullCard.WinRatePercentage)))
+                {
+                    // For secondary sort: Apply descending ordering for games played or win rate
+                    cardsResultFull = cardsResultFull.OrderBy(fullCard => primarySortProperty?.GetValue(fullCard)?.ToString())
+                        .ThenByDescending(fullCard => secondarySortProperty?.GetValue(fullCard)).ToList();
+                }
+                else if (secondarySort.Equals(nameof(FullCard.ColorIdentity)))
+                {
+                    // For secondary sort: Apply custom values for color identity sort: order is W, U, B, R, G, Multiple, Colorless
+                    cardsResultFull = cardsResultFull.OrderBy(fullCard => primarySortProperty?.GetValue(fullCard)?.ToString())
+                        .ThenBy(fullCard => ApplyColorIdentityValue(fullCard.ColorIdentity)).ToList();
+                }
+                else
+                {
+                    // For secondary sort: Apply regular ordering
+                    cardsResultFull = cardsResultFull.OrderBy(fullCard => primarySortProperty?.GetValue(fullCard)?.ToString())
+                        .ThenBy(fullCard => secondarySortProperty?.GetValue(fullCard)?.ToString()).ToList();
+                }
+            }
 
             // Give each card an associated image
             foreach (var fullCard in cardsResultFull)
