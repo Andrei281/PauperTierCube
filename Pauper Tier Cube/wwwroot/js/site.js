@@ -1,9 +1,11 @@
-﻿function prepareListPageButtons() {
+﻿function prepareListPage() {
     let tablinks = document.getElementsByClassName("tablinks");
     for (let i = 0; i < tablinks.length; i++) {
         tablinks[i].addEventListener("click", () => openTabContent(event, tablinks[i].id + "Content"));
     }
     document.getElementById("filterButton").addEventListener("click", () => GenerateFilteredCubeWindow());
+    document.getElementById("minGamesPlayedFilterInput").addEventListener("change", () => ToggleWinRateAccessibility());
+    ToggleWinRateAccessibility();
     document.getElementById("baseStatsButton").click();
 }
 
@@ -26,6 +28,17 @@ function openTabContent(evt, tabContentDivId) {
     // Show the current tab, and add an "active" class to the button that opened the tab
     document.getElementById(tabContentDivId).style.display = "flex";
     evt.currentTarget.className += " active";
+}
+
+// If minGames filter = 0, keep win rate filter inaccessible
+function ToggleWinRateAccessibility() {
+    if (document.getElementById("minGamesPlayedFilterInput").value == "0") {
+        document.getElementById("winRateFilterDiv").setAttribute("style", "opacity: 0.6; pointer-events: none; width: 100px");
+        document.getElementById("minWinRateFilterInput").value = "0";
+        document.getElementById("maxWinRateFilterInput").value = "100";
+    } else {
+        document.getElementById("winRateFilterDiv").setAttribute("style", "opacity: 1; pointer-events: auto; width: 100px");
+    }
 }
 
 // "Filter" button has been clicked. Prepare and navigate to new page

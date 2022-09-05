@@ -8,6 +8,6 @@ namespace Pauper_Tier_Cube.Models
         public string? DeckId { get; set; }
         public string? Name { get; set; }
         public int? CopiesUsed { get; set; }
-        public int? CopiesAvailable { get; set; }
+        public string? Tier { get; set; }
     }
 }
