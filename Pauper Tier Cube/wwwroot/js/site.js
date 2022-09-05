@@ -477,9 +477,19 @@ function DisplayToolTip(cardElement, fullCard) {
 
     // Create stats div
     let statsDiv = document.createElement('div');
-    statsDiv.setAttribute('style', 'font-size:18px;height:fit-content;background-color:lightgray;margin-left:10px;padding:10px;border-radius:10px;border:solid;display:flex;flex-direction:column;align-items:center');
+    statsDiv.setAttribute('style', 'font-size: 18px; height: fit-content; background-color: lightgray; margin-left: 10px; padding: 10px; border-radius: 10px; border: solid; display: flex; flex-direction: column; align-items: center');
     let tierDiv = document.createElement('div');
+    tierDiv.setAttribute("style", "display: flex");
     tierDiv.innerHTML = "Tier - " + fullCard.tier;
+    let tierColorDiv = document.createElement('div');
+    if (fullCard.tier == "Bronze") {
+        tierColorDiv.setAttribute("style", "margin-left: 10px; border: solid; width: 25px; height: 25px; background-color: #EFA67D");
+    } else if (fullCard.tier == "Silver") {
+        tierColorDiv.setAttribute("style", "margin-left: 10px; border: solid; width: 25px; height: 25px; background-color: #DBDAD9");
+    } else {
+        tierColorDiv.setAttribute("style", "margin-left: 10px; border: solid; width: 25px; height: 25px; background-color: #F2E979BF");
+    }
+    tierDiv.appendChild(tierColorDiv);
     statsDiv.appendChild(tierDiv);
     let gamesPlayedStatsDiv = document.createElement('div');
     gamesPlayedStatsDiv.innerHTML = "Games Played - " + fullCard.gamesPlayed;
