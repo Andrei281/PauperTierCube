@@ -43,34 +43,24 @@ function ToggleWinRateAccessibility() {
 
 // "Filter" button has been clicked. Prepare and navigate to new page
 function GenerateFilteredCubeWindow() {
-    // Get info about filters
+    // Acquire info for base stats filters
     let primaryFilterVal = document.getElementById('primaryFilterInput').value;
     let nameFilterVal = document.getElementById('nameFilterInput').value;
-    let tierFilterElement = document.getElementById('tierFilterInput');
-    let tierFilterVals = []
-        .filter.call(tierFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
-        .map(function (childNode) { return childNode.value; });
-    let colorIdentityFilterElement = document.getElementById('colorIdentityFilterInput');
-    let colorIdentityFilterVals = []
-        .filter.call(colorIdentityFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
-        .map(function (childNode) { return childNode.value; });
+    let tierFilterVals = AcquireFilterDivValues(document.getElementById('tierFilterInput'));
+    let colorIdentityFilterVals = AcquireFilterDivValues(document.getElementById('colorIdentityFilterInput'));
     let minManaValueFilterVal = document.getElementById('minManaValueFilterInput').value;
     let maxManaValueFilterVal = document.getElementById('maxManaValueFilterInput').value;
-    let typeFilterElement = document.getElementById('typeFilterInput');
-    let typeFilterVals = []
-        .filter.call(typeFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
-        .map(function (childNode) { return childNode.value; });
-    let draftabilityStatusFilterElement = document.getElementById('draftabilityStatusFilterInput');
-    let draftabilityStatusFilterVals = []
-        .filter.call(draftabilityStatusFilterElement.childNodes, function (childNode) { return (childNode.nodeName === 'INPUT') && childNode.checked; })
-        .map(function (childNode) { return childNode.value; });
+    let typeFilterVals = AcquireFilterDivValues(document.getElementById('typeFilterInput'));
+    let draftabilityStatusFilterVals = AcquireFilterDivValues(document.getElementById('draftabilityStatusFilterInput'));
     let displayFilterVal = document.getElementById('displayFilterInput').value;
 
-    let minWinRateFilterVal = document.getElementById('minWinRateFilterInput').value;
-    let maxWinRateFilterVal = document.getElementById('maxWinRateFilterInput').value;
+    // Acquire info for game stats filters
     let minGamesPlayedFilterVal = document.getElementById('minGamesPlayedFilterInput').value;
     let maxGamesPlayedFilterVal = document.getElementById('maxGamesPlayedFilterInput').value;
+    let minWinRateFilterVal = document.getElementById('minWinRateFilterInput').value;
+    let maxWinRateFilterVal = document.getElementById('maxWinRateFilterInput').value;
 
+    // Acquire info for sorting filters
     let primarySortVal = document.getElementById("primarySortInput").value;
     let secondarySortVal = document.getElementById("secondarySortInput").value;
 
@@ -86,6 +76,19 @@ function GenerateFilteredCubeWindow() {
         // Navigate to new page
         window.location.assign('https://localhost:5001/Home/FilterPopUp');
     }
+}
+
+function AcquireFilterDivValues(filterDiv) {
+    let itemReturnList = [];
+    for (let childElementIndex = 0; childElementIndex < filterDiv.children.length; childElementIndex++) {
+        for (let grandchildElementIndex = 0; grandchildElementIndex < filterDiv.children[childElementIndex].childNodes.length; grandchildElementIndex++) {
+            if (filterDiv.children[childElementIndex].childNodes[grandchildElementIndex].nodeName == "INPUT" && filterDiv.children[childElementIndex].childNodes[grandchildElementIndex].checked) {
+                let returnItem = filterDiv.children[childElementIndex].childNodes[grandchildElementIndex].value;
+                itemReturnList.push(returnItem);
+            }
+        }
+    }
+    return itemReturnList;
 }
 
 // New page has loaded. Fetch and display cards
