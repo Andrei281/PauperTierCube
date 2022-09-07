@@ -97,6 +97,15 @@ function AcquireFilterDivValues(filterDiv) {
 
 // New page has loaded. Fetch and display cards
 function FetchCardData() {
+    // Show loading icon
+    let loadingGifContainer = document.createElement("div");
+    loadingGifContainer.setAttribute("style", "margin: auto");
+    let loadingGif = document.createElement("img");
+    loadingGif.setAttribute("src", "https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif");
+    loadingGif.setAttribute("style", "margin: auto; width: 50px; height: 50px");
+    loadingGifContainer.appendChild(loadingGif);
+    document.getElementById('wrapperDiv').appendChild(loadingGifContainer);
+
     let primaryFilter = localStorage.getItem('filterVal0');
     let displayFilter = localStorage.getItem('filterVal1');
     let url = '/data/CubeData?nameFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
@@ -498,11 +507,12 @@ function DisplayToolTip(cardElement, fullCard) {
     let gamesPlayedStatsDiv = document.createElement('div');
     gamesPlayedStatsDiv.innerHTML = "Games Played - " + fullCard.gamesPlayed;
     statsDiv.appendChild(gamesPlayedStatsDiv);
-    // Only attempt to show win rate percentage if it exists
     let winRatePercentageStatsDiv = document.createElement('div');
     if (fullCard.winRatePercentage != null) {
+        // Win rate percentage exists. Show it
         winRatePercentageStatsDiv.innerHTML = "Win Rate - " + fullCard.winRatePercentage.toFixed(2) + "%";
     } else {
+        // Win rate percentage does not exist. Don't show it
         winRatePercentageStatsDiv.innerHTML = "Win Rate - N/A";
     }
     statsDiv.appendChild(winRatePercentageStatsDiv);
