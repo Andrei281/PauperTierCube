@@ -490,7 +490,7 @@ function DisplayToolTip(cardElement, fullCard) {
     // Create image
     let cardImg = document.createElement('img');
     cardImg.src = 'data:image/jpg;base64,' + fullCard.image;
-    cardImg.setAttribute('style', 'width: 250px');
+    cardImg.setAttribute('style', 'width: 250px; height: 350px');
 
     // Create stats div
     let statsDiv = document.createElement('div');
@@ -527,17 +527,28 @@ function DisplayToolTip(cardElement, fullCard) {
     toolTipDiv.appendChild(cardImg);
     toolTipDiv.appendChild(statsDiv);
 
-    // Initialize tooltip properties
-    toolTipDiv.setAttribute('style', 'background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:10px');
+    // Initialize tooltip properties (without location)
+    toolTipDiv.setAttribute('style', 'background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;height:fit-content;position:absolute;display:flex;padding:10px');
 
     // Use tooltip properties and card location to locate tooltip
     let cardElementPosition = GetAbsolutePosition(cardElement);
     let toolTipLeft = ((cardElementPosition.left + cardElementPosition.right) / 2) - (toolTipDiv.clientWidth / 2);
-    let toolTipTop = cardElementPosition.top - parseInt(cardElement.style.borderWidth) - toolTipDiv.clientHeight - 8;
+    let toolTipTop;
+    if (cardElement.innerText) {
+        // CardElement is a div with text. Don't apply operations using borderWidth
+        toolTipTop = cardElementPosition.top - toolTipDiv.clientHeight - 8;
+    } else {
+        // CardElement is an image. Apply operations using borderWidth
+        toolTipTop = cardElementPosition.top - parseInt(cardElement.style.borderWidth) - toolTipDiv.clientHeight - 8;
+    }
 
     // If too high on screen, position tooltip below cursor
     if (toolTipTop < 0) {
-        toolTipTop = cardElementPosition.bottom + parseInt(cardElement.style.borderWidth);
+        if (cardElement.innerText) {
+            toolTipTop = cardElementPosition.bottom + 2;
+        } else {
+            toolTipTop = cardElementPosition.bottom + parseInt(cardElement.style.borderWidth);
+        }
     }
 
     // If too far to one side, nudge the other way
