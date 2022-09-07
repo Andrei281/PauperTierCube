@@ -106,6 +106,7 @@ function FetchCardData() {
     loadingGifContainer.appendChild(loadingGif);
     document.getElementById('wrapperDiv').appendChild(loadingGifContainer);
 
+    // Begin fetching database info
     let primaryFilter = localStorage.getItem('filterVal0');
     let displayFilter = localStorage.getItem('filterVal1');
     let url = '/data/CubeData?nameFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
@@ -178,7 +179,7 @@ function FillNoneDiv(cards, displayFilter) {
         fillWithText(cards, cardDestinationElement, "width:max-content;margin-right:20px;float:left");
     } else if (displayFilter == 'images') {
         cardDestinationElement.setAttribute('style', 'padding-bottom:0px');
-        fillWithImages(cards, cardDestinationElement, 'width:215px;margin-right:10px;margin-bottom:10px;float:left');
+        fillWithImages(cards, cardDestinationElement, 'width: 215px; margin-right: 10px; margin-bottom: 10px; float: left; cursor: pointer');
     }
 }
 
@@ -208,7 +209,7 @@ function FillTierDiv(tier, cards, divColor, firstDivStatus, displayFilter) {
         fillWithText(cardsForThisDiv, cardDestinationElement, null);
     } else if (displayFilter == 'images') {
         cardDestinationElement.setAttribute('style', 'padding-bottom:0px')
-        fillWithImages(cardsForThisDiv, cardDestinationElement, 'width:80%;margin-bottom:10px')
+        fillWithImages(cardsForThisDiv, cardDestinationElement, 'width: 80%; margin-bottom: 10px; cursor: pointer')
     }
     cardDestinationWrapper.appendChild(cardDestinationElement);
 
@@ -249,7 +250,7 @@ function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, ca
     if (cardDisplayFilter == 'text') {
         fillWithText(cardsForThisDiv, cardArea, null);
     } else if (cardDisplayFilter == 'images') {
-        fillWithImages(cardsForThisDiv, cardArea, 'width:95%;margin-bottom:10px');
+        fillWithImages(cardsForThisDiv, cardArea, 'width: 95%; margin-bottom: 10px; cursor: pointer');
     }
     cardAreaWithColor.appendChild(cardArea);
     fullColorIdentityColumn.appendChild(cardAreaWithColor);
