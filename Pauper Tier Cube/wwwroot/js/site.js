@@ -1,7 +1,11 @@
 ﻿function prepareListPage() {
+
+    // Save height of tallest div for all content divs
+    let divHeightToRetain = document.getElementById("baseStatsButtonContent").clientHeight;
+
     let tablinks = document.getElementsByClassName("tablinks");
     for (let i = 0; i < tablinks.length; i++) {
-        tablinks[i].addEventListener("click", () => openTabContent(event, tablinks[i].id + "Content"));
+        tablinks[i].addEventListener("click", () => openTabContent(event, tablinks[i].id + "Content", divHeightToRetain));
     }
     document.getElementById("filterButton").addEventListener("click", () => GenerateFilteredCubeWindow());
     document.getElementById("minGamesPlayedFilterInput").addEventListener("change", () => ToggleWinRateAccessibility());
@@ -9,7 +13,7 @@
     document.getElementById("baseStatsButton").click();
 }
 
-function openTabContent(evt, tabContentDivId) {
+function openTabContent(evt, tabContentDivId, heightToRetain) {
     // Declare all variables
     var i, tabcontent, tablinks;
 
@@ -26,7 +30,7 @@ function openTabContent(evt, tabContentDivId) {
     }
 
     // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(tabContentDivId).style.display = "flex";
+    document.getElementById(tabContentDivId).setAttribute("style", "display: flex; height:" + heightToRetain + "px");
     evt.currentTarget.className += " active";
 }
 

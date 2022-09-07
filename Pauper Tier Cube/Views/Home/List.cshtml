@@ -9,9 +9,9 @@
 <head>
     <style>
         .FilterDiv {
-            margin-left:25px;
-            width:max-content;
-            float:left;
+            width: max-content;
+            height: max-content;
+            float: left;
         }
         label {
             cursor: pointer;
@@ -50,9 +50,10 @@
             justify-content: space-evenly;
             width: 100%;
             display: none;
-            padding: 15px 12px;
+            padding: 30px 12px;
             border: 1px solid #ccc;
             border-top: none;
+            height: fit-content;
         }
     </style>
 </head>
@@ -67,7 +68,7 @@
         </div>
 
     <!-- Tab content: Base Stats -->
-    <div id="baseStatsButtonContent" class="tabcontent">        
+    <div id="baseStatsButtonContent" class="tabcontent" style="display: initial">        
             <div class="FilterDiv" style="width:100px">
                 <label>Name:</label><br>
                 <div>
@@ -142,7 +143,7 @@
             </div>
         </div>
         <div class="FilterDiv">
-            <label>Card:</label><br>
+            <label>Images:</label><br>
             <div>
                 <select id="displayFilterInput">
                     <option value="images">Images</option>    
