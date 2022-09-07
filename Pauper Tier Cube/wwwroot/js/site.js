@@ -482,31 +482,14 @@ function FillWithImages(cards, cardDestinationElement, cardStyle) {
 }
 
 function DisplayToolTip(cardElement, fullCard) {
-    let cardElementPosition = GetAbsolutePosition(cardElement);
-    let imageWidth = 250;
-    let imageHeight = imageWidth * 1.4;
-
-    // Initialize tooltip properties
-    let toolTipDiv = document.getElementById("toolTipDiv");
-    let toolTipPadding = 5;
-    let toolTipWidth = imageWidth + (2 * toolTipPadding);
-    let toolTipLeft = ((cardElementPosition.left + cardElementPosition.right) / 2) - (toolTipWidth / 2);
-
-    // If too high on screen, position tooltip below cursor
-    let toolTipHeight = imageHeight + (2 * toolTipPadding);
-    let toolTipTop = cardElementPosition.top - toolTipHeight;
-    if (toolTipTop < 0) {
-        toolTipTop = cardElementPosition.bottom + toolTipPadding;
-    }
-
     // Create image
     let cardImg = document.createElement('img');
     cardImg.src = 'data:image/jpg;base64,' + fullCard.image;
-    cardImg.setAttribute('style', 'width:' + imageWidth + 'px');
+    cardImg.setAttribute('style', 'width: 250px');
 
     // Create stats div
     let statsDiv = document.createElement('div');
-    statsDiv.setAttribute('style', 'font-size: 18px; height: fit-content; background-color: lightgray; margin-left: 10px; padding: 10px; border-radius: 10px; border: solid; display: flex; flex-direction: column; align-items: center');
+    statsDiv.setAttribute('style', 'font-size: 18px; height: fit-content; margin-left: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center');
     let tierDiv = document.createElement('div');
     tierDiv.setAttribute("style", "display: flex");
     tierDiv.innerHTML = "Tier - " + fullCard.tier;
@@ -534,11 +517,35 @@ function DisplayToolTip(cardElement, fullCard) {
     statsDiv.appendChild(winRatePercentageStatsDiv);
 
     // Insert image and stats into tooltip
+    let toolTipDiv = document.getElementById("toolTipDiv");
     toolTipDiv.innerHTML = '';
     toolTipDiv.appendChild(cardImg);
     toolTipDiv.appendChild(statsDiv);
 
-    toolTipDiv.setAttribute('style', 'opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:' + toolTipPadding + 'px;top:' + toolTipTop + 'px;left:' + toolTipLeft + 'px');
+    // Initialize tooltip properties
+    toolTipDiv.setAttribute('style', 'background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:10px');
+
+    // Use tooltip properties and card location to locate tooltip
+    let cardElementPosition = GetAbsolutePosition(cardElement);
+    let toolTipLeft = ((cardElementPosition.left + cardElementPosition.right) / 2) - (toolTipDiv.clientWidth / 2);
+    let toolTipTop = cardElementPosition.top - parseInt(cardElement.style.borderWidth) - toolTipDiv.clientHeight - 10;
+
+    // If too high on screen, position tooltip below cursor
+    if (toolTipTop < 0) {
+        toolTipTop = cardElementPosition.bottom + parseInt(cardElement.style.borderWidth);
+    }
+
+    // If too far to one side, nudge the other way
+    if (toolTipLeft < 0) {
+        toolTipLeft = 15;
+    } else if (toolTipLeft > document.body.clientWidth - toolTipDiv.clientWidth) {
+        toolTipLeft = document.body.clientWidth - toolTipDiv.clientWidth - 15;
+    }
+
+    // Apply final tooltip properties
+    toolTipDiv.setAttribute("style", "background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:10px;left:" + toolTipLeft + "px;top:" + toolTipTop + "px");
+
+    // Make tooltip fade in
     let op = 0.1;
     let timer = setInterval(function () {
         toolTipDiv.style.opacity = op;
