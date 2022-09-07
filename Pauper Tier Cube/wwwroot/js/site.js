@@ -179,7 +179,7 @@ function FillNoneDiv(cards, displayFilter) {
         FillWithText(cards, cardDestinationElement, "width:max-content;margin-right:20px;float:left");
     } else if (displayFilter == 'images') {
         cardDestinationElement.setAttribute('style', 'padding-bottom:0px');
-        FillWithImages(cards, cardDestinationElement, 'width: 215px; margin-right: 10px; margin-bottom: 10px; float: left; cursor: pointer');
+        FillWithImages(cards, cardDestinationElement, 'width: 215px; cursor: pointer; margin-bottom: 10px;');
     }
 }
 
@@ -417,12 +417,13 @@ function FetchRandomPackData(tier, maxResults, cardStyle, cardDestination) {
         });
 }
 
-// TODO: Fix background-color styling
 function FillWithText(cards, cardDestinationElement, cardStyle) {
     for (let i = 0; i < cards.length; i++) {
         let card = cards[i];
         let cardElement = document.createElement('div');
         cardElement.setAttribute('class', 'CardListItem');
+
+        // Initialize card background-color based on tier
         let backgroundColor;
         if (card.tier == "Bronze") {
             backgroundColor = "#EFA67D";
@@ -433,6 +434,7 @@ function FillWithText(cards, cardDestinationElement, cardStyle) {
         }
         cardElement.setAttribute('style', cardStyle + "; background-color: " + backgroundColor);
         cardElement.innerHTML = card.name;
+
         // Apply tooltip capabilities
         var timeOut;
         cardElement.addEventListener("mouseenter", function () {
@@ -454,16 +456,19 @@ function FillWithImages(cards, cardDestinationElement, cardStyle) {
         let card = cards[index];
         if (card.image) {
             let cardImgElement = document.createElement('img');
+
+            // Initialize card border color based on tier
             let borderStyle = "; border-radius: 10px; border: solid 8px ";
             if (card.tier == "Bronze") {
                 borderStyle += "#EFA67D";
             } else if (card.tier == "Silver") {
                 borderStyle += "#DBDAD9";
             } else {
-                borderStyle += "#F2E979BF";
+                borderStyle += "#e8e079";
             }
             cardImgElement.setAttribute('style', cardStyle + borderStyle);
             cardImgElement.src = 'data:image/jpg;base64,' + card.image;
+
             // Apply tooltip capabilities
             var timeOut;
             cardImgElement.addEventListener("mouseenter", function () {
@@ -528,7 +533,7 @@ function DisplayToolTip(cardElement, fullCard) {
     // Use tooltip properties and card location to locate tooltip
     let cardElementPosition = GetAbsolutePosition(cardElement);
     let toolTipLeft = ((cardElementPosition.left + cardElementPosition.right) / 2) - (toolTipDiv.clientWidth / 2);
-    let toolTipTop = cardElementPosition.top - parseInt(cardElement.style.borderWidth) - toolTipDiv.clientHeight - 10;
+    let toolTipTop = cardElementPosition.top - parseInt(cardElement.style.borderWidth) - toolTipDiv.clientHeight - 8;
 
     // If too high on screen, position tooltip below cursor
     if (toolTipTop < 0) {
