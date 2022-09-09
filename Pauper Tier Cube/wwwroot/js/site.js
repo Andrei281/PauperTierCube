@@ -179,7 +179,7 @@ function FillNoneDiv(cards, displayFilter) {
         FillWithText(cards, cardDestinationElement, "width:max-content;margin-right:20px;float:left");
     } else if (displayFilter == 'images') {
         cardDestinationElement.setAttribute('style', 'padding-bottom:0px');
-        FillWithImages(cards, cardDestinationElement, 'width: 215px; cursor: pointer; margin-bottom: 10px;');
+        FillWithImages(cards, cardDestinationElement, 'width: 215px; height: 301px; cursor: pointer; margin-bottom: 10px;');
     }
 }
 
