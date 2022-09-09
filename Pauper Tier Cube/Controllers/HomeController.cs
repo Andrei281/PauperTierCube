@@ -38,7 +38,7 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult FilterPopUp()
+    public IActionResult ListFilterPopUp()
     {
         return View();
     }

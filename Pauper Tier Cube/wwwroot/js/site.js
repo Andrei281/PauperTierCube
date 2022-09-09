@@ -78,7 +78,7 @@ function GenerateFilteredCubeWindow() {
             localStorage.setItem("filterVal" + i, filterVals[i]);
         }
         // Navigate to new page
-        window.location.assign('https://localhost:5001/Home/FilterPopUp');
+        window.location.assign('https://localhost:5001/Home/ListFilterPopUp');
     }
 }
 
