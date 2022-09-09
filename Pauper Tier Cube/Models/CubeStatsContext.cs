@@ -137,10 +137,6 @@ namespace Pauper_Tier_Cube.Models
 
                 entity.Property(e => e.IslandCount).HasColumnName("islandCount");
 
-                entity.Property(e => e.LandsPerNonland)
-                    .HasColumnType("decimal(4, 3)")
-                    .HasColumnName("landsPerNonland");
-
                 entity.Property(e => e.MountainCount).HasColumnName("mountainCount");
 
                 entity.Property(e => e.PlainsCount).HasColumnName("plainsCount");
@@ -156,6 +152,10 @@ namespace Pauper_Tier_Cube.Models
                     .HasColumnName("strat");
 
                 entity.Property(e => e.SwampCount).HasColumnName("swampCount");
+
+                entity.Property(e => e.LandCount).HasColumnName("landCount");
+
+                entity.Property(e => e.NonlandCount).HasColumnName("nonlandCount");
             });
 
             modelBuilder.Entity<DraftedCard>(entity =>
