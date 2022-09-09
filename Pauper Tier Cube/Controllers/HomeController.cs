@@ -23,6 +23,11 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Decks()
+    {
+        return View();
+    }
+
     public IActionResult Themes()
     {
         return View();

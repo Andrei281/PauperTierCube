@@ -1,0 +1,209 @@
+﻿@{
+    ViewData["Title"] = "List";
+}
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <style>
+        .FilterDiv {
+            width: max-content;
+            height: max-content;
+            float: left;
+        }
+        label {
+            cursor: pointer;
+        }
+
+        /* Tab Classes */
+        /* Style the tab */
+        .tab {
+            display: flex;
+            justify-content: space-evenly;
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+            background-color: inherit;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            width: 20%;
+        }
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        /* Create an active/current tablink class */
+        .tab button.active {
+            background-color: #ccc;
+        }
+        /* Style the tab content */
+        .tabcontent {
+            justify-content: space-evenly;
+            width: 100%;
+            display: none;
+            padding: 30px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+            height: fit-content;
+        }
+    </style>
+</head>
+
+<body onload="prepareListPage();">
+    <div style="display:flex;flex-direction:column;align-items:center">
+        <!-- Tab links -->
+        <div class="tab">
+            <button class="tablinks" id="baseStatsButton">Base Stats</button>
+            <button class="tablinks" id="displayButton">Display</button>
+            <button class="tablinks" id ="gameStatsButton">Game Stats</button>
+        </div>
+
+    <!-- Tab content: Base Stats -->
+    <div id="baseStatsButtonContent" class="tabcontent" style="display: initial">        
+            <div class="FilterDiv" style="width:100px">
+                <label>Name:</label><br>
+                <div>
+                    <input style="width:100%" id="nameFilterInput"/>
+                </div>
+            </div>
+            <div class="FilterDiv">
+                <label>Tier:</label><br>
+                <div id="tierFilterInput">
+                    <label><input type="checkbox" value="bronze"/> Bronze</label><br/>
+                    <label><input type="checkbox" value="silver"/> Silver</label><br/>
+                    <label><input type="checkbox" value="gold"/> Gold</label>
+                </div>
+            </div>
+            <div class="FilterDiv">
+                <label>Color Identity:</label><br>
+                <div id="colorIdentityFilterInput">
+                    <label><input type="checkbox" value="W"/> White</label><br/>
+                    <label><input type="checkbox" value="U"/> Blue</label><br/>
+                    <label><input type="checkbox" value="B"/> Black</label><br/>
+                    <label><input type="checkbox" value="R"/> Red</label><br/>
+                    <label><input type="checkbox" value="G"/> Green</label><br/>
+                    <label><input type="checkbox" value="multiple"/> Multiple</label><br/>
+                    <label><input type="checkbox" value="colorless"/> Colorless</label>
+                </div>
+            </div>
+            <div class="FilterDiv" style="width:100px">
+                <label>Mana Value:</label><br>
+                <div>
+                    <label>Min:</label>
+                    <input type="number" style="margin-left:10px;width:40%;float:right" id="minManaValueFilterInput" value="0"/><br/>
+                    <label>Max:</label>
+                    <input type="number" style="margin-left:10px;width:40%;float:right" id="maxManaValueFilterInput"/><br/>
+                </div>
+            </div>
+            <div class="FilterDiv">
+                <label>Type:</label><br>
+                <div id="typeFilterInput">
+                    <label><input type="checkbox" value="artifact"/> Artifact</label><br/>
+                    <label><input type="checkbox" value="creature"/> Creature</label><br/>
+                    <label><input type="checkbox" value="enchantment"/> Enchantment</label><br/>
+                    <label><input type="checkbox" value="instant"/> Instant</label><br/>
+                    <label><input type="checkbox" value="land"/> Land</label><br/>
+                    <label><input type="checkbox" value="sorcery"/> Sorcery</label><br/>
+                    <label><input type="checkbox" value="artifact creature"/> Artifact Creature</label><br/>
+                    <label><input type="checkbox" value="artifact land"/> Artifact Land</label><br/>
+                    <label><input type="checkbox" value="enchantment creature"/> Enchantment Creature</label><br/>
+                    <label><input type="checkbox" value="instant creature"/> Instant Creature</label><br/>
+                    <label><input type="checkbox" value="sorcery creature"/> Sorcery Creature</label><br/>
+                </div>
+            </div>
+            <div class="FilterDiv">
+                <label>Draftability:</label><br>
+                <div id="draftabilityStatusFilterInput">
+                    <label><input type="checkbox" value="draftable" checked="checked"/> Draftable</label><br/>
+                    <label><input type="checkbox" value="changed"> Changed</label><br/>
+                    <label><input type="checkbox" value="not draftable"/> Not Draftable</label>
+                </div>
+            </div>
+    </div>
+
+    <!-- Tab content: Display -->
+    <div id="displayButtonContent" class="tabcontent">
+        <div class="FilterDiv" style="margin-left:0px">
+            <label>Layout:</label><br>
+            <div>
+                <select id="primaryFilterInput">
+                    <option value="none">Default</option>
+                    <option value="tier">Tier</option>
+                    <option value="colorIdentity">Color Identity</option>
+                </select>
+            </div>
+        </div>
+        <div class="FilterDiv">
+            <label>Images:</label><br>
+            <div>
+                <select id="displayFilterInput">
+                    <option value="images">Images</option>    
+                    <option value="text">Text</option>
+                </select>
+            </div>
+        </div>
+        <div class="FilterDiv">
+                <label>Primary Sort:</label><br>
+                <select id="primarySortInput">
+                    <option value="ColorIdentity">Color Identity</option>
+                    <option value="Cmc" selected="selected">Mana Value</option>
+                    <option value="CombinedTypes">Type</option>
+                    <option value="Tier">Tier</option>
+                    <option value="Draftability">Draftability</option>
+                    <option value="GamesPlayed">Games Played</option>
+                    <option value="WinRatePercentage">Win Rate</option>
+                </select>
+            </div>
+        <div class="FilterDiv">
+                <label>Secondary Sort:</label><br>
+                <select id="secondarySortInput">
+                    <option value="Name" selected="selected">Name</option>
+                    <option value="ColorIdentity">Color Identity</option>
+                    <option value="Cmc">Mana Value</option>
+                    <option value="CombinedTypes">Type</option>
+                    <option value="Tier">Tier</option>
+                    <option value="Draftability">Draftability</option>
+                    <option value="GamesPlayed">Games Played</option>
+                    <option value="WinRatePercentage">Win Rate</option>
+                </select>
+            </div>
+    </div>
+
+    <!-- Tab content: Game Stats -->
+    <div id="gameStatsButtonContent" class="tabcontent">
+        <div class="FilterDiv" style="width:120px">
+            <label>Games Played:</label><br>
+            <div>
+                <label>Min:</label>
+                <input type="number" style="margin-left:10px;width:40%;float:right" id="minGamesPlayedFilterInput" value="0"/><br/>
+                <label>Max:</label>
+                <input type="number" style="margin-left:10px;width:40%;float:right" id="maxGamesPlayedFilterInput"/><br/>
+            </div>
+        </div>
+        <div class="FilterDiv" id="winRateFilterDiv">
+            <label>Win Rate:</label><br>
+            <div>
+                <label>Min:</label>
+                <input type="number" style="margin-left:10px;width:50%;float:right" id="minWinRateFilterInput" value="0"/><br/>
+                <label>Max:</label>
+                <input type="number" style="margin-left:10px;width:50%;float:right" id="maxWinRateFilterInput" value="100"/><br/>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Button -->
+    <button id="filterButton" style="margin-top:20px;width:50%">Filter</button>
+    </div>
+    
+    @*<button onclick="GenerateRandomPackWindow()" style="margin-top:5%">Generate Random Pack</button>*@
+</body>
+</html>
