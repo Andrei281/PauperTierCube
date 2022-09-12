@@ -1,12 +1,14 @@
 ﻿function prepareListPage() {
-
     // Save height of tallest div for all content divs
     let divHeightToRetain = document.getElementById("baseStatsButtonContent").clientHeight;
 
+    // Make buttons display their respective contents
     let tablinks = document.getElementsByClassName("tablinks");
     for (let i = 0; i < tablinks.length; i++) {
         tablinks[i].addEventListener("click", () => openTabContent(event, tablinks[i].id + "Content", divHeightToRetain));
     }
+
+    // Misc
     document.getElementById("filterButton").addEventListener("click", () => GenerateFilteredCubeWindow());
     document.getElementById("minGamesPlayedFilterInput").addEventListener("change", () => ToggleWinRateAccessibility());
     ToggleWinRateAccessibility();
@@ -262,28 +264,6 @@ function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, ca
     ToggleColorIdentityDivVisibility(fullColorIdentityColumn);
 }
 
-// For color identity div card-count-area: convert color char to string
-function getFullColorIdentityWord(colorIdentity) {
-    if (colorIdentity == 'W') {
-        return 'White';
-    }
-    else if (colorIdentity == 'U') {
-        return 'Blue';
-    }
-    else if (colorIdentity == 'B') {
-        return 'Black';
-    }
-    else if (colorIdentity == 'R') {
-        return 'Red';
-    }
-    else if (colorIdentity == 'G') {
-        return 'Green';
-    }
-    else {
-        return colorIdentity;
-    }
-}
-
 function ToggleColorIdentityDivVisibility(fullColorIdentityColumn) {
     visibility = fullColorIdentityColumn.getAttribute('visibility');
     if (visibility == 'visible') {
@@ -336,85 +316,6 @@ function FilterCardsForSpecificDiv(filterType, filterVal, cards) {
         }
     }
     return cardsToReturn;
-}
-
-function GenerateRandomPackWindow() {
-    let height = 0.75 * window.screen.height;
-    let width = 0.60 * window.screen.width;
-    let left = 0.2 * window.screen.width;
-    let top = 0.125 * window.screen.height;
-    window.location.assign('https://localhost:5001/Home/PackPopUp', 'randomPackPopUp', 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes');
-}
-
-function GenerateRandomPack() {
-    // Readjust styling for certain, generated, parent div during runtime
-    let containerDivs = document.getElementsByClassName("container");
-    for (i = 0; i < containerDivs.length; i++) {
-        if (containerDivs[i].parentElement == document.body) {
-            containerDivs[i].setAttribute("style", "margin-left:0px;padding:0px");
-            break;
-        }
-    }
-
-    // Define card-sizing properties
-    const cardMargin = 5;
-    const cardWidth = 215;
-    let cardStyle = 'margin:' + cardMargin + 'px;width:' + cardWidth + 'px;float:unset'
-
-    // Use ^^ properties to define parent div widths
-    setGeneratedPackDivWidths(cardMargin, cardWidth);
-
-    // Fetch 5 random bronzes, 10 random silvers, and 5 random golds
-    let tiers = ["bronze", "silver", "gold"];
-    for (let i = 0; i < tiers.length; i++) {
-        if (tiers[i] == "bronze") {
-            let bronzeSection = document.getElementById("bronzeSection");
-            FetchRandomPackData(tiers[i], 5, cardStyle, bronzeSection);
-        } else if (tiers[i] == "silver") {
-            let silverSection = document.getElementById("silverSection");
-            FetchRandomPackData(tiers[i], 10, cardStyle, silverSection);
-        } else if (tiers[i] == "gold") {
-            let goldSection = document.getElementById("goldSection");
-            FetchRandomPackData(tiers[i], 5, cardStyle, goldSection);
-        }
-    }
-}
-
-function setGeneratedPackDivWidths(cardMargin, cardWidth) {
-    let cssObj = window.getComputedStyle(document.getElementById("bronzeSection"), null);
-    let divPadding = parseInt(cssObj.getPropertyValue("padding").slice(0, 1));
-    let divBorderWidth = parseInt(cssObj.getPropertyValue("border-width").slice(0, 1));
-    let packDivWidth = 5 * (2 * cardMargin + cardWidth) + 2 * (divPadding + divBorderWidth);
-
-    document.getElementById("bronzeSection").setAttribute("style", "width:" + packDivWidth + "px;background-color:#EFA67D");
-    document.getElementById("silverSection").setAttribute("style", "width:" + packDivWidth + "px;background-color:#DBDAD9");
-    document.getElementById("goldSection").setAttribute("style", "width:" + packDivWidth + "px;background-color:#F2E979BF;margin-bottom:0px");
-}
-
-function FetchRandomPackData(tier, maxResults, cardStyle, cardDestination) {
-    let url = '/data/LoadRandomPackData?tierFilter=' + tier
-        + '&maxResults=' + maxResults;
-    fetch(url, {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        headers: { 'Content-Type': 'application/json' },
-        mode: 'no-cors', // no-cors, *cors, same-origin
-    })
-        .then(res => {
-            if (res.status == 200) {
-                return res.json();
-            } else { throw "Error fetching data: " + res; }
-        })
-        .then(cards => {
-            if (cards) {
-                if (!Array.isArray(cards)) {
-                    throw 'cards in server response is not an array.'
-                }
-                FillWithImages(cards, cardDestination, cardStyle);
-            }
-        }).catch(err => {
-            if (err) { }
-            alert("Error fetching data: " + err);
-        });
 }
 
 function FillWithText(cards, cardDestinationElement, cardStyle) {
@@ -484,113 +385,4 @@ function FillWithImages(cards, cardDestinationElement, cardStyle) {
             throw 'Something went wrong.';
         }
     }
-}
-
-function DisplayToolTip(cardElement, fullCard) {
-    // Create image
-    let cardImg = document.createElement('img');
-    cardImg.src = 'data:image/jpg;base64,' + fullCard.image;
-    cardImg.setAttribute('style', 'width: 250px; height: 350px');
-
-    // Create stats div
-    let statsDiv = document.createElement('div');
-    statsDiv.setAttribute('style', 'font-size: 18px; height: fit-content; margin-left: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center');
-    let tierDiv = document.createElement('div');
-    tierDiv.setAttribute("style", "display: flex");
-    tierDiv.innerHTML = "Tier - " + fullCard.tier;
-    let tierColorDiv = document.createElement('div');
-    if (fullCard.tier == "Bronze") {
-        tierColorDiv.setAttribute("style", "margin-left: 10px; border: solid; width: 25px; height: 25px; background-color: #EFA67D");
-    } else if (fullCard.tier == "Silver") {
-        tierColorDiv.setAttribute("style", "margin-left: 10px; border: solid; width: 25px; height: 25px; background-color: #DBDAD9");
-    } else {
-        tierColorDiv.setAttribute("style", "margin-left: 10px; border: solid; width: 25px; height: 25px; background-color: #F2E979BF");
-    }
-    tierDiv.appendChild(tierColorDiv);
-    statsDiv.appendChild(tierDiv);
-    let gamesPlayedStatsDiv = document.createElement('div');
-    gamesPlayedStatsDiv.innerHTML = "Games Played - " + fullCard.gamesPlayed;
-    statsDiv.appendChild(gamesPlayedStatsDiv);
-    let winRatePercentageStatsDiv = document.createElement('div');
-    if (fullCard.winRatePercentage != null) {
-        // Win rate percentage exists. Show it
-        winRatePercentageStatsDiv.innerHTML = "Win Rate - " + fullCard.winRatePercentage.toFixed(2) + "%";
-    } else {
-        // Win rate percentage does not exist. Don't show it
-        winRatePercentageStatsDiv.innerHTML = "Win Rate - N/A";
-    }
-    statsDiv.appendChild(winRatePercentageStatsDiv);
-
-    // Insert image and stats into tooltip
-    let toolTipDiv = document.getElementById("toolTipDiv");
-    toolTipDiv.innerHTML = '';
-    toolTipDiv.appendChild(cardImg);
-    toolTipDiv.appendChild(statsDiv);
-
-    // Initialize tooltip properties (without location)
-    toolTipDiv.setAttribute('style', 'background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;height:fit-content;position:absolute;display:flex;padding:10px');
-
-    // Use tooltip properties and card location to locate tooltip
-    let cardElementPosition = GetAbsolutePosition(cardElement);
-    let toolTipLeft = ((cardElementPosition.left + cardElementPosition.right) / 2) - (toolTipDiv.clientWidth / 2);
-    let toolTipTop;
-    if (cardElement.innerText) {
-        // CardElement is a div with text. Don't apply operations using borderWidth
-        toolTipTop = cardElementPosition.top - toolTipDiv.clientHeight - 8;
-    } else {
-        // CardElement is an image. Apply operations using borderWidth
-        toolTipTop = cardElementPosition.top - parseInt(cardElement.style.borderWidth) - toolTipDiv.clientHeight - 8;
-    }
-
-    // If too high on screen, position tooltip below cursor
-    if (toolTipTop < 0) {
-        if (cardElement.innerText) {
-            toolTipTop = cardElementPosition.bottom + 2;
-        } else {
-            toolTipTop = cardElementPosition.bottom + parseInt(cardElement.style.borderWidth);
-        }
-    }
-
-    // If too far to one side, nudge the other way
-    if (toolTipLeft < 0) {
-        toolTipLeft = 15;
-    } else if (toolTipLeft > document.body.clientWidth - toolTipDiv.clientWidth) {
-        toolTipLeft = document.body.clientWidth - toolTipDiv.clientWidth - 15;
-    }
-
-    // Apply final tooltip properties
-    toolTipDiv.setAttribute("style", "background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:10px;left:" + toolTipLeft + "px;top:" + toolTipTop + "px");
-
-    // Make tooltip fade in
-    let op = 0.1;
-    let timer = setInterval(function () {
-        toolTipDiv.style.opacity = op;
-        op += op * 0.1;
-        if (op >= 1) {
-            clearInterval(timer);
-            toolTipDiv.style.opacity = 1;
-        }
-    }, 10);
-}
-
-function VanishToolTip() {
-    document.getElementById("toolTipDiv").innerHTML = '';
-    toolTipDiv.style.opacity = 0;
-}
-
-function GetAbsolutePosition(element) {
-    let pos = element.getBoundingClientRect();
-    pos = {
-        left: pos.left,
-        right: pos.right,
-        top: pos.top,
-        bottom: pos.bottom,
-    };
-    let sx = window.scrollX ? window.scrollX : window.pageXOffset;
-    let sy = window.scrollY ? window.scrollY : window.pageYOffset;
-    pos.left += sx;
-    pos.right += sx;
-    pos.top += sy;
-    pos.bottom += sy;
-    return pos;
 }
