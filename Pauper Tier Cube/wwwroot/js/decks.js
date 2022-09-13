@@ -1,25 +1,41 @@
 ﻿function prepareDecksPage() {
+
+    // Save height of tallest div for all content divs
+    document.getElementById("genericStatsButtonContent").setAttribute("style", "display: flex");
+    let divHeightToRetain = document.getElementById("genericStatsButtonContent").clientHeight;
+
+    // Make buttons display their respective contents
+    let tablinks = document.getElementsByClassName("tablinks");
+    for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].addEventListener("click", () => openTabContent(event, tablinks[i].id + "Content", divHeightToRetain));
+    }
+    document.getElementById("genericStatsButtonContent").click();
+
+    // Prepare filter button
     document.getElementById("filterButton").addEventListener("click", () => GenerateFilteredDecksWindow());
 }
 
 // "Filter" button has been clicked. Prepare and navigate to new page
-function GenerateFilteredCubeWindow() {
-    // Acquire info for base stats filters
-    let primaryFilterVal = document.getElementById('primaryFilterInput').value;
-    let nameFilterVal = document.getElementById('nameFilterInput').value;
-    let tierFilterVals = AcquireFilterDivValues(document.getElementById('tierFilterInput'));
-    let colorIdentityFilterVals = AcquireFilterDivValues(document.getElementById('colorIdentityFilterInput'));
-    let minManaValueFilterVal = document.getElementById('minManaValueFilterInput').value;
-    let maxManaValueFilterVal = document.getElementById('maxManaValueFilterInput').value;
-    let typeFilterVals = AcquireFilterDivValues(document.getElementById('typeFilterInput'));
-    let draftabilityStatusFilterVals = AcquireFilterDivValues(document.getElementById('draftabilityStatusFilterInput'));
-    let displayFilterVal = document.getElementById('displayFilterInput').value;
+function GenerateFilteredDecksWindow() {
 
-    // Acquire info for game stats filters
-    let minGamesPlayedFilterVal = document.getElementById('minGamesPlayedFilterInput').value;
-    let maxGamesPlayedFilterVal = document.getElementById('maxGamesPlayedFilterInput').value;
-    let minWinRateFilterVal = document.getElementById('minWinRateFilterInput').value;
-    let maxWinRateFilterVal = document.getElementById('maxWinRateFilterInput').value;
+    // Acquire info for generic filters
+    let deckIDFilterVal = document.getElementById('deckIDFilter').value;
+    let playerNameFilterVal = document.getElementById('playerNameFilter').value;
+    let stratFilterVal = document.getElementById('stratFilter').value;
+    let colorFilterVals = AcquireFilterDivValues(document.getElementById('colorsFilter'));
+    let dateFilterVal = document.getElementById('dateFilter').value;
+
+    // Acquire info for numeric filters
+    let minWinsFilterVal = document.getElementById('minWins').value;
+    let maxWinsFilterVal = document.getElementById('maxWins').value;
+    let minLossesFilterVal = document.getElementById('minLosses').value;
+    let maxLossesFilterVal = document.getElementById('maxLosses').value;
+    let minAverageManaValueFilterVal = document.getElementById('minAverageManaValueFilter').value;
+    let maxAverageManaValueFilterVal = document.getElementById('maxAverageManaValueFilter').value;
+    let minLandsFilterVal = document.getElementById('minLands').value;
+    let maxLandsFilterVal = document.getElementById('maxLands').value;
+    let minNonlandsFilterVal = document.getElementById('minNonlands').value;
+    let maxNonlandsFilterVal = document.getElementById('maxNonlands').value;
 
     // Acquire info for sorting filters
     let primarySortVal = document.getElementById("primarySortInput").value;
@@ -28,14 +44,15 @@ function GenerateFilteredCubeWindow() {
     // Check browser support
     if (typeof (Storage) !== "undefined") {
         // Store filter info in browser session
-        let filterVals = [primaryFilterVal, displayFilterVal, nameFilterVal, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal,
-            typeFilterVals, tierFilterVals, draftabilityStatusFilterVals, minWinRateFilterVal, maxWinRateFilterVal, minGamesPlayedFilterVal,
-            maxGamesPlayedFilterVal, primarySortVal, secondarySortVal];
+        let filterVals = [deckIDFilterVal, playerNameFilterVal, stratFilterVal, colorFilterVals, dateFilterVal, minWinsFilterVal,
+            maxWinsFilterVal, minLossesFilterVal, maxLossesFilterVal, minAverageManaValueFilterVal, maxAverageManaValueFilterVal,
+            minLandsFilterVal, maxLandsFilterVal, minNonlandsFilterVal, maxNonlandsFilterVal, primarySortVal, secondarySortVal];
+        localStorage.clear();
         for (let i = 0; i < filterVals.length; i++) {
             localStorage.setItem("filterVal" + i, filterVals[i]);
         }
         // Navigate to new page
-        window.location.assign('https://localhost:5001/Home/ListFilterPopUp');
+        window.location.assign('https://localhost:5001/Home/DecksFilterPopUp');
     }
 }
 

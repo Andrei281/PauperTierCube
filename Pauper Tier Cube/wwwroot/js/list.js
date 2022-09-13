@@ -1,5 +1,6 @@
 ﻿function prepareListPage() {
     // Save height of tallest div for all content divs
+    document.getElementById("baseStatsButtonContent").setAttribute("style", "display: initial");
     let divHeightToRetain = document.getElementById("baseStatsButtonContent").clientHeight;
 
     // Make buttons display their respective contents
@@ -13,27 +14,6 @@
     document.getElementById("minGamesPlayedFilterInput").addEventListener("change", () => ToggleWinRateAccessibility());
     ToggleWinRateAccessibility();
     document.getElementById("baseStatsButton").click();
-}
-
-function openTabContent(evt, tabContentDivId, heightToRetain) {
-    // Declare all variables
-    var i, tabcontent, tablinks;
-
-    // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-
-    // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(tabContentDivId).setAttribute("style", "display: flex; height:" + heightToRetain + "px");
-    evt.currentTarget.className += " active";
 }
 
 // If minGames filter = 0, keep win rate filter inaccessible
@@ -76,6 +56,7 @@ function GenerateFilteredCubeWindow() {
         let filterVals = [primaryFilterVal, displayFilterVal, nameFilterVal, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal,
             typeFilterVals, tierFilterVals, draftabilityStatusFilterVals, minWinRateFilterVal, maxWinRateFilterVal, minGamesPlayedFilterVal,
             maxGamesPlayedFilterVal, primarySortVal, secondarySortVal];
+        localStorage.clear();
         for (let i = 0; i < filterVals.length; i++) {
             localStorage.setItem("filterVal" + i, filterVals[i]);
         }
