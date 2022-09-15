@@ -65,21 +65,9 @@ function GenerateFilteredCubeWindow() {
     }
 }
 
-function AcquireFilterDivValues(filterDiv) {
-    let itemReturnList = [];
-    for (let childElementIndex = 0; childElementIndex < filterDiv.children.length; childElementIndex++) {
-        for (let grandchildElementIndex = 0; grandchildElementIndex < filterDiv.children[childElementIndex].childNodes.length; grandchildElementIndex++) {
-            if (filterDiv.children[childElementIndex].childNodes[grandchildElementIndex].nodeName == "INPUT" && filterDiv.children[childElementIndex].childNodes[grandchildElementIndex].checked) {
-                let returnItem = filterDiv.children[childElementIndex].childNodes[grandchildElementIndex].value;
-                itemReturnList.push(returnItem);
-            }
-        }
-    }
-    return itemReturnList;
-}
-
 // New page has loaded. Fetch and display cards
 function FetchCardData() {
+
     // Show loading icon
     let loadingGifContainer = document.createElement("div");
     loadingGifContainer.setAttribute("style", "margin: auto");
@@ -92,7 +80,7 @@ function FetchCardData() {
     // Begin fetching database info
     let primaryFilter = localStorage.getItem('filterVal0');
     let displayFilter = localStorage.getItem('filterVal1');
-    let url = '/data/CubeData?nameFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
+    let url = '/data/CardData?nameFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
         + '&colorIdentityFilter=' + encodeURIComponent(localStorage.getItem('filterVal3'))
         + '&minManaValueFilter=' + encodeURIComponent(localStorage.getItem('filterVal4'))
         + '&maxManaValueFilter=' + encodeURIComponent(localStorage.getItem('filterVal5'))
@@ -117,21 +105,25 @@ function FetchCardData() {
             } else { throw "Error fetching cards: " + res; }
         })
         .then(cards => {
+            deckDestinationElement
             if (cards) {
                 if (!Array.isArray(cards)) throw 'cards in server response is not an array.'
-                if (primaryFilter == 'none') {
+                if (primaryFilter == 'default') {
+                    document.getElementById('wrapperDiv').innerHTML = "";
+
                     // Default page structure: Display all cards in one div
-                    document.getElementById('wrapperDiv').innerHTML = "";
-                    FillNoneDiv(cards, displayFilter);
+                    FillDefaultDiv(cards, displayFilter);
                 } else if (primaryFilter == 'tier') {
-                    // Alternative page structure: Separate cards into different divs by tier
                     document.getElementById('wrapperDiv').innerHTML = "";
+
+                    // Alternative page structure: Separate cards into different divs by tier
                     FillTierDiv('Bronze', cards, '#EFA67D', true, displayFilter);
                     FillTierDiv('Silver', cards, '#DBDAD9', null, displayFilter);
                     FillTierDiv('Gold', cards, '#F2E979BF', null, displayFilter);
                 } else if (primaryFilter == 'colorIdentity') {
-                    // Alternative page structure: Separate cards into different divs by color identity
                     document.getElementById('wrapperDiv').innerHTML = "";
+
+                    // Alternative page structure: Separate cards into different divs by color identity
                     FillColorIdentityDiv('#ffff80', '#ffffe6', 'W', cards, displayFilter, 'shrunk'); // These are initialized opposite of how they will appear, due to the nature of ToggleColorIdentityDivVisibility()
                     FillColorIdentityDiv('#99ddff', '#e6ffff', 'U', cards, displayFilter, 'shrunk');
                     FillColorIdentityDiv('#df9fdf', '#f3e6ff', 'B', cards, displayFilter, 'shrunk');
@@ -147,16 +139,13 @@ function FetchCardData() {
         });
 }
 
-function FillNoneDiv(cards, displayFilter) {
+function FillDefaultDiv(cards, displayFilter) {
     var cardCountHeader = document.createElement('div');
-    cardCountHeader.setAttribute('style', 'position:absolute;height:8%;width:100%;background-color:white;border:3px inset gray;border-bottom:none;display:flex');
-    var cardCountDestinationElement = document.createElement('div');
-    cardCountDestinationElement.setAttribute('style', 'font-weight:bold;font-size:25px;text-align:center;width:100%;align-self:center')
-    cardCountHeader.appendChild(cardCountDestinationElement)
-    cardCountDestinationElement.innerHTML = 'Cards - (' + cards.length + ')';
+    cardCountHeader.setAttribute('style', 'height:8%;width:100%;background-color:white;border:3px inset gray;border-bottom:none;font-weight:bold;font-size:25px;display:flex;align-items:center;justify-content:center');
+    cardCountHeader.innerHTML = 'Cards - (' + cards.length + ')';
     wrapperDiv.appendChild(cardCountHeader);
     var cardDestinationElement = document.createElement('div');
-    cardDestinationElement.setAttribute('class', 'NoneDiv');
+    cardDestinationElement.setAttribute('class', 'DefaultDiv');
     wrapperDiv.appendChild(cardDestinationElement);
     if (displayFilter == 'text') {
         FillWithText(cards, cardDestinationElement, "width:max-content;margin-right:20px;float:left");
@@ -167,6 +156,7 @@ function FillNoneDiv(cards, displayFilter) {
 }
 
 function FillTierDiv(tier, cards, divColor, firstDivStatus, displayFilter) {
+
     // We only want cards that fit the specified tier
     cardsForThisDiv = FilterCardsForSpecificDiv("tier", tier, cards);
 
@@ -178,11 +168,8 @@ function FillTierDiv(tier, cards, divColor, firstDivStatus, displayFilter) {
 
     // Put card-count area in tier div
     let cardCountArea = document.createElement('div');
-    cardCountArea.setAttribute('style', 'font-weight:bold;text-align:center;height:5%;border:3px inset gray;border-bottom:none;display:flex;background-color:' + divColor);
-    let cardCountDiv = document.createElement('div');
-    cardCountDiv.setAttribute('style', 'width:100%;text-align:center;align-self:center');
-    cardCountDiv.innerHTML = tier + ' - (' + cardsForThisDiv.length + ')';
-    cardCountArea.appendChild(cardCountDiv);
+    cardCountArea.setAttribute('style', 'font-weight:bold;text-align:center;height:5%;border:3px inset gray;border-bottom:none;display:flex;align-items:center;justify-content:center;background-color:' + divColor);
+    cardCountArea.innerHTML = tier + ' - (' + cardsForThisDiv.length + ')';
     cardDestinationWrapper.appendChild(cardCountArea);
 
     // Put card area in tier div
@@ -201,6 +188,7 @@ function FillTierDiv(tier, cards, divColor, firstDivStatus, displayFilter) {
 }
 
 function FillColorIdentityDiv(cardCountDivColor, cardDivColor, colorIdentity, cards, cardDisplayFilter, visibility) {
+
     // We only want cards that fit the specified color identity
     let cardsForThisDiv = FilterCardsForSpecificDiv("colorIdentity", colorIdentity, cards)
 

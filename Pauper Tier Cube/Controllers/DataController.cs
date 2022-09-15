@@ -31,7 +31,7 @@ public class DataController : Controller
     private IConfiguration _configuration;
 
     [HttpGet]
-    public async Task<IActionResult> CubeData(
+    public async Task<IActionResult> CardData(
         [FromQuery] string nameFilter,
         [FromQuery] string colorIdentityFilter,
         [FromQuery] string minManaValueFilter,
@@ -89,40 +89,19 @@ public class DataController : Controller
 
             // Initialize base filters
             string nameValue = "";
-            if (!string.IsNullOrEmpty(nameFilter))
-            {
-                nameValue = nameFilter;
-            }
+            if (!string.IsNullOrEmpty(nameFilter)) nameValue = nameFilter;
             string[] colorIdentityValues = { "W", "U", "B", "R", "G", "multiple", "colorless" };
-            if (!string.IsNullOrEmpty(colorIdentityFilter))
-            {
-                colorIdentityValues = colorIdentityFilter.Split(',');
-            }
+            if (!string.IsNullOrEmpty(colorIdentityFilter)) colorIdentityValues = colorIdentityFilter.Split(',');
             int minManaValue = 0;
-            if (int.TryParse(minManaValueFilter, out int minMVRes))
-            {
-                minManaValue = minMVRes;
-            }
+            if (int.TryParse(minManaValueFilter, out int minMVRes)) minManaValue = minMVRes;
             int maxManaValue = 100;
-            if (int.TryParse(maxManaValueFilter, out int maxMVRes))
-            {
-                maxManaValue = maxMVRes;
-            }
+            if (int.TryParse(maxManaValueFilter, out int maxMVRes)) maxManaValue = maxMVRes;
             string[] typeValues = { "artifact", "creature", "enchantment", "instant", "land", "sorcery", "artifact creature", "artifact land", "enchantment creature", "instant creature", "sorcery creature" };
-            if (!string.IsNullOrEmpty(typeFilter))
-            {
-                typeValues = typeFilter.Split(',');
-            }
+            if (!string.IsNullOrEmpty(typeFilter)) typeValues = typeFilter.Split(',');
             string[] tierValues = { "bronze", "silver", "gold" };
-            if (!string.IsNullOrEmpty(tierFilter))
-            {
-                tierValues = tierFilter.Split(',');
-            }
+            if (!string.IsNullOrEmpty(tierFilter)) tierValues = tierFilter.Split(',');
             string[] draftabilityValues = { "draftable", "changed", "not draftable" };
-            if (!string.IsNullOrEmpty(draftabilityFilter))
-            {
-                draftabilityValues = draftabilityFilter.Split(',');
-            }
+            if (!string.IsNullOrEmpty(draftabilityFilter)) draftabilityValues = draftabilityFilter.Split(',');
 
             // Apply base filters
             IQueryable<FullCard> cardsResultByBaseStats = from fullCard in _cubeStatsContext.FullCards
@@ -136,25 +115,13 @@ public class DataController : Controller
 
             // Initialize statistics filters
             int minGames = 0;
-            if (int.TryParse(minGamesPlayedFilter, out int minGamesRes))
-            {
-                minGames = minGamesRes;
-            }
+            if (int.TryParse(minGamesPlayedFilter, out int minGamesRes)) minGames = minGamesRes;
             int maxGames = 99999;
-            if (int.TryParse(maxGamesPlayedFilter, out int maxGamesRes))
-            {
-                maxGames = maxGamesRes;
-            }
+            if (int.TryParse(maxGamesPlayedFilter, out int maxGamesRes)) maxGames = maxGamesRes;
             double minWinRate = 0;
-            if (double.TryParse(minWinRateFilter, out double minWinRateRes))
-            {
-                minWinRate = minWinRateRes;
-            }
+            if (double.TryParse(minWinRateFilter, out double minWinRateRes)) minWinRate = minWinRateRes;
             double maxWinRate = 100;
-            if (double.TryParse(maxWinRateFilter, out double maxWinRateRes))
-            {
-                maxWinRate = maxWinRateRes;
-            }
+            if (double.TryParse(maxWinRateFilter, out double maxWinRateRes)) maxWinRate = maxWinRateRes;
 
             // Apply statistics filters
             List<FullCard> cardsResultFull = new List<FullCard>();
@@ -210,9 +177,6 @@ public class DataController : Controller
                     }
                 }
             }
-
-            // TODO: Sort by int, not string. If primarySort is manaValue and secondarySort is winRate, cards of the same MV will be ordered incorrectly.
-            // It goes something like this: 80% -> 67% -> 33% -> 27% -> 100%
 
             // Initialize sorts
             PropertyInfo primarySortProperty = typeof(FullCard).GetProperty(primarySort);
@@ -317,6 +281,122 @@ public class DataController : Controller
         card.Cmc = Int16.Parse(cardInfo[1]);
         card.CombinedTypes = cardInfo[2];
         return card;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DeckData(
+    [FromQuery] string deckIDFilter,
+    [FromQuery] string playerNameFilter,
+    [FromQuery] string stratFilter,
+    [FromQuery] string colorFilter,
+    [FromQuery] string dateFilter,
+    [FromQuery] string minWinsFilter,
+    [FromQuery] string maxWinsFilter,
+    [FromQuery] string minLossesFilter,
+    [FromQuery] string maxLossesFilter,
+    [FromQuery] string minAverageManaValueFilter,
+    [FromQuery] string maxAverageManaValueFilter,
+    [FromQuery] string minLandsFilter,
+    [FromQuery] string maxLandsFilter,
+    [FromQuery] string minNonlandsFilter,
+    [FromQuery] string maxNonlandsFilter,
+    [FromQuery] string primarySort,
+    [FromQuery] string secondarySort)
+    {
+        try
+        {
+            // Initialize filters
+            string deckIDValue = "";
+            if (!string.IsNullOrEmpty(deckIDFilter)) deckIDValue = deckIDFilter;
+            string playerNameValue = "";
+            if (!string.IsNullOrEmpty(playerNameFilter)) playerNameValue = playerNameFilter;
+            string stratValue = "";
+            if (!string.IsNullOrEmpty(stratFilter)) stratValue = stratFilter;
+            string colorValue = "";
+            if (!string.IsNullOrEmpty(colorFilter)) colorValue = colorFilter;
+            string dateValue = "";
+            if (!string.IsNullOrEmpty(dateFilter)) dateValue = dateFilter;
+            int minWinsValue = 0;
+            if (int.TryParse(minWinsFilter, out int minWinsRes)) minWinsValue = minWinsRes;
+            int maxWinsValue = 99;
+            if (int.TryParse(maxWinsFilter, out int maxWinsRes)) maxWinsValue = maxWinsRes;
+            int minLossesValue = 0;
+            if (int.TryParse(minLossesFilter, out int minLossesRes)) minLossesValue = minLossesRes;
+            int maxLossesValue = 99;
+            if (int.TryParse(maxLossesFilter, out int maxLossesRes)) maxLossesValue = maxLossesRes;
+            int minAverageManaValueValue = 0;
+            if (int.TryParse(minAverageManaValueFilter, out int minAverageManaValueRes)) minAverageManaValueValue = minAverageManaValueRes;
+            int maxAverageManaValueValue = 10;
+            if (int.TryParse(maxAverageManaValueFilter, out int maxAverageManaValueRes)) maxAverageManaValueValue = maxAverageManaValueRes;
+            int minLandsValue = 0;
+            if (int.TryParse(minLandsFilter, out int minLandsRes)) minLandsValue = minLandsRes;
+            int maxLandsValue = 99;
+            if (int.TryParse(maxLandsFilter, out int maxLandsRes)) maxLandsValue = maxLandsRes;
+            int minNonlandsValue = 0;
+            if (int.TryParse(minNonlandsFilter, out int minNonlandsRes)) minNonlandsValue = minNonlandsRes;
+            int maxNonlandsValue = 99;
+            if (int.TryParse(maxNonlandsFilter, out int maxNonlandsRes)) maxNonlandsValue = maxNonlandsRes;
+
+            // Apply base filters
+            IQueryable<Deck> decksResult = from deck in _cubeStatsContext.Decks
+                                           where deck.DeckId.Contains(deckIDValue)
+                                           && deck.PlayerName.Contains(playerNameValue)
+                                           && deck.Strat.Contains(stratValue)
+                                           && deck.Colors.Contains(colorValue)
+                                           //&& deck.DatePlayed.Contains(dateValue)
+                                           && deck.GamesWon >= minWinsValue && deck.GamesWon <= maxWinsValue
+                                           && deck.GamesLost >= minLossesValue && deck.GamesLost <= maxLossesValue
+                                           //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
+                                           && deck.LandCount >= minLandsValue && deck.GamesWon <= maxLandsValue
+                                           && deck.NonlandCount >= minNonlandsValue && deck.GamesWon <= maxNonlandsValue
+                                           select (deck);
+
+            List<Deck> decksResultList = decksResult.ToList();
+
+            //// Initialize sorts
+            //PropertyInfo primarySortProperty = typeof(Deck).GetProperty(primarySort);
+            //PropertyInfo secondarySortProperty = typeof(Deck).GetProperty(secondarySort);
+
+            //// Handle sorting            
+            //if (primarySort.Equals(nameof(Deck.PlayerName)) || primarySort.Equals(nameof(Deck.Strat)))
+            //{
+            //    // For primary sort: Apply ascending ordering for playerName or strat
+            //    if (secondarySort.Equals(nameof(Deck.PlayerName)) || secondarySort.Equals(nameof(Deck.Strat)))
+            //    {
+            //        // For secondary sort: Apply ascending ordering for playerName or strat
+            //        decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck))
+            //            .ThenBy(deck => secondarySortProperty?.GetValue(deck)).ToList();
+            //    }
+            //    else
+            //    {
+            //        // For secondary sort: Apply descending ordering for numeric values
+            //        decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck))
+            //            .ThenByDescending(deck => secondarySortProperty?.GetValue(deck)?.ToString()).ToList();
+            //    }
+            //}
+            //else
+            //{
+            //    // For primary sort: Apply descending ordering for numeric values
+            //    if (secondarySort.Equals(nameof(Deck.PlayerName)) || secondarySort.Equals(nameof(Deck.Strat)))
+            //    {
+            //        // For secondary sort: Apply ascending ordering for playerName or strat
+            //        decksResultList = decksResultList.OrderByDescending(deck => primarySortProperty?.GetValue(deck)?.ToString())
+            //            .ThenBy(deck => secondarySortProperty?.GetValue(deck)).ToList();
+            //    }
+            //    else
+            //    {
+            //        // For secondary sort: Apply descending ordering for numeric values
+            //        decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck)?.ToString())
+            //            .ThenBy(deck => secondarySortProperty?.GetValue(deck)?.ToString()).ToList();
+            //    }
+            //}
+
+            return Ok(decksResultList.ToArray());
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex);
+        }
     }
 
     public async Task<IActionResult> LoadRandomPackData(
