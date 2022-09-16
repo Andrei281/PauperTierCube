@@ -313,7 +313,7 @@ public class DataController : Controller
             string stratValue = "";
             if (!string.IsNullOrEmpty(stratFilter)) stratValue = stratFilter;
             string colorValue = "";
-            if (!string.IsNullOrEmpty(colorFilter)) colorValue = colorFilter;
+            if (!string.IsNullOrEmpty(colorFilter)) colorValue = string.Join("", colorFilter.Split(","));
             string dateValue = "";
             if (!string.IsNullOrEmpty(dateFilter)) dateValue = dateFilter;
             int minWinsValue = 0;
@@ -337,19 +337,37 @@ public class DataController : Controller
             int maxNonlandsValue = 99;
             if (int.TryParse(maxNonlandsFilter, out int maxNonlandsRes)) maxNonlandsValue = maxNonlandsRes;
 
-            // Apply base filters
-            IQueryable<Deck> decksResult = from deck in _cubeStatsContext.Decks
-                                           where deck.DeckId.Contains(deckIDValue)
-                                           && deck.PlayerName.Contains(playerNameValue)
-                                           && deck.Strat.Contains(stratValue)
-                                           && deck.Colors.Contains(colorValue)
-                                           //&& deck.DatePlayed.Contains(dateValue)
-                                           && deck.GamesWon >= minWinsValue && deck.GamesWon <= maxWinsValue
-                                           && deck.GamesLost >= minLossesValue && deck.GamesLost <= maxLossesValue
-                                           //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
-                                           && deck.LandCount >= minLandsValue && deck.GamesWon <= maxLandsValue
-                                           && deck.NonlandCount >= minNonlandsValue && deck.GamesWon <= maxNonlandsValue
-                                           select (deck);
+            // Apply different filters depending on whether colors are specified
+            IQueryable<Deck> decksResult;
+            if (colorValue == "")
+            {
+                decksResult = from deck in _cubeStatsContext.Decks
+                              where deck.DeckId.Contains(deckIDValue)
+                              && deck.PlayerName.Contains(playerNameValue)
+                              && deck.Strat.Contains(stratValue)
+                              //&& deck.DatePlayed.Equals(dateValue)
+                              && deck.GamesWon >= minWinsValue && deck.GamesWon <= maxWinsValue
+                              && deck.GamesLost >= minLossesValue && deck.GamesLost <= maxLossesValue
+                              //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
+                              && deck.LandCount >= minLandsValue && deck.GamesWon <= maxLandsValue
+                              && deck.NonlandCount >= minNonlandsValue && deck.GamesWon <= maxNonlandsValue
+                              select (deck);
+            }
+            else
+            {
+                decksResult = from deck in _cubeStatsContext.Decks
+                              where deck.DeckId.Contains(deckIDValue)
+                              && deck.PlayerName.Contains(playerNameValue)
+                              && deck.Strat.Contains(stratValue)
+                              && deck.Colors.Equals(colorValue)
+                              //&& deck.DatePlayed.Equals(dateValue)
+                              && deck.GamesWon >= minWinsValue && deck.GamesWon <= maxWinsValue
+                              && deck.GamesLost >= minLossesValue && deck.GamesLost <= maxLossesValue
+                              //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
+                              && deck.LandCount >= minLandsValue && deck.GamesWon <= maxLandsValue
+                              && deck.NonlandCount >= minNonlandsValue && deck.GamesWon <= maxNonlandsValue
+                              select (deck);
+            }
 
             List<Deck> decksResultList = decksResult.ToList();
 
