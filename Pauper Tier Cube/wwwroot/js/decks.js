@@ -110,15 +110,94 @@ function FetchDeckData() {
 }
 
 function FillDecksDiv(decks) {
+
+    // Create title div used to count decks
     document.getElementById('wrapperDiv').innerHTML = "";
     var deckCountHeader = document.createElement('div');
     deckCountHeader.setAttribute('style', 'height:8%;width:100%;background-color:white;border:3px inset gray;border-bottom:none;font-weight:bold;font-size:25px;display:flex;align-items:center;justify-content:center');
     deckCountHeader.innerHTML = 'Decks - (' + decks.length + ')';
     wrapperDiv.appendChild(deckCountHeader);
+
+    // Create div used to display decks
     var deckDestinationElement = document.createElement('div');
     deckDestinationElement.setAttribute('class', 'DefaultDiv');
 
     // Fill deckDestinationElement with decks
+    for (let i = 0; i < decks.length; i++) {
+
+        // Create full deck div
+        let deckDiv = document.createElement('div');
+        deckDiv.setAttribute('class', 'DeckDiv');
+
+        // Inside full deck div: Create deckID div
+        let deckIDDiv = document.createElement('div');
+        deckIDDiv.innerHTML = "ID: " + decks[i].deckId;
+        deckDiv.appendChild(deckIDDiv);
+
+        // Inside full deck div: Create playerName div
+        let playerNameDiv = document.createElement('div');
+        playerNameDiv.innerHTML = "Player: " + decks[i].playerName;
+        deckDiv.appendChild(playerNameDiv);
+
+        // Inside full deck div: Create date div
+        let dateDiv = document.createElement('div');
+        dateDiv.innerHTML = "Date: " + decks[i].datePlayed.slice(0, 10);
+        deckDiv.appendChild(dateDiv);
+
+        // Inside full deck div: Create colors div
+        let colorsDiv = document.createElement('div');
+        colorsDiv.setAttribute('style', 'display:flex');
+        let deckColors = decks[i].colors.split('');
+        for (let j = 0; j < deckColors.length; j++) {
+            let colorOfDiv = deckColors[j];
+            let backgroundColor = ApplyColor(colorOfDiv);
+            let colorDiv = document.createElement('div');
+            if (j == deckColors.length - 1) {
+                colorDiv.setAttribute('style', 'border:solid;width:25px;height:25px;background-color:' + backgroundColor);
+            } else {
+                colorDiv.setAttribute('style', 'border:solid;width:25px;height:25px;margin-right:5px;background-color:' + backgroundColor);
+            }
+            colorsDiv.appendChild(colorDiv);
+        }
+        deckDiv.appendChild(colorsDiv);
+
+        // Inside full deck div: Create wins div
+        let winsDiv = document.createElement('div');
+        winsDiv.innerHTML = "W: " + decks[i].gamesWon;
+        deckDiv.appendChild(winsDiv);
+
+        // Inside full deck div: Create losses div
+        let lossesDiv = document.createElement('div');
+        lossesDiv.innerHTML = "L: " + decks[i].gamesLost;
+        deckDiv.appendChild(lossesDiv);
+
+        // Inside full deck div: Create lands div
+        let landsDiv = document.createElement('div');
+        landsDiv.innerHTML = "Lands: " + decks[i].landCount;
+        deckDiv.appendChild(landsDiv);
+
+        // Inside full deck div: Create nonlands div
+        let nonlandsDiv = document.createElement('div');
+        nonlandsDiv.innerHTML = "Nonlands: " + decks[i].nonlandCount;
+        deckDiv.appendChild(nonlandsDiv);
+
+        // Deck div is done. Insert into destination element
+        deckDestinationElement.appendChild(deckDiv);
+    }
 
     wrapperDiv.appendChild(deckDestinationElement);
+}
+
+function ApplyColor(colorOfDiv) {
+    if (colorOfDiv == 'W') {
+        return '#fbe82d';
+    } else if (colorOfDiv == 'U') {
+        return '#2a9dff';
+    } else if (colorOfDiv == 'B') {
+        return '#9900cc';
+    } else if (colorOfDiv == 'R') {
+        return '#fa2d35';
+    } else {
+        return '#4de141';
+    }
 }
