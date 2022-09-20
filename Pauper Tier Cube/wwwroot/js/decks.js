@@ -1,4 +1,8 @@
-﻿function prepareDecksPage() {
+﻿// We're on the decks filtering page. Prepare various elements...
+function prepareDecksPage() {
+
+    // Acquire and apply deck info to deckId and strat select elements
+    FetchAndAppendDeckDataToSelectElements();
 
     // Save height of tallest div for all content divs
     document.getElementById("genericStatsButtonContent").setAttribute("style", "display: flex");
@@ -15,63 +19,21 @@
     document.getElementById("filterButton").addEventListener("click", () => GenerateFilteredDecksWindow());
 }
 
-// "Filter" button has been clicked. Prepare and navigate to new page
-function GenerateFilteredDecksWindow() {
-
-    // Acquire info for generic filters
-    let deckIDFilterVal = document.getElementById('deckIDFilter').value;
-    let playerNameFilterVal = document.getElementById('playerNameFilter').value;
-    let stratFilterVal = document.getElementById('stratFilter').value;
-    let colorFilterVals = AcquireFilterDivValues(document.getElementById('colorsFilter'));
-    let dateFilterVal = document.getElementById('dateFilter').value;
-
-    // Acquire info for numeric filters
-    let minWinsFilterVal = document.getElementById('minWins').value;
-    let maxWinsFilterVal = document.getElementById('maxWins').value;
-    let minLossesFilterVal = document.getElementById('minLosses').value;
-    let maxLossesFilterVal = document.getElementById('maxLosses').value;
-    let minAverageManaValueFilterVal = document.getElementById('minAverageManaValueFilter').value;
-    let maxAverageManaValueFilterVal = document.getElementById('maxAverageManaValueFilter').value;
-    let minLandsFilterVal = document.getElementById('minLands').value;
-    let maxLandsFilterVal = document.getElementById('maxLands').value;
-    let minNonlandsFilterVal = document.getElementById('minNonlands').value;
-    let maxNonlandsFilterVal = document.getElementById('maxNonlands').value;
-
-    //// Acquire info for sorting filters
-    //let primarySortVal = document.getElementById("primarySortInput").value;
-    //let secondarySortVal = document.getElementById("secondarySortInput").value;
-
-    // Check browser support
-    if (typeof (Storage) !== "undefined") {
-
-        // Store filter info in browser session
-        let filterVals = [deckIDFilterVal, playerNameFilterVal, stratFilterVal, colorFilterVals, dateFilterVal, minWinsFilterVal,
-            maxWinsFilterVal, minLossesFilterVal, maxLossesFilterVal, minAverageManaValueFilterVal, maxAverageManaValueFilterVal,
-            minLandsFilterVal, maxLandsFilterVal, minNonlandsFilterVal, maxNonlandsFilterVal/*, primarySortVal, secondarySortVal*/];
-        localStorage.clear();
-        for (let i = 0; i < filterVals.length; i++) {
-            localStorage.setItem("filterVal" + i, filterVals[i]);
-        }
-
-        // Navigate to new page
-        window.location.assign('https://localhost:5001/Home/DecksFilterPopUp');
-    }
-}
-
-// New page has loaded. Fetch and display decks
+// Fetch filtered decks
 function FetchDeckData() {
 
-    // Show loading icon
-    let loadingGifContainer = document.createElement("div");
-    loadingGifContainer.setAttribute("style", "margin: auto");
-    let loadingGif = document.createElement("img");
-    loadingGif.setAttribute("src", "https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif");
-    loadingGif.setAttribute("style", "margin: auto; width: 50px; height: 50px");
-    loadingGifContainer.appendChild(loadingGif);
-    document.getElementById('wrapperDiv').appendChild(loadingGifContainer);
+    //// Show loading icon
+    //let loadingGifContainer = document.createElement("div");
+    //loadingGifContainer.setAttribute("style", "margin: auto");
+    //let loadingGif = document.createElement("img");
+    //loadingGif.setAttribute("src", "https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif");
+    //loadingGif.setAttribute("style", "margin: auto; width: 50px; height: 50px");
+    //loadingGifContainer.appendChild(loadingGif);
+    //document.getElementById('wrapperDiv').appendChild(loadingGifContainer);
 
     // Begin fetching database info
-    let url = '/data/DeckData?deckIDFilter=' + encodeURIComponent(localStorage.getItem('filterVal0'))
+    // Use different urls depending on whether we're using filters
+    url = '/data/DeckData?deckIdFilter=' + encodeURIComponent(localStorage.getItem('filterVal0'))
         + '&playerNameFilter=' + encodeURIComponent(localStorage.getItem('filterVal1'))
         + '&stratFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
         + '&colorFilter=' + encodeURIComponent(localStorage.getItem('filterVal3'))
@@ -101,13 +63,122 @@ function FetchDeckData() {
         .then(decks => {
             if (decks) {
                 if (!Array.isArray(decks)) throw 'decks in server response is not an array.'
+                /*loadingGifContainer.remove();*/
+                /*return decks;*/
                 FillDecksDiv(decks);
+            }
+        }).catch(err => {
+            if (err) { }
+            /*loadingGifContainer.remove();*/
+            alert("Error fetching data: " + err);
+        });
+}
+
+function FetchAndAppendDeckDataToSelectElements() {
+    fetch('/data/DeckData', {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors', // no-cors, *cors, same-origin
+    })
+        .then(res => {
+            if (res.status == 200) {
+                return res.json();
+            } else { throw "Error fetching decks: " + res; }
+        })
+        .then(decks => {
+            if (decks) {
+                if (!Array.isArray(decks)) throw 'decks in server response is not an array.'
+                let deckIds = GetPropertyFromDecks(decks, 'deckId', false);
+                let deckStrats = GetPropertyFromDecks(decks, 'strat', true);
+                ApplyDropdownInfo(document.getElementById('deckIds'), deckIds);
+                ApplyDropdownInfo(document.getElementById('strats'), deckStrats);
             }
         }).catch(err => {
             if (err) { }
             alert("Error fetching data: " + err);
         });
 }
+
+// Function to turn a list of decks into a list of property instances of a single property among those decks
+function GetPropertyFromDecks(decks, property, getDistinct) {
+    if (getDistinct) {
+
+        // Return instances of deck property with no repeats
+        let distinctPropertyInstances = [];
+        for (let i = 0; i < decks.length; i++) {
+            if (!distinctPropertyInstances.includes(decks[i][property])) {
+                distinctPropertyInstances.push(decks[i][property]);
+            }
+        }
+        return distinctPropertyInstances;
+    } else {
+
+        // Return instances of deck property. Repeats are irrelevant
+        let propertyInstances = []
+        for (let i = 0; i < decks.length; i++) {
+            propertyInstances.push(decks[i][property]);
+        }
+        return propertyInstances;
+    }
+}
+
+// Function to fill a dropdown with filter options
+function ApplyDropdownInfo(dropdownElement, propertyInstances) {
+    for (let i = 0; i < propertyInstances.length; i++) {
+        let propertyInstanceElement = document.createElement('option');
+        propertyInstanceElement.innerHTML = propertyInstances[i];
+        dropdownElement.appendChild(propertyInstanceElement);
+    }
+}
+
+// "Filter" button has been clicked. Prepare and navigate to new page
+function GenerateFilteredDecksWindow() {
+
+    // Acquire info for generic filters
+    let deckIdFilterVal = document.getElementById('deckIdFilter').value;
+    let playerNameFilterVal = document.getElementById('playerNameFilter').value;
+    let stratFilterVal = document.getElementById('stratFilter').value;
+    let colorFilterVals = AcquireFilterDivValues(document.getElementById('colorsFilter'));
+    let dateFilterVal = document.getElementById('dateFilter').value;
+
+    // Acquire info for numeric filters
+    let minWinsFilterVal = document.getElementById('minWins').value;
+    let maxWinsFilterVal = document.getElementById('maxWins').value;
+    let minLossesFilterVal = document.getElementById('minLosses').value;
+    let maxLossesFilterVal = document.getElementById('maxLosses').value;
+    let minAverageManaValueFilterVal = document.getElementById('minAverageManaValueFilter').value;
+    let maxAverageManaValueFilterVal = document.getElementById('maxAverageManaValueFilter').value;
+    let minLandsFilterVal = document.getElementById('minLands').value;
+    let maxLandsFilterVal = document.getElementById('maxLands').value;
+    let minNonlandsFilterVal = document.getElementById('minNonlands').value;
+    let maxNonlandsFilterVal = document.getElementById('maxNonlands').value;
+
+    //// Acquire info for sorting filters
+    //let primarySortVal = document.getElementById("primarySortInput").value;
+    //let secondarySortVal = document.getElementById("secondarySortInput").value;
+
+    // Check browser support
+    if (typeof (Storage) !== "undefined") {
+
+        // Store filter info in browser session
+        let filterVals = [deckIdFilterVal, playerNameFilterVal, stratFilterVal, colorFilterVals, dateFilterVal, minWinsFilterVal,
+            maxWinsFilterVal, minLossesFilterVal, maxLossesFilterVal, minAverageManaValueFilterVal, maxAverageManaValueFilterVal,
+            minLandsFilterVal, maxLandsFilterVal, minNonlandsFilterVal, maxNonlandsFilterVal/*, primarySortVal, secondarySortVal*/];
+        localStorage.clear();
+        for (let i = 0; i < filterVals.length; i++) {
+            localStorage.setItem("filterVal" + i, filterVals[i]);
+        }
+
+        // Navigate to new page
+        window.location.assign('https://localhost:5001/Home/DecksFilterPopUp');
+    }
+}
+
+//// New filter page has loaded
+//function PrepareDecksPopUpPage() {
+//    let decks = FetchDeckData();
+//    FillDecksDiv(decks);
+//}
 
 function FillDecksDiv(decks) {
 

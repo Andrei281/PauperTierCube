@@ -12,10 +12,17 @@
             width:45px;
         }
     </style>
+    <script>
+        window.onbeforeunload = function(event) {
+            var text = 'Not an SPA!';
+            event.returnValue = text; 
+            return text;
+        };
+    </script>
 </head>
 
 <body onload="prepareDecksPage();">
-    <div style="display:flex;flex-direction:column;align-items:center">
+    <div id="wrapperDiv" style="display:flex;flex-direction:column;align-items:center">
         <!-- Tab links -->
         <div class="tab">
             <button class="tablinks" id="genericStatsButton">Generic Stats</button>
@@ -27,15 +34,22 @@
         <div class="tabcontent" id="genericStatsButtonContent">
             <div class="FilterDiv" style="width:100px">
                 <label>Deck ID:</label><br>
-                <input type="number" style="width:100%" id="deckIDFilter"/>
+                <input type="number" list="deckIds" style="width:100%" id="deckIdFilter">
+                <datalist id="deckIds">
+                    <option></option>
+                </datalist>
             </div>
             <div class="FilterDiv" style="width:120px">
                 <label>Player Name:</label><br>
-                <input style="width:100%" id="playerNameFilter"/>
+                @*<input style="width:100%" id="playerNameFilter"/>*@
+                <select style="width:100%" id="playerNameFilter"></select>
             </div>
             <div class="FilterDiv" style="width:100px">
                 <label>Strategy:</label><br>
-                <input style="width:100%" id="stratFilter"/>
+                <input list="strats" style="width:100%" id="stratFilter">
+                <datalist id="strats" style="width:100%">
+                    <option></option>
+                </datalist>
             </div>
             <div class="FilterDiv">
                 <label>Colors:</label><br>

@@ -285,7 +285,7 @@ public class DataController : Controller
 
     [HttpGet]
     public async Task<IActionResult> DeckData(
-    [FromQuery] string deckIDFilter,
+    [FromQuery] string deckIdFilter,
     [FromQuery] string playerNameFilter,
     [FromQuery] string stratFilter,
     [FromQuery] string colorFilter,
@@ -306,8 +306,8 @@ public class DataController : Controller
         try
         {
             // Initialize filters
-            string deckIDValue = "";
-            if (!string.IsNullOrEmpty(deckIDFilter)) deckIDValue = deckIDFilter;
+            string deckIdValue = "";
+            if (!string.IsNullOrEmpty(deckIdFilter)) deckIdValue = deckIdFilter;
             string playerNameValue = "";
             if (!string.IsNullOrEmpty(playerNameFilter)) playerNameValue = playerNameFilter;
             string stratValue = "";
@@ -342,7 +342,7 @@ public class DataController : Controller
             if (colorValue == "")
             {
                 decksResult = from deck in _cubeStatsContext.Decks
-                              where deck.DeckId.Contains(deckIDValue)
+                              where deck.DeckId.Contains(deckIdValue)
                               && deck.PlayerName.Contains(playerNameValue)
                               && deck.Strat.Contains(stratValue)
                               //&& deck.DatePlayed.Equals(dateValue)
@@ -351,12 +351,12 @@ public class DataController : Controller
                               //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
                               && deck.LandCount >= minLandsValue && deck.GamesWon <= maxLandsValue
                               && deck.NonlandCount >= minNonlandsValue && deck.GamesWon <= maxNonlandsValue
-                              select (deck);
+                              select deck;
             }
             else
             {
                 decksResult = from deck in _cubeStatsContext.Decks
-                              where deck.DeckId.Contains(deckIDValue)
+                              where deck.DeckId.Contains(deckIdValue)
                               && deck.PlayerName.Contains(playerNameValue)
                               && deck.Strat.Contains(stratValue)
                               && deck.Colors.Equals(colorValue)
@@ -366,7 +366,7 @@ public class DataController : Controller
                               //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
                               && deck.LandCount >= minLandsValue && deck.GamesWon <= maxLandsValue
                               && deck.NonlandCount >= minNonlandsValue && deck.GamesWon <= maxNonlandsValue
-                              select (deck);
+                              select deck;
             }
 
             List<Deck> decksResultList = decksResult.ToList();
