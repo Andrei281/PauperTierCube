@@ -1,8 +1,11 @@
 ﻿// We're on the decks filtering page. Prepare various elements...
 function prepareDecksPage() {
 
+    // Display current date for olderThanDateFilter
+    document.getElementById("olderThanDateFilter").valueAsDate = new Date()
+
     // Acquire and apply deck info to deckId and strat select elements
-    FetchAndAppendDeckDataToSelectElements();
+    FetchAndAppendDeckDataToSelectElements(document.getElementById("olderThanDateFilter").value);
 
     // Save height of tallest div for all content divs
     document.getElementById("genericStatsButtonContent").setAttribute("style", "display: flex");
@@ -19,63 +22,9 @@ function prepareDecksPage() {
     document.getElementById("filterButton").addEventListener("click", () => GenerateFilteredDecksWindow());
 }
 
-// Fetch filtered decks
-function FetchDeckData() {
-
-    //// Show loading icon
-    //let loadingGifContainer = document.createElement("div");
-    //loadingGifContainer.setAttribute("style", "margin: auto");
-    //let loadingGif = document.createElement("img");
-    //loadingGif.setAttribute("src", "https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif");
-    //loadingGif.setAttribute("style", "margin: auto; width: 50px; height: 50px");
-    //loadingGifContainer.appendChild(loadingGif);
-    //document.getElementById('wrapperDiv').appendChild(loadingGifContainer);
-
-    // Begin fetching database info
-    // Use different urls depending on whether we're using filters
-    url = '/data/DeckData?deckIdFilter=' + encodeURIComponent(localStorage.getItem('filterVal0'))
-        + '&playerNameFilter=' + encodeURIComponent(localStorage.getItem('filterVal1'))
-        + '&stratFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
-        + '&colorFilter=' + encodeURIComponent(localStorage.getItem('filterVal3'))
-        + '&dateFilter=' + encodeURIComponent(localStorage.getItem('filterVal4'))
-        + '&minWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal5'))
-        + '&maxWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal6'))
-        + '&minLossesFilter=' + localStorage.getItem('filterVal7')
-        + '&maxLossesFilter=' + localStorage.getItem('filterVal8')
-        + '&minAverageManaValueFilter=' + localStorage.getItem('filterVal9')
-        + '&maxAverageManaValueFilter=' + localStorage.getItem('filterVal10')
-        + '&minLandsFilter=' + localStorage.getItem('filterVal11')
-        + '&maxLandsFilter=' + localStorage.getItem('filterVal12')
-        + '&minNonlandsFilter=' + localStorage.getItem('filterVal13')
-        + '&maxNonlandsFilter=' + localStorage.getItem('filterVal14');
-    //+ '&primarySort=' + localStorage.getItem('filterVal15')
-    //+ '&secondarySort=' + localStorage.getItem('filterVal16');
-    fetch(url, {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        headers: { 'Content-Type': 'application/json' },
-        mode: 'no-cors', // no-cors, *cors, same-origin
-    })
-        .then(res => {
-            if (res.status == 200) {
-                return res.json();
-            } else { throw "Error fetching decks: " + res; }
-        })
-        .then(decks => {
-            if (decks) {
-                if (!Array.isArray(decks)) throw 'decks in server response is not an array.'
-                /*loadingGifContainer.remove();*/
-                /*return decks;*/
-                FillDecksDiv(decks);
-            }
-        }).catch(err => {
-            if (err) { }
-            /*loadingGifContainer.remove();*/
-            alert("Error fetching data: " + err);
-        });
-}
-
-function FetchAndAppendDeckDataToSelectElements() {
-    fetch('/data/DeckData', {
+// Fetching deck data specifically for filter dropdowns
+function FetchAndAppendDeckDataToSelectElements(olderThanDateValue) {
+    fetch('/data/DeckData?olderThanDateFilter=' + olderThanDateValue, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
         mode: 'no-cors', // no-cors, *cors, same-origin
@@ -92,6 +41,7 @@ function FetchAndAppendDeckDataToSelectElements() {
                 let deckStrats = GetPropertyFromDecks(decks, 'strat', true);
                 ApplyDropdownInfo(document.getElementById('deckIds'), deckIds);
                 ApplyDropdownInfo(document.getElementById('strats'), deckStrats);
+                console.log();
             }
         }).catch(err => {
             if (err) { }
@@ -139,7 +89,8 @@ function GenerateFilteredDecksWindow() {
     let playerNameFilterVal = document.getElementById('playerNameFilter').value;
     let stratFilterVal = document.getElementById('stratFilter').value;
     let colorFilterVals = AcquireFilterDivValues(document.getElementById('colorsFilter'));
-    let dateFilterVal = document.getElementById('dateFilter').value;
+    let newerThanDateFilterVal = document.getElementById('newerThanDateFilter').value;
+    let olderThanDateFilterVal = document.getElementById('olderThanDateFilter').value;
 
     // Acquire info for numeric filters
     let minWinsFilterVal = document.getElementById('minWins').value;
@@ -161,8 +112,8 @@ function GenerateFilteredDecksWindow() {
     if (typeof (Storage) !== "undefined") {
 
         // Store filter info in browser session
-        let filterVals = [deckIdFilterVal, playerNameFilterVal, stratFilterVal, colorFilterVals, dateFilterVal, minWinsFilterVal,
-            maxWinsFilterVal, minLossesFilterVal, maxLossesFilterVal, minAverageManaValueFilterVal, maxAverageManaValueFilterVal,
+        let filterVals = [deckIdFilterVal, playerNameFilterVal, stratFilterVal, colorFilterVals, newerThanDateFilterVal, olderThanDateFilterVal,
+            minWinsFilterVal, maxWinsFilterVal, minLossesFilterVal, maxLossesFilterVal, minAverageManaValueFilterVal, maxAverageManaValueFilterVal,
             minLandsFilterVal, maxLandsFilterVal, minNonlandsFilterVal, maxNonlandsFilterVal/*, primarySortVal, secondarySortVal*/];
         localStorage.clear();
         for (let i = 0; i < filterVals.length; i++) {
@@ -174,11 +125,60 @@ function GenerateFilteredDecksWindow() {
     }
 }
 
-//// New filter page has loaded
-//function PrepareDecksPopUpPage() {
-//    let decks = FetchDeckData();
-//    FillDecksDiv(decks);
-//}
+// Fetch filtered decks
+function FetchDeckData() {
+
+    // Show loading icon
+    let loadingGifContainer = document.createElement("div");
+    loadingGifContainer.setAttribute("style", "margin: auto");
+    let loadingGif = document.createElement("img");
+    loadingGif.setAttribute("src", "https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif");
+    loadingGif.setAttribute("style", "margin: auto; width: 50px; height: 50px");
+    loadingGifContainer.appendChild(loadingGif);
+    document.getElementById('wrapperDiv').appendChild(loadingGifContainer);
+
+    // Begin fetching database info
+    // Use different urls depending on whether we're using filters
+    url = '/data/DeckData?deckIdFilter=' + encodeURIComponent(localStorage.getItem('filterVal0'))
+        + '&playerNameFilter=' + encodeURIComponent(localStorage.getItem('filterVal1'))
+        + '&stratFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
+        + '&colorFilter=' + encodeURIComponent(localStorage.getItem('filterVal3'))
+        + '&newerThanDateFilter=' + encodeURIComponent(localStorage.getItem('filterVal4'))
+        + '&olderThanDateFilter=' + encodeURIComponent(localStorage.getItem('filterVal5'))
+        + '&minWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal6'))
+        + '&maxWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal7'))
+        + '&minLossesFilter=' + localStorage.getItem('filterVal8')
+        + '&maxLossesFilter=' + localStorage.getItem('filterVal9')
+        + '&minAverageManaValueFilter=' + localStorage.getItem('filterVal10')
+        + '&maxAverageManaValueFilter=' + localStorage.getItem('filterVal11')
+        + '&minLandsFilter=' + localStorage.getItem('filterVal12')
+        + '&maxLandsFilter=' + localStorage.getItem('filterVal13')
+        + '&minNonlandsFilter=' + localStorage.getItem('filterVal14')
+        + '&maxNonlandsFilter=' + localStorage.getItem('filterVal15');
+    //+ '&primarySort=' + localStorage.getItem('filterVal16')
+    //+ '&secondarySort=' + localStorage.getItem('filterVal17');
+    fetch(url, {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors', // no-cors, *cors, same-origin
+    })
+        .then(res => {
+            if (res.status == 200) {
+                return res.json();
+            } else { throw "Error fetching decks: " + res; }
+        })
+        .then(decks => {
+            if (decks) {
+                if (!Array.isArray(decks)) throw 'decks in server response is not an array.'
+                loadingGifContainer.remove();
+                FillDecksDiv(decks);
+            }
+        }).catch(err => {
+            if (err) { }
+            loadingGifContainer.remove();
+            alert("Error fetching data: " + err);
+        });
+}
 
 function FillDecksDiv(decks) {
 

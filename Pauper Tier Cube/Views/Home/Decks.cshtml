@@ -12,13 +12,6 @@
             width:45px;
         }
     </style>
-    <script>
-        window.onbeforeunload = function(event) {
-            var text = 'Not an SPA!';
-            event.returnValue = text; 
-            return text;
-        };
-    </script>
 </head>
 
 <body onload="prepareDecksPage();">
@@ -72,9 +65,9 @@
                     <label><input type="checkbox" value="G"/> Green</label>
                 </div>
             </div>
-            <div class="FilterDiv" style="width:100px">
-                <label>Date:</label><br>
-                <input style="width:100%" id="dateFilter"/>
+            <div class="FilterDiv" style="width:135px">
+                <label>Newer Than:</label><input type="date" style="width:100%" id="newerThanDateFilter" value="2021-03-16"/><br><br>
+                <label>Older Than:</label><input type="date" style="width:100%" id="olderThanDateFilter"/>
             </div>
         </div>
 

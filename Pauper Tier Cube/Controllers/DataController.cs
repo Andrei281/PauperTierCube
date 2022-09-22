@@ -289,7 +289,8 @@ public class DataController : Controller
     [FromQuery] string playerNameFilter,
     [FromQuery] string stratFilter,
     [FromQuery] string colorFilter,
-    [FromQuery] string dateFilter,
+    [FromQuery] DateTime newerThanDateFilter,
+    [FromQuery] DateTime olderThanDateFilter,
     [FromQuery] string minWinsFilter,
     [FromQuery] string maxWinsFilter,
     [FromQuery] string minLossesFilter,
@@ -314,8 +315,10 @@ public class DataController : Controller
             if (!string.IsNullOrEmpty(stratFilter)) stratValue = stratFilter;
             string colorValue = "";
             if (!string.IsNullOrEmpty(colorFilter)) colorValue = string.Join("", colorFilter.Split(","));
-            string dateValue = "";
-            if (!string.IsNullOrEmpty(dateFilter)) dateValue = dateFilter;
+            DateTime newerThanDateValue = new DateTime(0001, 01, 01);
+            if (!string.IsNullOrEmpty(newerThanDateFilter.ToString())) newerThanDateValue = newerThanDateFilter;
+            DateTime olderThanDateValue = new DateTime(9999, 12, 31);
+            if (!string.IsNullOrEmpty(olderThanDateFilter.ToString())) olderThanDateValue = olderThanDateFilter;
             int minWinsValue = 0;
             if (int.TryParse(minWinsFilter, out int minWinsRes)) minWinsValue = minWinsRes;
             int maxWinsValue = 99;
@@ -345,7 +348,6 @@ public class DataController : Controller
                               where deck.DeckId.Contains(deckIdValue)
                               && deck.PlayerName.Contains(playerNameValue)
                               && deck.Strat.Contains(stratValue)
-                              //&& deck.DatePlayed.Equals(dateValue)
                               && deck.GamesWon >= minWinsValue && deck.GamesWon <= maxWinsValue
                               && deck.GamesLost >= minLossesValue && deck.GamesLost <= maxLossesValue
                               //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
@@ -360,7 +362,6 @@ public class DataController : Controller
                               && deck.PlayerName.Contains(playerNameValue)
                               && deck.Strat.Contains(stratValue)
                               && deck.Colors.Equals(colorValue)
-                              //&& deck.DatePlayed.Equals(dateValue)
                               && deck.GamesWon >= minWinsValue && deck.GamesWon <= maxWinsValue
                               && deck.GamesLost >= minLossesValue && deck.GamesLost <= maxLossesValue
                               //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
@@ -369,7 +370,11 @@ public class DataController : Controller
                               select deck;
             }
 
-            List<Deck> decksResultList = decksResult.ToList();
+            // Apply dateTime filters to non-linq expression
+            var decksResultList = from deck in decksResult.ToList()
+                                  where newerThanDateValue.CompareTo(deck.DatePlayed) <= 0
+                                  && olderThanDateValue.CompareTo(deck.DatePlayed) >= 0
+                                  select deck;
 
             //// Initialize sorts
             //PropertyInfo primarySortProperty = typeof(Deck).GetProperty(primarySort);
