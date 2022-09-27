@@ -156,6 +156,8 @@ namespace Pauper_Tier_Cube.Models
                 entity.Property(e => e.LandCount).HasColumnName("landCount");
 
                 entity.Property(e => e.NonlandCount).HasColumnName("nonlandCount");
+
+                entity.Property(e => e.AvgManaValue).HasColumnName("avgManaValue");
             });
 
             modelBuilder.Entity<DraftedCard>(entity =>

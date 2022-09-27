@@ -327,10 +327,10 @@ public class DataController : Controller
             if (int.TryParse(minLossesFilter, out int minLossesRes)) minLossesValue = minLossesRes;
             int maxLossesValue = 99;
             if (int.TryParse(maxLossesFilter, out int maxLossesRes)) maxLossesValue = maxLossesRes;
-            int minAverageManaValueValue = 0;
-            if (int.TryParse(minAverageManaValueFilter, out int minAverageManaValueRes)) minAverageManaValueValue = minAverageManaValueRes;
-            int maxAverageManaValueValue = 10;
-            if (int.TryParse(maxAverageManaValueFilter, out int maxAverageManaValueRes)) maxAverageManaValueValue = maxAverageManaValueRes;
+            double minAverageManaValueValue = 0;
+            if (double.TryParse(minAverageManaValueFilter, out double minAverageManaValueRes)) minAverageManaValueValue = minAverageManaValueRes;
+            double maxAverageManaValueValue = 10;
+            if (double.TryParse(maxAverageManaValueFilter, out double maxAverageManaValueRes)) maxAverageManaValueValue = maxAverageManaValueRes;
             int minLandsValue = 0;
             if (int.TryParse(minLandsFilter, out int minLandsRes)) minLandsValue = minLandsRes;
             int maxLandsValue = 99;
@@ -350,7 +350,7 @@ public class DataController : Controller
                               && deck.Strat.Contains(stratValue)
                               && deck.GamesWon >= minWinsValue && deck.GamesWon <= maxWinsValue
                               && deck.GamesLost >= minLossesValue && deck.GamesLost <= maxLossesValue
-                              //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
+                              && deck.AvgManaValue >= minAverageManaValueValue && deck.AvgManaValue <= maxAverageManaValueValue
                               && deck.LandCount >= minLandsValue && deck.GamesWon <= maxLandsValue
                               && deck.NonlandCount >= minNonlandsValue && deck.GamesWon <= maxNonlandsValue
                               select deck;
@@ -364,7 +364,7 @@ public class DataController : Controller
                               && deck.Colors.Equals(colorValue)
                               && deck.GamesWon >= minWinsValue && deck.GamesWon <= maxWinsValue
                               && deck.GamesLost >= minLossesValue && deck.GamesLost <= maxLossesValue
-                              //&& deck.AverageManaValue >= minAverageManaValueValue && deck.AverageManaValue <= maxAverageManaValueValue
+                              && deck.AvgManaValue >= minAverageManaValueValue && deck.AvgManaValue <= maxAverageManaValueValue
                               && deck.LandCount >= minLandsValue && deck.GamesWon <= maxLandsValue
                               && deck.NonlandCount >= minNonlandsValue && deck.GamesWon <= maxNonlandsValue
                               select deck;

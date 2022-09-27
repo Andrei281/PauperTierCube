@@ -22,5 +22,6 @@ namespace Pauper_Tier_Cube.Models
         public string? DraftingFormat { get; set; }
         public int? LandCount { get; set; }
         public int? NonlandCount { get; set; }
+        public double? AvgManaValue { get; set; }
     }
 }

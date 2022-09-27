@@ -212,7 +212,7 @@ function FillDecksDiv(decks) {
 
         // Inside full deck div: Create date div
         let dateDiv = document.createElement('div');
-        dateDiv.innerHTML = "Date: " + decks[i].datePlayed.slice(0, 10);
+        dateDiv.innerHTML = decks[i].datePlayed.slice(0, 10);
         deckDiv.appendChild(dateDiv);
 
         // Inside full deck div: Create colors div
@@ -232,25 +232,20 @@ function FillDecksDiv(decks) {
         }
         deckDiv.appendChild(colorsDiv);
 
-        // Inside full deck div: Create wins div
+        // Inside full deck div: Create wins/losses div
         let winsDiv = document.createElement('div');
-        winsDiv.innerHTML = "W: " + decks[i].gamesWon;
+        winsDiv.innerHTML = "W/L: " + decks[i].gamesWon + " / " + decks[i].gamesLost;
         deckDiv.appendChild(winsDiv);
 
-        // Inside full deck div: Create losses div
-        let lossesDiv = document.createElement('div');
-        lossesDiv.innerHTML = "L: " + decks[i].gamesLost;
-        deckDiv.appendChild(lossesDiv);
-
-        // Inside full deck div: Create lands div
+        // Inside full deck div: Create lands/nonlands div
         let landsDiv = document.createElement('div');
-        landsDiv.innerHTML = "Lands: " + decks[i].landCount;
+        landsDiv.innerHTML = "Lands/Nonlands: " + decks[i].landCount + "/" + decks[i].nonlandCount;
         deckDiv.appendChild(landsDiv);
 
         // Inside full deck div: Create nonlands div
-        let nonlandsDiv = document.createElement('div');
-        nonlandsDiv.innerHTML = "Nonlands: " + decks[i].nonlandCount;
-        deckDiv.appendChild(nonlandsDiv);
+        let avgManaValueDiv = document.createElement('div');
+        avgManaValueDiv.innerHTML = "Mean Mana Value: " + decks[i].avgManaValue;
+        deckDiv.appendChild(avgManaValueDiv);
 
         // Deck div is done. Insert into destination element
         deckDestinationElement.appendChild(deckDiv);
