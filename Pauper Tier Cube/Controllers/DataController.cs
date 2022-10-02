@@ -376,43 +376,66 @@ public class DataController : Controller
                                   && olderThanDateValue.CompareTo(deck.DatePlayed) >= 0
                                   select deck;
 
-            //// Initialize sorts
-            //PropertyInfo primarySortProperty = typeof(Deck).GetProperty(primarySort);
-            //PropertyInfo secondarySortProperty = typeof(Deck).GetProperty(secondarySort);
+            // Initialize sorts
+            PropertyInfo primarySortProperty = typeof(Deck).GetProperty(primarySort);
+            PropertyInfo secondarySortProperty = typeof(Deck).GetProperty(secondarySort);
 
-            //// Handle sorting            
-            //if (primarySort.Equals(nameof(Deck.PlayerName)) || primarySort.Equals(nameof(Deck.Strat)))
-            //{
-            //    // For primary sort: Apply ascending ordering for playerName or strat
-            //    if (secondarySort.Equals(nameof(Deck.PlayerName)) || secondarySort.Equals(nameof(Deck.Strat)))
-            //    {
-            //        // For secondary sort: Apply ascending ordering for playerName or strat
-            //        decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck))
-            //            .ThenBy(deck => secondarySortProperty?.GetValue(deck)).ToList();
-            //    }
-            //    else
-            //    {
-            //        // For secondary sort: Apply descending ordering for numeric values
-            //        decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck))
-            //            .ThenByDescending(deck => secondarySortProperty?.GetValue(deck)?.ToString()).ToList();
-            //    }
-            //}
-            //else
-            //{
-            //    // For primary sort: Apply descending ordering for numeric values
-            //    if (secondarySort.Equals(nameof(Deck.PlayerName)) || secondarySort.Equals(nameof(Deck.Strat)))
-            //    {
-            //        // For secondary sort: Apply ascending ordering for playerName or strat
-            //        decksResultList = decksResultList.OrderByDescending(deck => primarySortProperty?.GetValue(deck)?.ToString())
-            //            .ThenBy(deck => secondarySortProperty?.GetValue(deck)).ToList();
-            //    }
-            //    else
-            //    {
-            //        // For secondary sort: Apply descending ordering for numeric values
-            //        decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck)?.ToString())
-            //            .ThenBy(deck => secondarySortProperty?.GetValue(deck)?.ToString()).ToList();
-            //    }
-            //}
+            // TODO: Install decks tooltip
+            // TODO: Verify that ordering by strat works
+
+            // Handle sorting            
+            if (primarySort.Equals(nameof(Deck.PlayerName)) || primarySort.Equals(nameof(Deck.Strat)) || primarySort.Equals(nameof(Deck.AvgManaValue)))
+            {
+                // For primary sort: Apply ascending ordering for playerName or strat
+                if (secondarySort.Equals(nameof(Deck.PlayerName)) || secondarySort.Equals(nameof(Deck.Strat)) || secondarySort.Equals(nameof(Deck.AvgManaValue)))
+                {
+                    // For secondary sort: Apply ascending ordering for playerName or strat
+                    decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck)).ThenBy(deck => secondarySortProperty?.GetValue(deck)).ToList();
+                }
+                else if (secondarySort.Equals(nameof(Deck.DatePlayed)))
+                {
+                    // For secondary sort: Apply descending ordering for date. Not toString()
+                    decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck)).ThenByDescending(deck => secondarySortProperty?.GetValue(deck)).ToList();
+                }
+                else
+                {
+                    // For secondary sort: Apply descending ordering for numeric values
+                    decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck)).ThenByDescending(deck => secondarySortProperty?.GetValue(deck)?.ToString()).ToList();
+                }
+            }
+            else if (primarySort.Equals(nameof(Deck.DatePlayed)))
+            {
+                // For primary sort: Apply descending ordering for date. Not toString()
+                if (secondarySort.Equals(nameof(Deck.PlayerName)) || secondarySort.Equals(nameof(Deck.Strat)) || secondarySort.Equals(nameof(Deck.AvgManaValue)) || secondarySort.Equals(nameof(Deck.DatePlayed)))
+                {
+                    // For secondary sort: Apply ascending ordering for playerName or strat
+                    decksResultList = decksResultList.OrderByDescending(deck => primarySortProperty?.GetValue(deck)).ThenBy(deck => secondarySortProperty?.GetValue(deck)).ToList();
+                }
+                else
+                {
+                    // For secondary sort: Apply descending ordering for numeric values
+                    decksResultList = decksResultList.OrderByDescending(deck => primarySortProperty?.GetValue(deck)).OrderByDescending(deck => secondarySortProperty?.GetValue(deck)?.ToString()).ToList();
+                }
+            }
+            else
+            {
+                // For primary sort: Apply descending ordering for numeric values
+                if (secondarySort.Equals(nameof(Deck.PlayerName)) || secondarySort.Equals(nameof(Deck.Strat)) || secondarySort.Equals(nameof(Deck.AvgManaValue)))
+                {
+                    // For secondary sort: Apply ascending ordering for playerName or strat
+                    decksResultList = decksResultList.OrderByDescending(deck => primarySortProperty?.GetValue(deck)?.ToString()).ThenBy(deck => secondarySortProperty?.GetValue(deck)).ToList();
+                }
+                else if (secondarySort.Equals(nameof(Deck.DatePlayed)))
+                {
+                    // For secondary sort: Apply descending ordering for date. Not toString()
+                    decksResultList = decksResultList.OrderBy(deck => primarySortProperty?.GetValue(deck)).ThenByDescending(deck => secondarySortProperty?.GetValue(deck)).ToList();
+                }
+                else
+                {
+                    // For secondary sort: Apply descending ordering for numeric values
+                    decksResultList = decksResultList.OrderByDescending(deck => primarySortProperty?.GetValue(deck)?.ToString()).OrderByDescending(deck => secondarySortProperty?.GetValue(deck)?.ToString()).ToList();
+                }
+            }
 
             return Ok(decksResultList.ToArray());
         }

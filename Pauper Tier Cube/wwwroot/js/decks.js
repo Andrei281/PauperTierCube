@@ -24,7 +24,7 @@ function prepareDecksPage() {
 
 // Fetching deck data specifically for filter dropdowns
 function FetchAndAppendDeckDataToSelectElements(olderThanDateValue) {
-    fetch('/data/DeckData?olderThanDateFilter=' + olderThanDateValue, {
+    fetch('/data/DeckData?olderThanDateFilter=' + olderThanDateValue + '&primarySort=DatePlayed&secondarySort=Strat', {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
         mode: 'no-cors', // no-cors, *cors, same-origin
@@ -104,9 +104,9 @@ function GenerateFilteredDecksWindow() {
     let minNonlandsFilterVal = document.getElementById('minNonlands').value;
     let maxNonlandsFilterVal = document.getElementById('maxNonlands').value;
 
-    //// Acquire info for sorting filters
-    //let primarySortVal = document.getElementById("primarySortInput").value;
-    //let secondarySortVal = document.getElementById("secondarySortInput").value;
+    // Acquire info for sorting filters
+    let primarySortVal = document.getElementById("primarySortInput").value;
+    let secondarySortVal = document.getElementById("secondarySortInput").value;
 
     // Check browser support
     if (typeof (Storage) !== "undefined") {
@@ -114,7 +114,7 @@ function GenerateFilteredDecksWindow() {
         // Store filter info in browser session
         let filterVals = [deckIdFilterVal, playerNameFilterVal, stratFilterVal, colorFilterVals, newerThanDateFilterVal, olderThanDateFilterVal,
             minWinsFilterVal, maxWinsFilterVal, minLossesFilterVal, maxLossesFilterVal, minAverageManaValueFilterVal, maxAverageManaValueFilterVal,
-            minLandsFilterVal, maxLandsFilterVal, minNonlandsFilterVal, maxNonlandsFilterVal/*, primarySortVal, secondarySortVal*/];
+            minLandsFilterVal, maxLandsFilterVal, minNonlandsFilterVal, maxNonlandsFilterVal, primarySortVal, secondarySortVal];
         localStorage.clear();
         for (let i = 0; i < filterVals.length; i++) {
             localStorage.setItem("filterVal" + i, filterVals[i]);
@@ -138,7 +138,6 @@ function FetchDeckData() {
     document.getElementById('wrapperDiv').appendChild(loadingGifContainer);
 
     // Begin fetching database info
-    // Use different urls depending on whether we're using filters
     url = '/data/DeckData?deckIdFilter=' + encodeURIComponent(localStorage.getItem('filterVal0'))
         + '&playerNameFilter=' + encodeURIComponent(localStorage.getItem('filterVal1'))
         + '&stratFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
@@ -154,9 +153,9 @@ function FetchDeckData() {
         + '&minLandsFilter=' + localStorage.getItem('filterVal12')
         + '&maxLandsFilter=' + localStorage.getItem('filterVal13')
         + '&minNonlandsFilter=' + localStorage.getItem('filterVal14')
-        + '&maxNonlandsFilter=' + localStorage.getItem('filterVal15');
-    //+ '&primarySort=' + localStorage.getItem('filterVal16')
-    //+ '&secondarySort=' + localStorage.getItem('filterVal17');
+        + '&maxNonlandsFilter=' + localStorage.getItem('filterVal15')
+        + '&primarySort=' + localStorage.getItem('filterVal16')
+        + '&secondarySort=' + localStorage.getItem('filterVal17');
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
@@ -200,20 +199,30 @@ function FillDecksDiv(decks) {
         let deckDiv = document.createElement('div');
         deckDiv.setAttribute('class', 'DeckDiv');
 
-        // Inside full deck div: Create deckID div
-        let deckIDDiv = document.createElement('div');
-        deckIDDiv.innerHTML = "ID: " + decks[i].deckId;
-        deckDiv.appendChild(deckIDDiv);
-
-        // Inside full deck div: Create playerName div
-        let playerNameDiv = document.createElement('div');
-        playerNameDiv.innerHTML = "Player: " + decks[i].playerName;
-        deckDiv.appendChild(playerNameDiv);
-
         // Inside full deck div: Create date div
         let dateDiv = document.createElement('div');
         dateDiv.innerHTML = decks[i].datePlayed.slice(0, 10);
         deckDiv.appendChild(dateDiv);
+
+        // Inside full deck div: Create playerName div
+        let playerNameDiv = document.createElement('div');
+        playerNameDiv.innerHTML = "By: " + decks[i].playerName;
+        deckDiv.appendChild(playerNameDiv);
+
+        // Inside full deck div: Create wins/losses div
+        let winsDiv = document.createElement('div');
+        winsDiv.innerHTML = "W/L: " + decks[i].gamesWon + " / " + decks[i].gamesLost;
+        deckDiv.appendChild(winsDiv);
+
+        // Inside full deck div: Create lands/nonlands div
+        let landsDiv = document.createElement('div');
+        landsDiv.innerHTML = "Lands/Nonlands: " + decks[i].landCount + " / " + decks[i].nonlandCount;
+        deckDiv.appendChild(landsDiv);
+
+        // Inside full deck div: Create nonlands div
+        let avgManaValueDiv = document.createElement('div');
+        avgManaValueDiv.innerHTML = "Mean Mana Value: " + decks[i].avgManaValue;
+        deckDiv.appendChild(avgManaValueDiv);
 
         // Inside full deck div: Create colors div
         let colorsDiv = document.createElement('div');
@@ -231,21 +240,6 @@ function FillDecksDiv(decks) {
             colorsDiv.appendChild(colorDiv);
         }
         deckDiv.appendChild(colorsDiv);
-
-        // Inside full deck div: Create wins/losses div
-        let winsDiv = document.createElement('div');
-        winsDiv.innerHTML = "W/L: " + decks[i].gamesWon + " / " + decks[i].gamesLost;
-        deckDiv.appendChild(winsDiv);
-
-        // Inside full deck div: Create lands/nonlands div
-        let landsDiv = document.createElement('div');
-        landsDiv.innerHTML = "Lands/Nonlands: " + decks[i].landCount + "/" + decks[i].nonlandCount;
-        deckDiv.appendChild(landsDiv);
-
-        // Inside full deck div: Create nonlands div
-        let avgManaValueDiv = document.createElement('div');
-        avgManaValueDiv.innerHTML = "Mean Mana Value: " + decks[i].avgManaValue;
-        deckDiv.appendChild(avgManaValueDiv);
 
         // Deck div is done. Insert into destination element
         deckDestinationElement.appendChild(deckDiv);

@@ -20,7 +20,7 @@
         <div class="tab">
             <button class="tablinks" id="genericStatsButton">Generic Stats</button>
             <button class="tablinks" id ="numericStatsButton">Numeric Stats</button>
-            <button class="tablinks" id="displayButton">Display</button>
+            <button class="tablinks" id="orderingButton">Ordering</button>
         </div>
 
         <!-- Tab content: Generic Stats -->
@@ -101,8 +101,30 @@
             </div>
         </div>
 
-        <!-- Tab content: Display -->
-        <div class="tabcontent" id="displayButtonContent">
+        <!-- Tab content: Ordering -->
+        <div class="tabcontent" id="orderingButtonContent">
+            <div class="FilterDiv">
+                <label>Primary Sort:</label><br>
+                <select id="primarySortInput">
+                    <option value="DatePlayed" selected="selected">Date</option>
+                    <option value="Strat">Strategy</option>
+                    <option value="AvgManaValue">Average Mana Value</option>
+                    <option value="GamesWon">Wins</option>
+                    <option value="GamesLost">Losses</option>
+                    <option value="PlayerName">Player</option>
+                </select>
+            </div>
+            <div class="FilterDiv">
+                <label>Secondary Sort:</label><br>
+                <select id="secondarySortInput">
+                    <option value="DatePlayed">Date</option>
+                    <option value="Strat" selected="selected">Strategy</option>
+                    <option value="AvgManaValue">Average Mana Value</option>
+                    <option value="GamesWon">Wins</option>
+                    <option value="GamesLost">Losses</option>
+                    <option value="PlayerName">Player</option>
+                </select>
+            </div>
         </div>
 
         <!-- Filter Button -->
