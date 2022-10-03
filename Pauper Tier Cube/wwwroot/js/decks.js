@@ -1,11 +1,8 @@
 ﻿// We're on the decks filtering page. Prepare various elements...
 function prepareDecksPage() {
 
-    // Display current date for olderThanDateFilter
-    document.getElementById("olderThanDateFilter").valueAsDate = new Date()
-
     // Acquire and apply deck info to deckId and strat select elements
-    FetchAndAppendDeckDataToSelectElements(document.getElementById("olderThanDateFilter").value);
+    FetchAndAppendDeckDataToSelectElements();
 
     // Save height of tallest div for all content divs
     document.getElementById("genericStatsButtonContent").setAttribute("style", "display: flex");
@@ -23,8 +20,10 @@ function prepareDecksPage() {
 }
 
 // Fetching deck data specifically for filter dropdowns
-function FetchAndAppendDeckDataToSelectElements(olderThanDateValue) {
-    fetch('/data/DeckData?olderThanDateFilter=' + olderThanDateValue + '&primarySort=DatePlayed&secondarySort=Strat', {
+function FetchAndAppendDeckDataToSelectElements() {
+
+    // By default, we know we're getting info about all decks for our dropdowns
+    fetch('/data/DeckData?&primarySort=DatePlayed&secondarySort=Strat&countDrafts=true', {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
         mode: 'no-cors', // no-cors, *cors, same-origin
@@ -34,14 +33,15 @@ function FetchAndAppendDeckDataToSelectElements(olderThanDateValue) {
                 return res.json();
             } else { throw "Error fetching decks: " + res; }
         })
-        .then(decks => {
-            if (decks) {
-                if (!Array.isArray(decks)) throw 'decks in server response is not an array.'
-                let deckIds = GetPropertyFromDecks(decks, 'deckId', false);
-                let deckStrats = GetPropertyFromDecks(decks, 'strat', true);
+        .then(deckdata => {
+            if (deckdata) {
+                if (!Array.isArray(deckdata)) throw 'decks in server response is not an array.'
+                let deckIds = GetPropertyFromDecks(deckdata[0], 'deckId', false);
+                let deckStrats = GetPropertyFromDecks(deckdata[0], 'strat', true);
                 ApplyDropdownInfo(document.getElementById('deckIds'), deckIds);
                 ApplyDropdownInfo(document.getElementById('strats'), deckStrats);
-                console.log();
+                document.getElementById('pastDrafts').setAttribute('value', deckdata[1]);
+                //console.log(); // Experiment: Do we need this?
             }
         }).catch(err => {
             if (err) { }
@@ -89,8 +89,6 @@ function GenerateFilteredDecksWindow() {
     let playerNameFilterVal = document.getElementById('playerNameFilter').value;
     let stratFilterVal = document.getElementById('stratFilter').value;
     let colorFilterVals = AcquireFilterDivValues(document.getElementById('colorsFilter'));
-    let newerThanDateFilterVal = document.getElementById('newerThanDateFilter').value;
-    let olderThanDateFilterVal = document.getElementById('olderThanDateFilter').value;
 
     // Acquire info for numeric filters
     let minWinsFilterVal = document.getElementById('minWins').value;
@@ -103,6 +101,7 @@ function GenerateFilteredDecksWindow() {
     let maxLandsFilterVal = document.getElementById('maxLands').value;
     let minNonlandsFilterVal = document.getElementById('minNonlands').value;
     let maxNonlandsFilterVal = document.getElementById('maxNonlands').value;
+    let pastDraftsFilterVal = document.getElementById('pastDrafts').value;
 
     // Acquire info for sorting filters
     let primarySortVal = document.getElementById("primarySortInput").value;
@@ -112,8 +111,8 @@ function GenerateFilteredDecksWindow() {
     if (typeof (Storage) !== "undefined") {
 
         // Store filter info in browser session
-        let filterVals = [deckIdFilterVal, playerNameFilterVal, stratFilterVal, colorFilterVals, newerThanDateFilterVal, olderThanDateFilterVal,
-            minWinsFilterVal, maxWinsFilterVal, minLossesFilterVal, maxLossesFilterVal, minAverageManaValueFilterVal, maxAverageManaValueFilterVal,
+        let filterVals = [deckIdFilterVal, playerNameFilterVal, stratFilterVal, colorFilterVals, pastDraftsFilterVal, minWinsFilterVal,
+            maxWinsFilterVal, minLossesFilterVal, maxLossesFilterVal, minAverageManaValueFilterVal, maxAverageManaValueFilterVal,
             minLandsFilterVal, maxLandsFilterVal, minNonlandsFilterVal, maxNonlandsFilterVal, primarySortVal, secondarySortVal];
         localStorage.clear();
         for (let i = 0; i < filterVals.length; i++) {
@@ -142,20 +141,20 @@ function FetchDeckData() {
         + '&playerNameFilter=' + encodeURIComponent(localStorage.getItem('filterVal1'))
         + '&stratFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
         + '&colorFilter=' + encodeURIComponent(localStorage.getItem('filterVal3'))
-        + '&newerThanDateFilter=' + encodeURIComponent(localStorage.getItem('filterVal4'))
-        + '&olderThanDateFilter=' + encodeURIComponent(localStorage.getItem('filterVal5'))
-        + '&minWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal6'))
-        + '&maxWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal7'))
-        + '&minLossesFilter=' + localStorage.getItem('filterVal8')
-        + '&maxLossesFilter=' + localStorage.getItem('filterVal9')
-        + '&minAverageManaValueFilter=' + localStorage.getItem('filterVal10')
-        + '&maxAverageManaValueFilter=' + localStorage.getItem('filterVal11')
-        + '&minLandsFilter=' + localStorage.getItem('filterVal12')
-        + '&maxLandsFilter=' + localStorage.getItem('filterVal13')
-        + '&minNonlandsFilter=' + localStorage.getItem('filterVal14')
-        + '&maxNonlandsFilter=' + localStorage.getItem('filterVal15')
-        + '&primarySort=' + localStorage.getItem('filterVal16')
-        + '&secondarySort=' + localStorage.getItem('filterVal17');
+        + '&pastDraftsFilter=' + encodeURIComponent(localStorage.getItem('filterVal4'))
+        + '&minWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal5'))
+        + '&maxWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal6'))
+        + '&minLossesFilter=' + localStorage.getItem('filterVal7')
+        + '&maxLossesFilter=' + localStorage.getItem('filterVal8')
+        + '&minAverageManaValueFilter=' + localStorage.getItem('filterVal9')
+        + '&maxAverageManaValueFilter=' + localStorage.getItem('filterVal10')
+        + '&minLandsFilter=' + localStorage.getItem('filterVal11')
+        + '&maxLandsFilter=' + localStorage.getItem('filterVal12')
+        + '&minNonlandsFilter=' + localStorage.getItem('filterVal13')
+        + '&maxNonlandsFilter=' + localStorage.getItem('filterVal14')
+        + '&primarySort=' + localStorage.getItem('filterVal15')
+        + '&secondarySort=' + localStorage.getItem('filterVal16')
+        + '&countDrafts=false';
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },

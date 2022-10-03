@@ -289,8 +289,7 @@ public class DataController : Controller
     [FromQuery] string playerNameFilter,
     [FromQuery] string stratFilter,
     [FromQuery] string colorFilter,
-    [FromQuery] DateTime newerThanDateFilter,
-    [FromQuery] DateTime olderThanDateFilter,
+    [FromQuery] int pastDraftsFilter,
     [FromQuery] string minWinsFilter,
     [FromQuery] string maxWinsFilter,
     [FromQuery] string minLossesFilter,
@@ -302,7 +301,8 @@ public class DataController : Controller
     [FromQuery] string minNonlandsFilter,
     [FromQuery] string maxNonlandsFilter,
     [FromQuery] string primarySort,
-    [FromQuery] string secondarySort)
+    [FromQuery] string secondarySort,
+    [FromQuery] bool countDrafts)
     {
         try
         {
@@ -315,10 +315,6 @@ public class DataController : Controller
             if (!string.IsNullOrEmpty(stratFilter)) stratValue = stratFilter;
             string colorValue = "";
             if (!string.IsNullOrEmpty(colorFilter)) colorValue = string.Join("", colorFilter.Split(","));
-            DateTime newerThanDateValue = new DateTime(0001, 01, 01);
-            if (!string.IsNullOrEmpty(newerThanDateFilter.ToString())) newerThanDateValue = newerThanDateFilter;
-            DateTime olderThanDateValue = new DateTime(9999, 12, 31);
-            if (!string.IsNullOrEmpty(olderThanDateFilter.ToString())) olderThanDateValue = olderThanDateFilter;
             int minWinsValue = 0;
             if (int.TryParse(minWinsFilter, out int minWinsRes)) minWinsValue = minWinsRes;
             int maxWinsValue = 99;
@@ -370,11 +366,35 @@ public class DataController : Controller
                               select deck;
             }
 
-            // Apply dateTime filters to non-linq expression
-            var decksResultList = from deck in decksResult.ToList()
-                                  where newerThanDateValue.CompareTo(deck.DatePlayed) <= 0
-                                  && olderThanDateValue.CompareTo(deck.DatePlayed) >= 0
-                                  select deck;
+            // Convert result to list for applying non-Linq-compatible operations
+            var decksResultList = decksResult.ToList();
+
+            // If filter button was hit, filter by past drafts
+            if (!countDrafts)
+            {
+                // Start: Get all unique dates in which decks were played
+                // We assume the cube has had one draft per day at most
+                List<DateTime?> uniqueDeckDates = new List<DateTime?>();
+                foreach (var deck in decksResultList)
+                {
+                    if (!uniqueDeckDates.Contains(deck.DatePlayed))
+                    {
+                        uniqueDeckDates.Add(deck.DatePlayed);
+                    }
+                }
+
+                // Next: Acquire all dates validated by past drafts filter
+                // Reoorder dates by descending
+                uniqueDeckDates = uniqueDeckDates.OrderByDescending(date => date).ToList();
+                if (pastDraftsFilter > uniqueDeckDates.Count) pastDraftsFilter = uniqueDeckDates.Count;
+                uniqueDeckDates.RemoveRange(pastDraftsFilter, uniqueDeckDates.Count - pastDraftsFilter); // TODO: Figure out why pastDraftsFilter = 0
+
+                // Finally: Remove decks whose dates don't match the validated dates
+                var decksResultIEnumerable = from deck in decksResult.ToList()
+                                             where uniqueDeckDates.Contains(deck.DatePlayed)
+                                             select deck;
+                decksResultList = decksResultIEnumerable.ToList();
+            }
 
             // Initialize sorts
             PropertyInfo primarySortProperty = typeof(Deck).GetProperty(primarySort);
@@ -435,6 +455,24 @@ public class DataController : Controller
                     // For secondary sort: Apply descending ordering for numeric values
                     decksResultList = decksResultList.OrderByDescending(deck => primarySortProperty?.GetValue(deck)?.ToString()).OrderByDescending(deck => secondarySortProperty?.GetValue(deck)?.ToString()).ToList();
                 }
+            }
+
+            // Decks filter page is loading, return decks and total draft count
+            if (countDrafts)
+            {
+                List<DateTime?> uniqueDeckDates = new List<DateTime?>();
+                foreach (var deck in decksResultList)
+                {
+                    if (!uniqueDeckDates.Contains(deck.DatePlayed))
+                    {
+                        uniqueDeckDates.Add(deck.DatePlayed);
+                    }
+                }
+                int totalDraftCount = uniqueDeckDates.Count;
+                object[] returnArray = new object[2];
+                returnArray[0] = decksResultList;
+                returnArray[1] = totalDraftCount;
+                return Ok(returnArray);
             }
 
             return Ok(decksResultList.ToArray());
