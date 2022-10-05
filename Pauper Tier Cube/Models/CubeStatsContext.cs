@@ -106,8 +106,6 @@ namespace Pauper_Tier_Cube.Models
             {
                 entity.HasNoKey();
 
-                entity.Property(e => e.ColorCount).HasColumnName("colorCount");
-
                 entity.Property(e => e.Colors)
                     .HasMaxLength(40)
                     .IsUnicode(false)
@@ -158,6 +156,8 @@ namespace Pauper_Tier_Cube.Models
                 entity.Property(e => e.NonlandCount).HasColumnName("nonlandCount");
 
                 entity.Property(e => e.AvgManaValue).HasColumnName("avgManaValue");
+
+                entity.Property(e => e.PodSize).HasColumnName("podSize");
             });
 
             modelBuilder.Entity<DraftedCard>(entity =>

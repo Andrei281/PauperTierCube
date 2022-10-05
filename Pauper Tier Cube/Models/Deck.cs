@@ -11,7 +11,6 @@ namespace Pauper_Tier_Cube.Models
         public DateTime? DatePlayed { get; set; }
         public int? GamesWon { get; set; }
         public int? GamesLost { get; set; }
-        public int? ColorCount { get; set; }
         public int? PlainsCount { get; set; }
         public int? IslandCount { get; set; }
         public int? SwampCount { get; set; }
@@ -23,5 +22,6 @@ namespace Pauper_Tier_Cube.Models
         public int? LandCount { get; set; }
         public int? NonlandCount { get; set; }
         public double? AvgManaValue { get; set; }
+        public int? PodSize { get; set; }
     }
 }
