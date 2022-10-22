@@ -20,7 +20,21 @@ function openTabContent(evt, tabContentDivId, heightToRetain) {
     evt.currentTarget.className += " active";
 }
 
-// For color identity div card-count-area: convert color char to string
+// For checkbox filters, checkboxed values are returned in a certain array format
+function AcquireFilterDivValues(filterDiv) {
+    let itemReturnList = [];
+    for (let childElementIndex = 0; childElementIndex < filterDiv.children.length; childElementIndex++) {
+        for (let grandchildElementIndex = 0; grandchildElementIndex < filterDiv.children[childElementIndex].childNodes.length; grandchildElementIndex++) {
+            if (filterDiv.children[childElementIndex].childNodes[grandchildElementIndex].nodeName == "INPUT" && filterDiv.children[childElementIndex].childNodes[grandchildElementIndex].checked) {
+                let returnItem = filterDiv.children[childElementIndex].childNodes[grandchildElementIndex].value;
+                itemReturnList.push(returnItem);
+            }
+        }
+    }
+    return itemReturnList;
+}
+
+// General color-char to color-word converter
 function getFullColorIdentityWord(colorIdentity) {
     if (colorIdentity == 'W') {
         return 'White';
@@ -86,36 +100,9 @@ function DisplayToolTip(cardElement, fullCard) {
     // Initialize tooltip properties (without location)
     toolTipDiv.setAttribute('style', 'background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;height:fit-content;position:absolute;display:flex;padding:10px');
 
-    // Use tooltip properties and card location to locate tooltip
-    let cardElementPosition = GetAbsolutePosition(cardElement);
-    let toolTipLeft = ((cardElementPosition.left + cardElementPosition.right) / 2) - (toolTipDiv.clientWidth / 2);
-    let toolTipTop;
-    if (cardElement.innerText) {
-        // CardElement is a div with text. Don't apply operations using borderWidth
-        toolTipTop = cardElementPosition.top - toolTipDiv.clientHeight - 8;
-    } else {
-        // CardElement is an image. Apply operations using borderWidth
-        toolTipTop = cardElementPosition.top - parseInt(cardElement.style.borderWidth) - toolTipDiv.clientHeight - 8;
-    }
-
-    // If too high on screen, position tooltip below cursor
-    if (toolTipTop < 0) {
-        if (cardElement.innerText) {
-            toolTipTop = cardElementPosition.bottom + 2;
-        } else {
-            toolTipTop = cardElementPosition.bottom + parseInt(cardElement.style.borderWidth);
-        }
-    }
-
-    // If too far to one side, nudge the other way
-    if (toolTipLeft < 0) {
-        toolTipLeft = 15;
-    } else if (toolTipLeft > document.body.clientWidth - toolTipDiv.clientWidth) {
-        toolTipLeft = document.body.clientWidth - toolTipDiv.clientWidth - 15;
-    }
-
-    // Apply final tooltip properties
-    toolTipDiv.setAttribute("style", "background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:10px;left:" + toolTipLeft + "px;top:" + toolTipTop + "px");
+    // Apply final tooltip properties (with location)
+    toolTipTopAndLeft = FindToolTipTopAndLeft(cardElement, toolTipDiv);
+    toolTipDiv.setAttribute("style", "background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:10px;top:" + toolTipTopAndLeft[0] + "px;left:" + toolTipTopAndLeft[1] + "px");
 
     // Make tooltip fade in
     let op = 0.1;
@@ -129,9 +116,30 @@ function DisplayToolTip(cardElement, fullCard) {
     }, 10);
 }
 
-function VanishToolTip() {
-    document.getElementById("toolTipDiv").innerHTML = '';
-    toolTipDiv.style.opacity = 0;
+function FindToolTipTopAndLeft(baseElement, toolTipDiv) {
+
+    // Use tooltip properties and base element location to locate tooltip
+    let baseElementPosition = GetAbsolutePosition(baseElement);
+    let toolTipLeft = ((baseElementPosition.left + baseElementPosition.right) / 2) - (toolTipDiv.clientWidth / 2);
+    let toolTipTop = baseElementPosition.top - toolTipDiv.clientHeight - 8;
+
+    // If too high on screen, position tooltip below cursor
+    if (toolTipTop < 0) {
+        if (baseElement.innerText) {
+            toolTipTop = baseElementPosition.bottom + 2;
+        } else {
+            toolTipTop = baseElementPosition.bottom + parseInt(baseElement.style.borderWidth);
+        }
+    }
+
+    // If too far to one side, nudge the other way
+    if (toolTipLeft < 0) {
+        toolTipLeft = 15;
+    } else if (toolTipLeft > document.body.clientWidth - toolTipDiv.clientWidth) {
+        toolTipLeft = document.body.clientWidth - toolTipDiv.clientWidth - 15;
+    }
+
+    return [toolTipTop, toolTipLeft];
 }
 
 function GetAbsolutePosition(element) {
@@ -149,4 +157,9 @@ function GetAbsolutePosition(element) {
     pos.top += sy;
     pos.bottom += sy;
     return pos;
+}
+
+function VanishToolTip() {
+    document.getElementById("toolTipDiv").innerHTML = '';
+    toolTipDiv.style.opacity = 0;
 }

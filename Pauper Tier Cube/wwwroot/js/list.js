@@ -105,7 +105,6 @@ function FetchCardData() {
             } else { throw "Error fetching cards: " + res; }
         })
         .then(cards => {
-            deckDestinationElement
             if (cards) {
                 if (!Array.isArray(cards)) throw 'cards in server response is not an array.'
                 if (primaryFilter == 'default') {
@@ -140,13 +139,19 @@ function FetchCardData() {
 }
 
 function FillDefaultDiv(cards, displayFilter) {
+
+    // Create title div used to count cards
     var cardCountHeader = document.createElement('div');
     cardCountHeader.setAttribute('style', 'height:8%;width:100%;background-color:white;border:3px inset gray;border-bottom:none;font-weight:bold;font-size:25px;display:flex;align-items:center;justify-content:center');
     cardCountHeader.innerHTML = 'Cards - (' + cards.length + ')';
     wrapperDiv.appendChild(cardCountHeader);
+
+    // Create div used to display decks
     var cardDestinationElement = document.createElement('div');
     cardDestinationElement.setAttribute('class', 'DefaultDiv');
     wrapperDiv.appendChild(cardDestinationElement);
+
+    // Display cards as either text or images
     if (displayFilter == 'text') {
         FillWithText(cards, cardDestinationElement, "width:max-content;margin-right:20px;float:left");
     } else if (displayFilter == 'images') {

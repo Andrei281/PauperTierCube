@@ -215,13 +215,8 @@ function FillDecksDiv(decks) {
 
         // Inside full deck div: Create lands/nonlands div
         let landsDiv = document.createElement('div');
-        landsDiv.innerHTML = "Lands/Nonlands: " + decks[i].landCount + " / " + decks[i].nonlandCount;
+        landsDiv.innerHTML = "Lands/Spells: " + decks[i].landCount + " / " + decks[i].nonlandCount;
         deckDiv.appendChild(landsDiv);
-
-        // Inside full deck div: Create nonlands div
-        let avgManaValueDiv = document.createElement('div');
-        avgManaValueDiv.innerHTML = "Mean Mana Value: " + decks[i].avgManaValue;
-        deckDiv.appendChild(avgManaValueDiv);
 
         // Inside full deck div: Create colors div
         let colorsDiv = document.createElement('div');
@@ -239,6 +234,18 @@ function FillDecksDiv(decks) {
             colorsDiv.appendChild(colorDiv);
         }
         deckDiv.appendChild(colorsDiv);
+
+        // Apply tooltip capabilities to deck div
+        var timeOut;
+        deckDiv.addEventListener("mouseenter", function () {
+            let that = this;
+            timeOut = setTimeout(function () { DisplayDeckToolTip(that, decks[i]) }, 400);
+        });
+        deckDiv.addEventListener("mouseleave", function () {
+            clearTimeout(timeOut);
+            VanishToolTip();
+            cardElement.style.backgroundColor = backgroundColor;
+        });
 
         // Deck div is done. Insert into destination element
         deckDestinationElement.appendChild(deckDiv);
@@ -259,4 +266,63 @@ function ApplyColor(colorOfDiv) {
     } else {
         return '#4de141';
     }
+}
+
+function DisplayDeckToolTip(deckElement, deck) {
+    // Create stats div
+    let statsDiv = document.createElement('div');
+    statsDiv.setAttribute('style', 'font-size: 18px; height: fit-content; margin-left: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center');
+
+    // Insert stats into stats div
+    let deckIdDiv = document.createElement('div');
+    deckIdDiv.innerHTML = "ID - " + deck.deckId;
+    statsDiv.appendChild(deckIdDiv);
+
+    let stratDiv = document.createElement('div');
+    deckIdDiv.innerHTML = "Strategy - " + deck.strat;
+    statsDiv.appendChild(stratDiv);
+
+    let podSizeDiv = document.createElement('div');
+    podSizeDiv.innerHTML = "Pod Size - " + deck.podSize;
+    statsDiv.appendChild(podSizeDiv);
+
+    let formatDiv = document.createElement('div');
+    formatDiv.innerHTML = "Format - " + deck.draftingFormat;
+    statsDiv.appendChild(formatDiv);
+
+    let avgManaValueDiv = document.createElement('div');
+    avgManaValueDiv.innerHTML = "Average Mana Value - " + deck.avgManaValue;
+    statsDiv.appendChild(avgManaValueDiv);
+
+    if (deck.hallOfFame) {
+        let hallOfFameDiv = document.createElement('div');
+        let starImage = document.createElement('img');
+        starImage.setAttribute('src', '	https://opengameart.org/sites/default/files/styles/medium/public/sss_1.png');
+        starImage.setAttribute('style', 'width:100px;height:100px');
+        hallOfFameDiv.appendChild(starImage);
+        statsDiv.appendChild(hallOfFameDiv);
+    }
+
+    // Insert stats div into tooltip
+    let toolTipDiv = document.getElementById("toolTipDiv");
+    toolTipDiv.innerHTML = '';
+    toolTipDiv.appendChild(statsDiv);
+
+    // Initialize tooltip properties (without location)
+    toolTipDiv.setAttribute('style', 'background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;height:fit-content;position:absolute;display:flex;padding:10px');
+
+    // Apply tooltip location
+    toolTipTopAndLeft = FindToolTipTopAndLeft(deckElement, toolTipDiv);
+    toolTipDiv.setAttribute("style", "background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:10px;top:" + toolTipTopAndLeft[0] + "px;left:" + toolTipTopAndLeft[1] + "px");
+
+    // Make tooltip fade in
+    let op = 0.1;
+    let timer = setInterval(function () {
+        toolTipDiv.style.opacity = op;
+        op += op * 0.1;
+        if (op >= 1) {
+            clearInterval(timer);
+            toolTipDiv.style.opacity = 1;
+        }
+    }, 10);
 }
