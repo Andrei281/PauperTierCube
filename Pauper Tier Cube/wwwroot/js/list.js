@@ -315,7 +315,7 @@ function FillWithText(cards, cardDestinationElement, cardStyle) {
         cardElement.addEventListener("mouseenter", function () {
             let that = this;
             cardElement.style.backgroundColor = "lightgray";
-            timeOut = setTimeout(function () { DisplayToolTip(that, card) }, 400);
+            timeOut = setTimeout(function () { DisplayCardToolTip(that, card) }, 400);
         });
         cardElement.addEventListener("mouseleave", function () {
             clearTimeout(timeOut);
@@ -348,7 +348,7 @@ function FillWithImages(cards, cardDestinationElement, cardStyle) {
             var timeOut;
             cardImgElement.addEventListener("mouseenter", function () {
                 let that = this;
-                timeOut = setTimeout(function () { DisplayToolTip(that, card) }, 400);
+                timeOut = setTimeout(function () { DisplayCardToolTip(that, card) }, 400);
             });
             cardImgElement.addEventListener("mouseleave", function () {
                 clearTimeout(timeOut);
@@ -359,4 +359,61 @@ function FillWithImages(cards, cardDestinationElement, cardStyle) {
             throw 'Something went wrong.';
         }
     }
+}
+
+function DisplayCardToolTip(cardElement, fullCard) {
+    // Create image
+    let cardImg = document.createElement('img');
+    cardImg.src = 'data:image/jpg;base64,' + fullCard.image;
+    cardImg.setAttribute('style', 'width: 250px; height: 350px');
+
+    // Create stats div
+    let statsDiv = document.createElement('div');
+    statsDiv.setAttribute('style', 'font-size: 18px; height: fit-content; margin-left: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center');
+    let gamesPlayedStatsDiv = document.createElement('div');
+    gamesPlayedStatsDiv.innerHTML = "Games Played - " + fullCard.gamesPlayed;
+    statsDiv.appendChild(gamesPlayedStatsDiv);
+    let winRatePercentageStatsDiv = document.createElement('div');
+    if (fullCard.winRatePercentage != null) {
+        // Win rate percentage exists. Show it
+        winRatePercentageStatsDiv.innerHTML = "Win Rate - " + fullCard.winRatePercentage.toFixed(2) + "%";
+    } else {
+        // Win rate percentage does not exist. Don't show it
+        winRatePercentageStatsDiv.innerHTML = "Win Rate - N/A";
+    }
+    statsDiv.appendChild(winRatePercentageStatsDiv);
+
+    // Insert image and stats into tooltip
+    let toolTipDiv = document.getElementById("toolTipDiv");
+    toolTipDiv.innerHTML = '';
+    toolTipDiv.appendChild(cardImg);
+    toolTipDiv.appendChild(statsDiv);
+
+    // Initialize tooltip properties (without location and background-color)
+    toolTipDiv.setAttribute('style', 'border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;height:fit-content;position:absolute;display:flex;padding:10px');
+
+    // Find tooltip location and background-color
+    toolTipTopAndLeft = FindToolTipTopAndLeft(cardElement, toolTipDiv);
+    let backgroundColor = "";
+    if (fullCard.tier == "Bronze") {
+        backgroundColor = "#EFA67D";
+    } else if (fullCard.tier == "Silver") {
+        backgroundColor = "#DBDAD9";
+    } else {
+        backgroundColor = "#e8e079";
+    }
+
+    // Apply final tooltip properties (with location and background-color)
+    toolTipDiv.setAttribute("style", "background-color:" + backgroundColor + ";border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:10px;top:" + toolTipTopAndLeft[0] + "px;left:" + toolTipTopAndLeft[1] + "px");
+
+    // Make tooltip fade in
+    let op = 0.1;
+    let timer = setInterval(function () {
+        toolTipDiv.style.opacity = op;
+        op += op * 0.1;
+        if (op >= 1) {
+            clearInterval(timer);
+            toolTipDiv.style.opacity = 1;
+        }
+    }, 10);
 }
