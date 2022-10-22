@@ -271,26 +271,31 @@ function ApplyColor(colorOfDiv) {
 function DisplayDeckToolTip(deckElement, deck) {
     // Create stats div
     let statsDiv = document.createElement('div');
-    statsDiv.setAttribute('style', 'font-size: 18px; height: fit-content; margin-left: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center');
+    statsDiv.setAttribute('style', 'font-size:18px;padding:10px;display:flex;flex-direction:column;align-items:center');
 
     // Insert stats into stats div
     let deckIdDiv = document.createElement('div');
+    deckIdDiv.setAttribute("class", "TooltipStat");
     deckIdDiv.innerHTML = "ID - " + deck.deckId;
     statsDiv.appendChild(deckIdDiv);
 
     let stratDiv = document.createElement('div');
-    deckIdDiv.innerHTML = "Strategy - " + deck.strat;
+    stratDiv.setAttribute("class", "TooltipStat");
+    stratDiv.innerHTML = "Strategy - " + deck.strat;
     statsDiv.appendChild(stratDiv);
 
     let podSizeDiv = document.createElement('div');
+    podSizeDiv.setAttribute("class", "TooltipStat");
     podSizeDiv.innerHTML = "Pod Size - " + deck.podSize;
     statsDiv.appendChild(podSizeDiv);
 
     let formatDiv = document.createElement('div');
+    formatDiv.setAttribute("class", "TooltipStat");
     formatDiv.innerHTML = "Format - " + deck.draftingFormat;
     statsDiv.appendChild(formatDiv);
 
     let avgManaValueDiv = document.createElement('div');
+    avgManaValueDiv.setAttribute("class", "TooltipStat");
     avgManaValueDiv.innerHTML = "Average Mana Value - " + deck.avgManaValue;
     statsDiv.appendChild(avgManaValueDiv);
 
@@ -298,7 +303,7 @@ function DisplayDeckToolTip(deckElement, deck) {
         let hallOfFameDiv = document.createElement('div');
         let starImage = document.createElement('img');
         starImage.setAttribute('src', '	https://opengameart.org/sites/default/files/styles/medium/public/sss_1.png');
-        starImage.setAttribute('style', 'width:100px;height:100px');
+        starImage.setAttribute('style', 'width:50px;height:50px');
         hallOfFameDiv.appendChild(starImage);
         statsDiv.appendChild(hallOfFameDiv);
     }
@@ -313,7 +318,7 @@ function DisplayDeckToolTip(deckElement, deck) {
 
     // Apply tooltip location
     toolTipTopAndLeft = FindToolTipTopAndLeft(deckElement, toolTipDiv);
-    toolTipDiv.setAttribute("style", "background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;width:fit-content;position:absolute;display:flex;padding:10px;top:" + toolTipTopAndLeft[0] + "px;left:" + toolTipTopAndLeft[1] + "px");
+    toolTipDiv.setAttribute("style", "background-color:lightgray;border:solid;border-radius:10px;opacity:0;z-index:3;position:absolute;display:flex;padding:10px;top:" + toolTipTopAndLeft[0] + "px;left:" + toolTipTopAndLeft[1] + "px");
 
     // Make tooltip fade in
     let op = 0.1;

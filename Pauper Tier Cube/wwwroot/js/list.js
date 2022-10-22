@@ -369,8 +369,9 @@ function DisplayCardToolTip(cardElement, fullCard) {
 
     // Create stats div
     let statsDiv = document.createElement('div');
-    statsDiv.setAttribute('style', 'font-size: 18px; height: fit-content; margin-left: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center');
+    statsDiv.setAttribute('style', 'font-size:18px;height:fit-content;margin-left:10px;padding:10px;display:flex;flex-direction:column;align-items:center;align-self:center');
     let gamesPlayedStatsDiv = document.createElement('div');
+    gamesPlayedStatsDiv.setAttribute("style", "margin-bottom:100px");
     gamesPlayedStatsDiv.innerHTML = "Games Played - " + fullCard.gamesPlayed;
     statsDiv.appendChild(gamesPlayedStatsDiv);
     let winRatePercentageStatsDiv = document.createElement('div');
