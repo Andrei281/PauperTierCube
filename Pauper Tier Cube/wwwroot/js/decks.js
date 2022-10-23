@@ -198,6 +198,16 @@ function FillDecksDiv(decks) {
         let deckDiv = document.createElement('div');
         deckDiv.setAttribute('class', 'DeckDiv');
 
+        // Inside full deck div: Create HallOfFame icon (if applicable)
+        if (decks[i].hallOfFame) {
+            let hallOfFameDiv = document.createElement('div');
+            let starImage = document.createElement('img');
+            starImage.setAttribute('src', '	https://opengameart.org/sites/default/files/styles/medium/public/sss_1.png');
+            starImage.setAttribute('style', 'width:30px;height:30px');
+            hallOfFameDiv.appendChild(starImage);
+            deckDiv.appendChild(hallOfFameDiv);
+        }
+
         // Inside full deck div: Create date div
         let dateDiv = document.createElement('div');
         dateDiv.innerHTML = decks[i].datePlayed.slice(0, 10);
@@ -212,11 +222,6 @@ function FillDecksDiv(decks) {
         let winsDiv = document.createElement('div');
         winsDiv.innerHTML = "W/L: " + decks[i].gamesWon + " / " + decks[i].gamesLost;
         deckDiv.appendChild(winsDiv);
-
-        // Inside full deck div: Create lands/nonlands div
-        let landsDiv = document.createElement('div');
-        landsDiv.innerHTML = "Lands/Spells: " + decks[i].landCount + " / " + decks[i].nonlandCount;
-        deckDiv.appendChild(landsDiv);
 
         // Inside full deck div: Create colors div
         let colorsDiv = document.createElement('div');
@@ -244,7 +249,6 @@ function FillDecksDiv(decks) {
         deckDiv.addEventListener("mouseleave", function () {
             clearTimeout(timeOut);
             VanishToolTip();
-            cardElement.style.backgroundColor = backgroundColor;
         });
 
         // Deck div is done. Insert into destination element
@@ -299,14 +303,10 @@ function DisplayDeckToolTip(deckElement, deck) {
     avgManaValueDiv.innerHTML = "Average Mana Value - " + deck.avgManaValue;
     statsDiv.appendChild(avgManaValueDiv);
 
-    if (deck.hallOfFame) {
-        let hallOfFameDiv = document.createElement('div');
-        let starImage = document.createElement('img');
-        starImage.setAttribute('src', '	https://opengameart.org/sites/default/files/styles/medium/public/sss_1.png');
-        starImage.setAttribute('style', 'width:30px;height:30px');
-        hallOfFameDiv.appendChild(starImage);
-        statsDiv.appendChild(hallOfFameDiv);
-    }
+    let landsDiv = document.createElement('div');
+    landsDiv.setAttribute("class", "TooltipStat");
+    landsDiv.innerHTML = "Lands/Spells: " + deck.landCount + " / " + deck.nonlandCount;
+    statsDiv.appendChild(landsDiv);
 
     // Insert stats div into tooltip
     let toolTipDiv = document.getElementById("toolTipDiv");
