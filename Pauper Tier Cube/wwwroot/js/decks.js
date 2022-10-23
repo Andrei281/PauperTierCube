@@ -41,7 +41,7 @@ function FetchAndAppendDeckDataToSelectElements() {
                 ApplyDropdownInfo(document.getElementById('deckIds'), deckIds);
                 ApplyDropdownInfo(document.getElementById('strats'), deckStrats);
                 document.getElementById('pastDrafts').setAttribute('value', deckdata[1]);
-                //console.log(); // Experiment: Do we need this?
+                document.getElementById('filterButton').setAttribute('style', 'margin-top:20px;width:50%;opacity:1;pointer-events:initial');
             }
         }).catch(err => {
             if (err) { }
@@ -303,7 +303,7 @@ function DisplayDeckToolTip(deckElement, deck) {
         let hallOfFameDiv = document.createElement('div');
         let starImage = document.createElement('img');
         starImage.setAttribute('src', '	https://opengameart.org/sites/default/files/styles/medium/public/sss_1.png');
-        starImage.setAttribute('style', 'width:50px;height:50px');
+        starImage.setAttribute('style', 'width:30px;height:30px');
         hallOfFameDiv.appendChild(starImage);
         statsDiv.appendChild(hallOfFameDiv);
     }
