@@ -11,28 +11,49 @@
         .numberInput {
             width:45px;
         }
+        .DeckDiv {
+            width: 100%;
+            display: flex;
+            justify-content: space-evenly;
+            border: solid;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            height: fit-content;
+            margin-bottom: 5px;
+            background-color: aliceblue;
+            align-items: center;
+            font-weight: bold;
+        }
+        .DeckDiv:hover {
+            background-color: lightgray;
+            cursor: pointer;
+        }
+        .TooltipStat {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .ColorIndicator {
+            border: solid;
+            width: 25px;
+            height: 25px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 
 <body onload="prepareDecksPage();">
-    <div id="wrapperDiv" style="display:flex;flex-direction:column;align-items:center">
-        <!-- Tab links -->
-        <div class="tab">
-            <button class="tablinks" id="genericStatsButton">Generic Stats</button>
-            <button class="tablinks" id ="numericStatsButton">Numeric Stats</button>
-            <button class="tablinks" id="orderingButton">Ordering</button>
-        </div>
+    <div id="wrapperDiv" style="display:flex;flex-direction:column;align-items:center;padding-top:50px">
 
-        <!-- Tab content: Generic Stats -->
-        <div class="tabcontent" id="genericStatsButtonContent">
-            <div class="FilterDiv" style="width:100px">
+        <!-- Filters -->
+        <div style="position:fixed;left:80px;display:block;width:180px;background-color:white;padding:10px;border:solid;border-radius:10px">
+            <div class="FilterDiv">
                 <label>Deck ID:</label><br>
                 <input type="number" list="deckIds" style="width:100%" id="deckIdFilter">
                 <datalist id="deckIds">
                     <option></option>
                 </datalist>
             </div>
-            <div class="FilterDiv" style="width:120px">
+            <div class="FilterDiv">
                 <label>Player Name:</label><br>
                 <input list="playerNames" style="width:100%" id="playerNameFilter">
                 <datalist id="playerNames" style="width:100%">
@@ -41,14 +62,14 @@
                     <option value="CinnamonToes"></option>
                     <option value="DungeonMaestro"></option>
                     <option value="HandOfEmrakul"></option>
-                    <option value="MonoGreenBill"></option>
                     <option value="Misc"></option>
+                    <option value="MonoGreenBill"></option>
                     <option value="OGPrime"></option>
                     <option value="TestSubject"></option>
                     <option value="WaffleMakerLemonSqueezy"></option>
                 </datalist>
             </div>
-            <div class="FilterDiv" style="width:100px">
+            <div class="FilterDiv">
                 <label>Strategy:</label><br>
                 <input list="strats" style="width:100%" id="stratFilter">
                 <datalist id="strats" style="width:100%">
@@ -65,15 +86,13 @@
                     <label><input type="checkbox" value="G"/> Green</label>
                 </div>
             </div>
-        </div>
-
-        <!-- Tab content: Numeric Stats -->
-        <div class="tabcontent" id="numericStatsButtonContent">
-            <div class="FilterDiv">               
+            <div class="FilterDiv">
                 <label>Wins:</label><br>
                 <input type="number" class="numberInput" id="minWins" value="0"/>
                 <label> - </label>
-                <input type="number" class="numberInput" id="maxWins"/><br><br>
+                <input type="number" class="numberInput" id="maxWins"/>
+            </div>
+            <div class="FilterDiv">
                 <label>Losses:</label><br>
                 <input type="number" class="numberInput" id="minLosses" value="0"/>
                 <label> - </label>
@@ -89,7 +108,9 @@
                 <label>Lands:</label><br>
                 <input type="number" class="numberInput" id="minLands" value="0"/>
                 <label>-</label>
-                <input type="number" class="numberInput" id="maxLands"/><br><br>
+                <input type="number" class="numberInput" id="maxLands"/>
+            </div>
+            <div class="FilterDiv">
                 <label>Nonlands:</label><br>
                 <input type="number" class="numberInput" id="minNonlands" value="0"/>
                 <label>-</label>
@@ -97,15 +118,11 @@
             </div>
             <div class="FilterDiv">
                 <label>Past Drafts:</label><br>
-                <input type="number" class="numberInput" id="pastDrafts"/>
+                <input type="number" style="width:60px" id="pastDrafts"/>
             </div>
-        </div>
-
-        <!-- Tab content: Ordering -->
-        <div class="tabcontent" id="orderingButtonContent">
             <div class="FilterDiv">
                 <label>Primary Sort:</label><br>
-                <select id="primarySortInput">
+                <select id="primarySortInput" style="width:100%">
                     <option value="DatePlayed" selected="selected">Date</option>
                     <option value="Strat">Strategy</option>
                     <option value="AvgManaValue">Average Mana Value</option>
@@ -116,7 +133,7 @@
             </div>
             <div class="FilterDiv">
                 <label>Secondary Sort:</label><br>
-                <select id="secondarySortInput">
+                <select id="secondarySortInput" style="width:100%">
                     <option value="DatePlayed">Date</option>
                     <option value="Strat" selected="selected">Strategy</option>
                     <option value="AvgManaValue">Average Mana Value</option>
@@ -125,10 +142,16 @@
                     <option value="PlayerName">Player</option>
                 </select>
             </div>
-        </div>
 
         <!-- Filter Button -->
-        <button id="filterButton" style="margin-top:20px;width:50%;opacity:0.6;pointer-events:none">Filter</button>
+        <button id="filterButton" style="background-color:#F08E00;width:100%;margin-top:20px;margin-bottom:10px;opacity:0.6;pointer-events:none">Filter</button>
+        </div>
+
+        <!-- Deck Destination -->
+        <div id="decksDestination" style="height:100%;width:100%;display:flex;flex-direction:column;align-content:center"></div>
+
+        <!-- Tooltip -->
+        <div id="toolTipDiv" style="opacity:0%"></div>
     </div>
 </body>
 </html>

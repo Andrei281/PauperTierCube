@@ -1,29 +1,17 @@
-﻿// We're on the decks filtering page. Prepare various elements...
-function prepareDecksPage() {
+﻿// We're in decks page. Prepare various elements...
+async function prepareDecksPage() {
 
-    // Acquire and apply deck info to deckId and strat select elements
-    FetchAndAppendDeckDataToSelectElements();
+    // Show loading icon
+    let loadingGifContainer = document.createElement("div");
+    loadingGifContainer.setAttribute("style", "margin: auto");
+    let loadingGif = document.createElement("img");
+    loadingGif.setAttribute("src", "https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif");
+    loadingGif.setAttribute("style", "margin: auto; width: 50px; height: 50px");
+    loadingGifContainer.appendChild(loadingGif);
+    document.getElementById('decksDestination').appendChild(loadingGifContainer);
 
-    // Save height of tallest div for all content divs
-    document.getElementById("genericStatsButtonContent").setAttribute("style", "display: flex");
-    let divHeightToRetain = document.getElementById("genericStatsButtonContent").clientHeight;
-
-    // Make buttons display their respective contents
-    let tablinks = document.getElementsByClassName("tablinks");
-    for (let i = 0; i < tablinks.length; i++) {
-        tablinks[i].addEventListener("click", () => openTabContent(event, tablinks[i].id + "Content", divHeightToRetain));
-    }
-    document.getElementById("genericStatsButtonContent").click();
-
-    // Prepare filter button
-    document.getElementById("filterButton").addEventListener("click", () => GenerateFilteredDecksWindow());
-}
-
-// Fetching deck data specifically for filter dropdowns
-function FetchAndAppendDeckDataToSelectElements() {
-
-    // By default, we know we're getting info about all decks for our dropdowns
-    fetch('/data/DeckData?&primarySort=DatePlayed&secondarySort=Strat&countDrafts=true', {
+    // Acquire preliminary deck info
+    let preliminaryDeckData = await fetch('/data/DeckData?&primarySort=DatePlayed&secondarySort=Strat&countDrafts=true', {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
         mode: 'no-cors', // no-cors, *cors, same-origin
@@ -36,17 +24,25 @@ function FetchAndAppendDeckDataToSelectElements() {
         .then(deckdata => {
             if (deckdata) {
                 if (!Array.isArray(deckdata)) throw 'decks in server response is not an array.'
-                let deckIds = GetPropertyFromDecks(deckdata[0], 'deckId', false);
-                let deckStrats = GetPropertyFromDecks(deckdata[0], 'strat', true);
-                ApplyDropdownInfo(document.getElementById('deckIds'), deckIds);
-                ApplyDropdownInfo(document.getElementById('strats'), deckStrats);
-                document.getElementById('pastDrafts').setAttribute('value', deckdata[1]);
-                document.getElementById('filterButton').setAttribute('style', 'margin-top:20px;width:50%;opacity:1;pointer-events:initial');
+                return deckdata;
             }
         }).catch(err => {
-            if (err) { }
             alert("Error fetching data: " + err);
         });
+
+    // Apply deck info to various filter elements
+    let deckIds = GetPropertyFromDecks(preliminaryDeckData[0], 'deckId', false);
+    let deckStrats = GetPropertyFromDecks(preliminaryDeckData[0], 'strat', true);
+    ApplyDropdownInfo(document.getElementById('deckIds'), deckIds);
+    ApplyDropdownInfo(document.getElementById('strats'), deckStrats);
+    document.getElementById('pastDrafts').setAttribute('value', preliminaryDeckData[1]);
+
+    // Insert preliminary, fetched decks into page
+    FillDecksDiv(preliminaryDeckData[0]);
+
+    // Prepare filter button
+    document.getElementById('filterButton').setAttribute('style', 'background-color:#F08E00;margin-top:20px;margin-bottom:10px;width:100%;opacity:1;pointer-events:initial');
+    document.getElementById("filterButton").addEventListener("click", () => FetchDeckData());
 }
 
 // Function to turn a list of decks into a list of property instances of a single property among those decks
@@ -81,51 +77,8 @@ function ApplyDropdownInfo(dropdownElement, propertyInstances) {
     }
 }
 
-// "Filter" button has been clicked. Prepare and navigate to new page
-function GenerateFilteredDecksWindow() {
-
-    // Acquire info for generic filters
-    let deckIdFilterVal = document.getElementById('deckIdFilter').value;
-    let playerNameFilterVal = document.getElementById('playerNameFilter').value;
-    let stratFilterVal = document.getElementById('stratFilter').value;
-    let colorFilterVals = AcquireFilterDivValues(document.getElementById('colorsFilter'));
-
-    // Acquire info for numeric filters
-    let minWinsFilterVal = document.getElementById('minWins').value;
-    let maxWinsFilterVal = document.getElementById('maxWins').value;
-    let minLossesFilterVal = document.getElementById('minLosses').value;
-    let maxLossesFilterVal = document.getElementById('maxLosses').value;
-    let minAverageManaValueFilterVal = document.getElementById('minAverageManaValueFilter').value;
-    let maxAverageManaValueFilterVal = document.getElementById('maxAverageManaValueFilter').value;
-    let minLandsFilterVal = document.getElementById('minLands').value;
-    let maxLandsFilterVal = document.getElementById('maxLands').value;
-    let minNonlandsFilterVal = document.getElementById('minNonlands').value;
-    let maxNonlandsFilterVal = document.getElementById('maxNonlands').value;
-    let pastDraftsFilterVal = document.getElementById('pastDrafts').value;
-
-    // Acquire info for sorting filters
-    let primarySortVal = document.getElementById("primarySortInput").value;
-    let secondarySortVal = document.getElementById("secondarySortInput").value;
-
-    // Check browser support
-    if (typeof (Storage) !== "undefined") {
-
-        // Store filter info in browser session
-        let filterVals = [deckIdFilterVal, playerNameFilterVal, stratFilterVal, colorFilterVals, pastDraftsFilterVal, minWinsFilterVal,
-            maxWinsFilterVal, minLossesFilterVal, maxLossesFilterVal, minAverageManaValueFilterVal, maxAverageManaValueFilterVal,
-            minLandsFilterVal, maxLandsFilterVal, minNonlandsFilterVal, maxNonlandsFilterVal, primarySortVal, secondarySortVal];
-        localStorage.clear();
-        for (let i = 0; i < filterVals.length; i++) {
-            localStorage.setItem("filterVal" + i, filterVals[i]);
-        }
-
-        // Navigate to new page
-        window.location.assign('https://localhost:5001/Home/DecksFilterPopUp');
-    }
-}
-
 // Fetch filtered decks
-function FetchDeckData() {
+async function FetchDeckData() {
 
     // Show loading icon
     let loadingGifContainer = document.createElement("div");
@@ -134,28 +87,28 @@ function FetchDeckData() {
     loadingGif.setAttribute("src", "https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif");
     loadingGif.setAttribute("style", "margin: auto; width: 50px; height: 50px");
     loadingGifContainer.appendChild(loadingGif);
-    document.getElementById('wrapperDiv').appendChild(loadingGifContainer);
+    document.getElementById('decksDestination').appendChild(loadingGifContainer);
 
     // Begin fetching database info
-    url = '/data/DeckData?deckIdFilter=' + encodeURIComponent(localStorage.getItem('filterVal0'))
-        + '&playerNameFilter=' + encodeURIComponent(localStorage.getItem('filterVal1'))
-        + '&stratFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
-        + '&colorFilter=' + encodeURIComponent(localStorage.getItem('filterVal3'))
-        + '&pastDraftsFilter=' + encodeURIComponent(localStorage.getItem('filterVal4'))
-        + '&minWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal5'))
-        + '&maxWinsFilter=' + encodeURIComponent(localStorage.getItem('filterVal6'))
-        + '&minLossesFilter=' + localStorage.getItem('filterVal7')
-        + '&maxLossesFilter=' + localStorage.getItem('filterVal8')
-        + '&minAverageManaValueFilter=' + localStorage.getItem('filterVal9')
-        + '&maxAverageManaValueFilter=' + localStorage.getItem('filterVal10')
-        + '&minLandsFilter=' + localStorage.getItem('filterVal11')
-        + '&maxLandsFilter=' + localStorage.getItem('filterVal12')
-        + '&minNonlandsFilter=' + localStorage.getItem('filterVal13')
-        + '&maxNonlandsFilter=' + localStorage.getItem('filterVal14')
-        + '&primarySort=' + localStorage.getItem('filterVal15')
-        + '&secondarySort=' + localStorage.getItem('filterVal16')
+    url = '/data/DeckData?deckIdFilter=' + document.getElementById('deckIdFilter').value
+        + '&playerNameFilter=' + document.getElementById('playerNameFilter').value
+        + '&stratFilter=' + document.getElementById('stratFilter').value
+        + '&colorFilter=' + AcquireFilterDivValues(document.getElementById('colorsFilter'))
+        + '&pastDraftsFilter=' + document.getElementById('pastDrafts').value
+        + '&minWinsFilter=' + document.getElementById('minWins').value
+        + '&maxWinsFilter=' + document.getElementById('maxWins').value
+        + '&minLossesFilter=' + document.getElementById('minLosses').value
+        + '&maxLossesFilter=' + document.getElementById('maxLosses').value
+        + '&minAverageManaValueFilter=' + document.getElementById('minAverageManaValueFilter').value
+        + '&maxAverageManaValueFilter=' + document.getElementById('maxAverageManaValueFilter').value
+        + '&minLandsFilter=' + document.getElementById('minLands').value
+        + '&maxLandsFilter=' + document.getElementById('maxLands').value
+        + '&minNonlandsFilter=' + document.getElementById('minNonlands').value
+        + '&maxNonlandsFilter=' + document.getElementById('maxNonlands').value
+        + '&primarySort=' + document.getElementById("primarySortInput").value
+        + '&secondarySort=' + document.getElementById("secondarySortInput").value
         + '&countDrafts=false';
-    fetch(url, {
+    await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
         mode: 'no-cors', // no-cors, *cors, same-origin
@@ -168,7 +121,7 @@ function FetchDeckData() {
         .then(decks => {
             if (decks) {
                 if (!Array.isArray(decks)) throw 'decks in server response is not an array.'
-                loadingGifContainer.remove();
+                /*                loadingGifContainer.remove();*/
                 FillDecksDiv(decks);
             }
         }).catch(err => {
@@ -181,17 +134,14 @@ function FetchDeckData() {
 function FillDecksDiv(decks) {
 
     // Create title div used to count decks
-    document.getElementById('wrapperDiv').innerHTML = "";
+    var deckDestinationElement = document.getElementById('decksDestination');
+    deckDestinationElement.innerHTML = "";
     var deckCountHeader = document.createElement('div');
-    deckCountHeader.setAttribute('style', 'height:8%;width:100%;background-color:white;border:3px inset gray;border-bottom:none;font-weight:bold;font-size:25px;display:flex;align-items:center;justify-content:center');
+    deckCountHeader.setAttribute('style', 'width:100%;background-color:white;border:3px inset gray;border-bottom:none;font-weight:bold;font-size:25px;display:flex;align-items:center;justify-content:center;padding:10px');
     deckCountHeader.innerHTML = 'Decks - (' + decks.length + ')';
-    wrapperDiv.appendChild(deckCountHeader);
+    deckDestinationElement.appendChild(deckCountHeader);
 
-    // Create div used to display decks
-    var deckDestinationElement = document.createElement('div');
-    deckDestinationElement.setAttribute('class', 'DefaultDiv');
-
-    // Fill deckDestinationElement with decks
+    // Fill deckDestination with decks
     for (let i = 0; i < decks.length; i++) {
 
         // Create full deck div
@@ -215,12 +165,12 @@ function FillDecksDiv(decks) {
 
         // Inside full deck div: Create playerName div
         let playerNameDiv = document.createElement('div');
-        playerNameDiv.innerHTML = "By: " + decks[i].playerName;
+        playerNameDiv.innerHTML = "By : " + decks[i].playerName;
         deckDiv.appendChild(playerNameDiv);
 
         // Inside full deck div: Create wins/losses div
         let winsDiv = document.createElement('div');
-        winsDiv.innerHTML = "W/L: " + decks[i].gamesWon + " / " + decks[i].gamesLost;
+        winsDiv.innerHTML = "W / L : " + decks[i].gamesWon + " / " + decks[i].gamesLost;
         deckDiv.appendChild(winsDiv);
 
         // Inside full deck div: Create colors div
@@ -231,10 +181,13 @@ function FillDecksDiv(decks) {
             let colorOfDiv = deckColors[j];
             let backgroundColor = ApplyColor(colorOfDiv);
             let colorDiv = document.createElement('div');
+            colorDiv.setAttribute('class', 'ColorIndicator');
             if (j == deckColors.length - 1) {
-                colorDiv.setAttribute('style', 'border:solid;width:25px;height:25px;background-color:' + backgroundColor);
+                //colorDiv.setAttribute('style', 'border:solid;width:25px;height:25px;background-color:' + backgroundColor);
+                colorDiv.setAttribute('style', 'background-color:' + backgroundColor);
             } else {
-                colorDiv.setAttribute('style', 'border:solid;width:25px;height:25px;margin-right:5px;background-color:' + backgroundColor);
+                //colorDiv.setAttribute('style', 'border:solid;width:25px;height:25px;margin-right:5px;background-color:' + backgroundColor);
+                colorDiv.setAttribute('style', 'margin-right:5px;background-color:' + backgroundColor);
             }
             colorsDiv.appendChild(colorDiv);
         }
@@ -254,8 +207,6 @@ function FillDecksDiv(decks) {
         // Deck div is done. Insert into destination element
         deckDestinationElement.appendChild(deckDiv);
     }
-
-    wrapperDiv.appendChild(deckDestinationElement);
 }
 
 function ApplyColor(colorOfDiv) {
@@ -305,7 +256,7 @@ function DisplayDeckToolTip(deckElement, deck) {
 
     let landsDiv = document.createElement('div');
     landsDiv.setAttribute("class", "TooltipStat");
-    landsDiv.innerHTML = "Lands/Spells: " + deck.landCount + " / " + deck.nonlandCount;
+    landsDiv.innerHTML = "Lands / Spells - " + deck.landCount + " / " + deck.nonlandCount;
     statsDiv.appendChild(landsDiv);
 
     // Insert stats div into tooltip
