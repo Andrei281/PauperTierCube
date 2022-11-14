@@ -23,7 +23,6 @@
         }
         .DefaultDiv{
             width:100%;
-            position:absolute;
             height:92%;
             background-color:white;
             overflow-y:scroll;            
@@ -71,49 +70,36 @@
             opacity:0;
         }
         .FilterDiv {
-            width: max-content;
-            height: max-content;
-            float: left;
+            margin:10px;
         }
         label {
             cursor: pointer;
         }
-        /* Tab Classes */
-        .tab {
-            display: flex;
-            justify-content: space-evenly;
-            width: 100%;
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
+        .DropdownNumberInput {
+            margin-left:10px;
+            width:50%;
+            float:right
         }
-        /* Style the buttons that are used to open the tab content */
-        .tab button {
-            background-color: inherit;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-            width: 20%;
+        .FilterContainer {
+            position:absolute;
+            left:80px;
+            display:block;
+            width:200px;
+            background-color:white;
+            padding:10px;
+            border:solid;
+            border-radius:10px;
         }
-        /* Change background color of buttons on hover */
-        .tab button:hover {
-            background-color: #ddd;
+        .FilterDropdownButton {
+            width:100%;
+            text-align:left;
+            border:none;
+            margin-bottom:10px;
         }
-        /* Create an active/current tablink class */
-        .tab button.active {
-            background-color: #ccc;
-        }
-        /* Style the tab content */
-        .tabcontent {
-            justify-content: space-evenly;
-            width: 100%;
+        .FilterDropdownContainer {
             display: none;
-            padding: 30px 12px;
-            border: 1px solid #ccc;
-            border-top: none;
-            height: fit-content;
+            padding-left: 8px;
+            margin-bottom: 5px;
         }
     </style>
 </head>

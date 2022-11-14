@@ -30,6 +30,9 @@ async function prepareDecksPage() {
             alert("Error fetching data: " + err);
         });
 
+    // Prepare dropdown filter elements
+    PrepareFilterDropdowns();
+
     // Apply deck info to various filter elements
     let deckIds = GetPropertyFromDecks(preliminaryDeckData[0], 'deckId', false);
     let deckStrats = GetPropertyFromDecks(preliminaryDeckData[0], 'strat', true);

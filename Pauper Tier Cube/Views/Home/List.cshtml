@@ -10,77 +10,72 @@
 </head>
 
 <body onload="prepareListPage();">
-    <div style="display:flex;flex-direction:column;align-items:center">
+<div style="display:flex;flex-direction:column;align-items:center">
 
-        <!-- Tab links -->
-        <div class="tab">
-            <button class="tablinks" id="baseStatsButton">Base Stats</button>
-            <button class="tablinks" id="displayButton">Display</button>
-            <button class="tablinks" id ="gameStatsButton">Game Stats</button>
+     <!-- Filters: -->
+    <div class="FilterContainer">
+        <div class="FilterDiv" style="width:100px">
+            <label>Name:</label><br>
+            <input style="width:100%" id="nameFilterInput"/>
         </div>
-
-    <!-- Tab content: Base Stats -->
-    <div id="baseStatsButtonContent" class="tabcontent">        
-            <div class="FilterDiv" style="width:100px">
-                <label>Name:</label><br>
-                <input style="width:100%" id="nameFilterInput"/>
-            </div>
-            <div class="FilterDiv">
-                <label>Tier:</label><br>
-                <div id="tierFilterInput">
-                    <label><input type="checkbox" value="bronze"/> Bronze</label><br>
-                    <label><input type="checkbox" value="silver"/> Silver</label><br>
-                    <label><input type="checkbox" value="gold"/> Gold</label>
-                </div>
-            </div>
-            <div class="FilterDiv">
-                <label>Color Identity:</label><br>
-                <div id="colorIdentityFilterInput">
-                    <label><input type="checkbox" value="W"/> White</label><br>
-                    <label><input type="checkbox" value="U"/> Blue</label><br>
-                    <label><input type="checkbox" value="B"/> Black</label><br>
-                    <label><input type="checkbox" value="R"/> Red</label><br>
-                    <label><input type="checkbox" value="G"/> Green</label><br>
-                    <label><input type="checkbox" value="multiple"/> Multiple</label><br>
-                    <label><input type="checkbox" value="colorless"/> Colorless</label>
-                </div>
-            </div>
-            <div class="FilterDiv" style="width:100px">
-                <label>Mana Value:</label><br>                               
-                <label>Min:</label>
-                <input type="number" style="margin-left:10px;width:40%;float:right" id="minManaValueFilterInput" value="0"/><br>
-                <label>Max:</label>
-                <input type="number" style="margin-left:10px;width:40%;float:right" id="maxManaValueFilterInput"/>
-            </div>
-            <div class="FilterDiv">
-                <label>Type:</label><br>
-                <div id="typeFilterInput">
-                    <label><input type="checkbox" value="artifact"/> Artifact</label><br>
-                    <label><input type="checkbox" value="creature"/> Creature</label><br>
-                    <label><input type="checkbox" value="enchantment"/> Enchantment</label><br>
-                    <label><input type="checkbox" value="instant"/> Instant</label><br>
-                    <label><input type="checkbox" value="land"/> Land</label><br>
-                    <label><input type="checkbox" value="sorcery"/> Sorcery</label><br>
-                    <label><input type="checkbox" value="artifact creature"/> Artifact Creature</label><br>
-                    <label><input type="checkbox" value="artifact land"/> Artifact Land</label><br>
-                    <label><input type="checkbox" value="enchantment creature"/> Enchantment Creature</label><br>
-                    <label><input type="checkbox" value="instant creature"/> Instant Creature</label><br>
-                    <label><input type="checkbox" value="sorcery creature"/> Sorcery Creature</label>
-                </div>
-            </div>
-            <div class="FilterDiv">
-                <label>Draftability:</label><br>
-                <div id="draftabilityStatusFilterInput">
-                    <label><input type="checkbox" value="draftable" checked="checked"/> Draftable</label><br>
-                    <label><input type="checkbox" value="changed"> Changed</label><br>
-                    <label><input type="checkbox" value="not draftable"/> Not Draftable</label>
-                </div>
-            </div>
-    </div>
-
-    <!-- Tab content: Display -->
-    <div id="displayButtonContent" class="tabcontent">
-        <div class="FilterDiv" style="margin-left:0px">
+        <button class="FilterDropdownButton">Tier:</button>
+        <div class="FilterDropdownContainer" id="tierFilterInput">
+            <label><input type="checkbox" value="bronze"/> Bronze</label><br>
+            <label><input type="checkbox" value="silver"/> Silver</label><br>
+            <label><input type="checkbox" value="gold"/> Gold</label>
+        </div>
+        <button class="FilterDropdownButton">Color Identity:</button>
+        <div class="FilterDropdownContainer" id="colorIdentityFilterInput">
+            <label><input type="checkbox" value="W"/> White</label><br>
+            <label><input type="checkbox" value="U"/> Blue</label><br>
+            <label><input type="checkbox" value="B"/> Black</label><br>
+            <label><input type="checkbox" value="R"/> Red</label><br>
+            <label><input type="checkbox" value="G"/> Green</label><br>
+            <label><input type="checkbox" value="multiple"/> Multiple</label><br>
+            <label><input type="checkbox" value="colorless"/> Colorless</label>
+        </div>
+        <button class="FilterDropdownButton">Mana Value:</button>
+        <div class="FilterDropdownContainer">
+            <label>Min:</label>
+            <input type="number" class="DropdownNumberInput" id="minManaValueFilterInput" value="0"/><br>
+            <label>Max:</label>
+            <input type="number" class="DropdownNumberInput" id="maxManaValueFilterInput"/>
+        </div>
+        <button class="FilterDropdownButton">Type:</button>
+        <div class="FilterDropdownContainer" id="typeFilterInput">
+            <label><input type="checkbox" value="artifact"/> Artifact</label><br>
+            <label><input type="checkbox" value="creature"/> Creature</label><br>
+            <label><input type="checkbox" value="enchantment"/> Enchantment</label><br>
+            <label><input type="checkbox" value="instant"/> Instant</label><br>
+            <label><input type="checkbox" value="land"/> Land</label><br>
+            <label><input type="checkbox" value="sorcery"/> Sorcery</label><br>
+            <label><input type="checkbox" value="artifact creature"/> Artifact Creature</label><br>
+            <label><input type="checkbox" value="artifact land"/> Artifact Land</label><br>
+            <label><input type="checkbox" value="enchantment creature"/> Enchantment Creature</label><br>
+            <label><input type="checkbox" value="instant creature"/> Instant Creature</label><br>
+            <label><input type="checkbox" value="sorcery creature"/> Sorcery Creature</label>
+        </div>
+        <button class="FilterDropdownButton">Draftability:</button>
+        <div class="FilterDropdownContainer" id="draftabilityStatusFilterInput">
+            <label><input type="checkbox" value="draftable" checked="checked"/> Draftable</label><br>
+            <label><input type="checkbox" value="changed"> Changed</label><br>
+            <label><input type="checkbox" value="not draftable"/> Not Draftable</label>
+        </div>
+        <button class="FilterDropdownButton">Games Played:</button>
+        <div class="FilterDropdownContainer">
+            <label>Min:</label>
+            <input type="number" class="DropdownNumberInput" id="minGamesPlayedFilterInput" value="0"/><br/>
+            <label>Max:</label>
+            <input type="number" class="DropdownNumberInput" id="maxGamesPlayedFilterInput"/>
+        </div>
+        <button class="FilterDropdownButton">Win Rate:</button>
+        <div class="FilterDropdownContainer" id="winRateFilterDiv">
+            <label>Min:</label>
+            <input type="number" class="DropdownNumberInput" id="minWinRateFilterInput" value="0"/><br/>
+            <label>Max:</label>
+            <input type="number" class="DropdownNumberInput" id="maxWinRateFilterInput" value="100"/>
+        </div>
+        <div class="FilterDiv">
             <label>Layout:</label><br>
             <select id="primaryFilterInput">
                 <option value="default">Default</option>
@@ -96,54 +91,42 @@
             </select>
         </div>
         <div class="FilterDiv">
-                <label>Primary Sort:</label><br>
-                <select id="primarySortInput">
-                    <option value="ColorIdentity">Color Identity</option>
-                    <option value="Cmc" selected="selected">Mana Value</option>
-                    <option value="CombinedTypes">Type</option>
-                    <option value="Tier">Tier</option>
-                    <option value="Draftability">Draftability</option>
-                    <option value="GamesPlayed">Games Played</option>
-                    <option value="WinRatePercentage">Win Rate</option>
-                </select>
-            </div>
+            <label>Primary Sort:</label><br>
+            <select id="primarySortInput">
+                <option value="ColorIdentity">Color Identity</option>
+                <option value="Cmc" selected="selected">Mana Value</option>
+                <option value="CombinedTypes">Type</option>
+                <option value="Tier">Tier</option>
+                <option value="Draftability">Draftability</option>
+                <option value="GamesPlayed">Games Played</option>
+                <option value="WinRatePercentage">Win Rate</option>
+            </select>
+        </div>
         <div class="FilterDiv">
-                <label>Secondary Sort:</label><br>
-                <select id="secondarySortInput">
-                    <option value="Name" selected="selected">Name</option>
-                    <option value="ColorIdentity">Color Identity</option>
-                    <option value="Cmc">Mana Value</option>
-                    <option value="CombinedTypes">Type</option>
-                    <option value="Tier">Tier</option>
-                    <option value="Draftability">Draftability</option>
-                    <option value="GamesPlayed">Games Played</option>
-                    <option value="WinRatePercentage">Win Rate</option>
-                </select>
-            </div>
+            <label>Secondary Sort:</label><br>
+            <select id="secondarySortInput">
+                <option value="Name" selected="selected">Name</option>
+                <option value="ColorIdentity">Color Identity</option>
+                <option value="Cmc">Mana Value</option>
+                <option value="CombinedTypes">Type</option>
+                <option value="Tier">Tier</option>
+                <option value="Draftability">Draftability</option>
+                <option value="GamesPlayed">Games Played</option>
+                <option value="WinRatePercentage">Win Rate</option>
+            </select>
+        </div>
+
+        <!-- Filter Button -->
+        <button id="filterButton" style="margin-top:20px;width:50%">Filter</button>
+        @*<button onclick="GenerateRandomPackWindow()" style="margin-top:5%">Generate Random Pack</button>*@
     </div>
 
-    <!-- Tab content: Game Stats -->
-    <div id="gameStatsButtonContent" class="tabcontent">
-        <div class="FilterDiv" style="width:120px">
-            <label>Games Played:</label><br>                      
-            <label>Min:</label>
-            <input type="number" style="margin-left:10px;width:40%;float:right" id="minGamesPlayedFilterInput" value="0"/><br/>
-            <label>Max:</label>
-            <input type="number" style="margin-left:10px;width:40%;float:right" id="maxGamesPlayedFilterInput"/>
-        </div>
-        <div class="FilterDiv" id="winRateFilterDiv">
-            <label>Win Rate:</label><br>
-            <label>Min:</label>
-            <input type="number" style="margin-left:10px;width:50%;float:right" id="minWinRateFilterInput" value="0"/><br/>
-            <label>Max:</label>
-            <input type="number" style="margin-left:10px;width:50%;float:right" id="maxWinRateFilterInput" value="100"/>
-        </div>
+    <!-- Card Destination -->
+    <div id="cardDestination" style="width:130%">
     </div>
-    
-    <!-- Filter Button -->
-    <button id="filterButton" style="margin-top:20px;width:50%">Filter</button>
-    </div>
-    
-    @*<button onclick="GenerateRandomPackWindow()" style="margin-top:5%">Generate Random Pack</button>*@
+
+    <!-- Tooltip -->
+    <div id="toolTipDiv" style="opacity:0%"></div>
+</div>
 </body>
 </html>

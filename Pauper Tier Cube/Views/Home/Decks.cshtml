@@ -45,7 +45,7 @@
     <div id="wrapperDiv" style="display:flex;flex-direction:column;align-items:center;padding-top:50px">
 
         <!-- Filters -->
-        <div style="position:fixed;left:80px;display:block;width:180px;background-color:white;padding:10px;border:solid;border-radius:10px">
+        <div class="FilterContainer">
             <div class="FilterDiv">
                 <label>Deck ID:</label><br>
                 <input type="number" list="deckIds" style="width:100%" id="deckIdFilter">
@@ -77,48 +77,52 @@
                 </datalist>
             </div>
             <div class="FilterDiv">
-                <label>Colors:</label><br>
-                <div id="colorsFilter">
-                    <label><input type="checkbox" value="W"/> White</label><br>
-                    <label><input type="checkbox" value="U"/> Blue</label><br>
-                    <label><input type="checkbox" value="B"/> Black</label><br>
-                    <label><input type="checkbox" value="R"/> Red</label><br>
-                    <label><input type="checkbox" value="G"/> Green</label>
-                </div>
-            </div>
-            <div class="FilterDiv">
-                <label>Wins:</label><br>
-                <input type="number" class="numberInput" id="minWins" value="0"/>
-                <label> - </label>
-                <input type="number" class="numberInput" id="maxWins"/>
-            </div>
-            <div class="FilterDiv">
-                <label>Losses:</label><br>
-                <input type="number" class="numberInput" id="minLosses" value="0"/>
-                <label> - </label>
-                <input type="number" class="numberInput" id="maxLosses"/>
-            </div>
-            <div class="FilterDiv">
-                <label>Average Mana Value:</label><br>
-                <input type="number" class="numberInput" id="minAverageManaValueFilter" value="0"/>
-                <label>-</label>
-                <input type="number" class="numberInput" id="maxAverageManaValueFilter"/>
-            </div>
-            <div class="FilterDiv">
-                <label>Lands:</label><br>
-                <input type="number" class="numberInput" id="minLands" value="0"/>
-                <label>-</label>
-                <input type="number" class="numberInput" id="maxLands"/>
-            </div>
-            <div class="FilterDiv">
-                <label>Nonlands:</label><br>
-                <input type="number" class="numberInput" id="minNonlands" value="0"/>
-                <label>-</label>
-                <input type="number" class="numberInput" id="maxNonlands"/>
-            </div>
-            <div class="FilterDiv">
                 <label>Past Drafts:</label><br>
-                <input type="number" style="width:60px" id="pastDrafts"/>
+                <input type="number" style="width:100%" id="pastDrafts"/>
+            </div>
+
+            <button class="FilterDropdownButton">Colors:</button>
+            <div class="FilterDropdownContainer" id="colorsFilter">
+                <label><input type="checkbox" value="W"/> White</label><br>
+                <label><input type="checkbox" value="U"/> Blue</label><br>
+                <label><input type="checkbox" value="B"/> Black</label><br>
+                <label><input type="checkbox" value="R"/> Red</label><br>
+                <label><input type="checkbox" value="G"/> Green</label>
+            </div>
+            <button class="FilterDropdownButton">Wins:</button>
+            <div class="FilterDropdownContainer">
+                <label>Min:</label>
+                <input type="number" class="DropdownNumberInput" id="minWins" value="0"/><br/>
+                <label>Max:</label>
+                <input type="number" class="DropdownNumberInput" id="maxWins"/>
+            </div>
+            <button class="FilterDropdownButton">Losses:</button>
+            <div class="FilterDropdownContainer">
+                <label>Min:</label>
+                <input type="number" class="DropdownNumberInput" id="minLosses" value="0"/><br/>
+                <label>Max:</label>
+                <input type="number" class="DropdownNumberInput" id="maxLosses"/>
+            </div>
+            <button class="FilterDropdownButton">Average Mana Value:</button>
+            <div class="FilterDropdownContainer">
+                <label>Min:</label>
+                <input type="number" class="DropdownNumberInput" id="minAverageManaValueFilter" value="0"/><br/>
+                <label>Max:</label>
+                <input type="number" class="DropdownNumberInput" id="maxAverageManaValueFilter"/>
+            </div>
+            <button class="FilterDropdownButton">Lands:</button>
+            <div class="FilterDropdownContainer">
+                <label>Min:</label>
+                <input type="number" class="DropdownNumberInput" id="minLands" value="0"/><br/>
+                <label>Max:</label>
+                <input type="number" class="DropdownNumberInput" id="maxLands"/>
+            </div>
+            <button class="FilterDropdownButton">Nonlands:</button>
+            <div class="FilterDropdownContainer">
+                <label>Min:</label>
+                <input type="number" class="DropdownNumberInput" id="minNonlands" value="0"/><br/>
+                <label>Max:</label>
+                <input type="number" class="DropdownNumberInput" id="maxNonlands"/>
             </div>
             <div class="FilterDiv">
                 <label>Primary Sort:</label><br>

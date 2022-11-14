@@ -1,71 +1,26 @@
 ﻿function prepareListPage() {
-    // Save height of tallest div for all content divs
-    document.getElementById("baseStatsButtonContent").setAttribute("style", "display: initial");
-    let divHeightToRetain = document.getElementById("baseStatsButtonContent").clientHeight;
-
-    // Make buttons display their respective contents
-    let tablinks = document.getElementsByClassName("tablinks");
-    for (let i = 0; i < tablinks.length; i++) {
-        tablinks[i].addEventListener("click", () => openTabContent(event, tablinks[i].id + "Content", divHeightToRetain));
-    }
-
-    // Misc
-    document.getElementById("filterButton").addEventListener("click", () => GenerateFilteredCubeWindow());
+    document.getElementById("filterButton").addEventListener("click", () => FetchCardData());
     document.getElementById("minGamesPlayedFilterInput").addEventListener("change", () => ToggleWinRateAccessibility());
+    PrepareFilterDropdowns();
     ToggleWinRateAccessibility();
-    document.getElementById("baseStatsButton").click();
+    FetchCardData();
 }
 
 // If minGames filter = 0, keep win rate filter inaccessible
 function ToggleWinRateAccessibility() {
+    let winRateFilterDiv = document.getElementById("winRateFilterDiv");
     if (document.getElementById("minGamesPlayedFilterInput").value == "0") {
-        document.getElementById("winRateFilterDiv").setAttribute("style", "opacity: 0.6; pointer-events: none; width: 100px");
+        winRateFilterDiv.style.opacity = 0.6;
+        winRateFilterDiv.style.pointerEvents = "none";
         document.getElementById("minWinRateFilterInput").value = "0";
         document.getElementById("maxWinRateFilterInput").value = "100";
     } else {
-        document.getElementById("winRateFilterDiv").setAttribute("style", "opacity: 1; pointer-events: auto; width: 100px");
+        winRateFilterDiv.style.opacity = 1;
+        winRateFilterDiv.style.pointerEvents = "auto";
     }
 }
 
-// "Filter" button has been clicked. Prepare and navigate to new page
-function GenerateFilteredCubeWindow() {
-    // Acquire info for base stats filters
-    let primaryFilterVal = document.getElementById('primaryFilterInput').value;
-    let nameFilterVal = document.getElementById('nameFilterInput').value;
-    let tierFilterVals = AcquireFilterDivValues(document.getElementById('tierFilterInput'));
-    let colorIdentityFilterVals = AcquireFilterDivValues(document.getElementById('colorIdentityFilterInput'));
-    let minManaValueFilterVal = document.getElementById('minManaValueFilterInput').value;
-    let maxManaValueFilterVal = document.getElementById('maxManaValueFilterInput').value;
-    let typeFilterVals = AcquireFilterDivValues(document.getElementById('typeFilterInput'));
-    let draftabilityStatusFilterVals = AcquireFilterDivValues(document.getElementById('draftabilityStatusFilterInput'));
-    let displayFilterVal = document.getElementById('displayFilterInput').value;
-
-    // Acquire info for game stats filters
-    let minGamesPlayedFilterVal = document.getElementById('minGamesPlayedFilterInput').value;
-    let maxGamesPlayedFilterVal = document.getElementById('maxGamesPlayedFilterInput').value;
-    let minWinRateFilterVal = document.getElementById('minWinRateFilterInput').value;
-    let maxWinRateFilterVal = document.getElementById('maxWinRateFilterInput').value;
-
-    // Acquire info for sorting filters
-    let primarySortVal = document.getElementById("primarySortInput").value;
-    let secondarySortVal = document.getElementById("secondarySortInput").value;
-
-    // Check browser support
-    if (typeof (Storage) !== "undefined") {
-        // Store filter info in browser session
-        let filterVals = [primaryFilterVal, displayFilterVal, nameFilterVal, colorIdentityFilterVals, minManaValueFilterVal, maxManaValueFilterVal,
-            typeFilterVals, tierFilterVals, draftabilityStatusFilterVals, minWinRateFilterVal, maxWinRateFilterVal, minGamesPlayedFilterVal,
-            maxGamesPlayedFilterVal, primarySortVal, secondarySortVal];
-        localStorage.clear();
-        for (let i = 0; i < filterVals.length; i++) {
-            localStorage.setItem("filterVal" + i, filterVals[i]);
-        }
-        // Navigate to new page
-        window.location.assign('https://localhost:5001/Home/ListFilterPopUp');
-    }
-}
-
-// New page has loaded. Fetch and display cards
+// Fetch and display cards
 function FetchCardData() {
 
     // Show loading icon
@@ -75,25 +30,25 @@ function FetchCardData() {
     loadingGif.setAttribute("src", "https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif");
     loadingGif.setAttribute("style", "margin: auto; width: 50px; height: 50px");
     loadingGifContainer.appendChild(loadingGif);
-    document.getElementById('wrapperDiv').appendChild(loadingGifContainer);
+    document.getElementById('cardDestination').appendChild(loadingGifContainer);
 
     // Begin fetching database info
-    let primaryFilter = localStorage.getItem('filterVal0');
-    let displayFilter = localStorage.getItem('filterVal1');
-    let url = '/data/CardData?nameFilter=' + encodeURIComponent(localStorage.getItem('filterVal2'))
-        + '&colorIdentityFilter=' + encodeURIComponent(localStorage.getItem('filterVal3'))
-        + '&minManaValueFilter=' + encodeURIComponent(localStorage.getItem('filterVal4'))
-        + '&maxManaValueFilter=' + encodeURIComponent(localStorage.getItem('filterVal5'))
-        + '&typeFilter=' + encodeURIComponent(localStorage.getItem('filterVal6'))
-        + '&tierFilter=' + encodeURIComponent(localStorage.getItem('filterVal7'))
-        + '&draftabilityFilter=' + encodeURIComponent(localStorage.getItem('filterVal8'))
-        + '&displayFilter=' + encodeURIComponent(displayFilter)
-        + '&minWinRateFilter=' + localStorage.getItem('filterVal9')
-        + '&maxWinRateFilter=' + localStorage.getItem('filterVal10')
-        + '&minGamesPlayedFilter=' + localStorage.getItem('filterVal11')
-        + '&maxGamesPlayedFilter=' + localStorage.getItem('filterVal12')
-        + '&primarySort=' + localStorage.getItem('filterVal13')
-        + '&secondarySort=' + localStorage.getItem('filterVal14');
+    let primaryFilter = document.getElementById('primaryFilterInput').value;
+    let displayFilter = document.getElementById('displayFilterInput').value;
+    let url = '/data/CardData?nameFilter=' + document.getElementById('nameFilterInput').value
+        + '&colorIdentityFilter=' + AcquireFilterDivValues(document.getElementById('colorIdentityFilterInput'))
+        + '&minManaValueFilter=' + document.getElementById('minManaValueFilterInput').value
+        + '&maxManaValueFilter=' + document.getElementById('maxManaValueFilterInput').value
+        + '&typeFilter=' + AcquireFilterDivValues(document.getElementById('typeFilterInput'))
+        + '&tierFilter=' + AcquireFilterDivValues(document.getElementById('tierFilterInput'))
+        + '&draftabilityFilter=' + AcquireFilterDivValues(document.getElementById('draftabilityStatusFilterInput'))
+        + '&displayFilter=' + document.getElementById('displayFilterInput').value
+        + '&minWinRateFilter=' + document.getElementById('minWinRateFilterInput').value
+        + '&maxWinRateFilter=' + document.getElementById('maxGamesPlayedFilterInput').value
+        + '&minGamesPlayedFilter=' + document.getElementById('minGamesPlayedFilterInput').value
+        + '&maxGamesPlayedFilter=' + document.getElementById('maxGamesPlayedFilterInput').value
+        + '&primarySort=' + document.getElementById("primarySortInput").value
+        + '&secondarySort=' + document.getElementById("secondarySortInput").value;
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: { 'Content-Type': 'application/json' },
@@ -108,19 +63,19 @@ function FetchCardData() {
             if (cards) {
                 if (!Array.isArray(cards)) throw 'cards in server response is not an array.'
                 if (primaryFilter == 'default') {
-                    document.getElementById('wrapperDiv').innerHTML = "";
+                    document.getElementById('cardDestination').innerHTML = "";
 
                     // Default page structure: Display all cards in one div
                     FillDefaultDiv(cards, displayFilter);
                 } else if (primaryFilter == 'tier') {
-                    document.getElementById('wrapperDiv').innerHTML = "";
+                    document.getElementById('cardDestination').innerHTML = "";
 
                     // Alternative page structure: Separate cards into different divs by tier
                     FillTierDiv('Bronze', cards, '#EFA67D', true, displayFilter);
                     FillTierDiv('Silver', cards, '#DBDAD9', null, displayFilter);
                     FillTierDiv('Gold', cards, '#F2E979BF', null, displayFilter);
                 } else if (primaryFilter == 'colorIdentity') {
-                    document.getElementById('wrapperDiv').innerHTML = "";
+                    document.getElementById('cardDestination').innerHTML = "";
 
                     // Alternative page structure: Separate cards into different divs by color identity
                     FillColorIdentityDiv('#ffff80', '#ffffe6', 'W', cards, displayFilter, 'shrunk'); // These are initialized opposite of how they will appear, due to the nature of ToggleColorIdentityDivVisibility()
@@ -142,14 +97,14 @@ function FillDefaultDiv(cards, displayFilter) {
 
     // Create title div used to count cards
     var cardCountHeader = document.createElement('div');
-    cardCountHeader.setAttribute('style', 'height:8%;width:100%;background-color:white;border:3px inset gray;border-bottom:none;font-weight:bold;font-size:25px;display:flex;align-items:center;justify-content:center');
+    cardCountHeader.setAttribute('style', 'padding:10px;height:8%;width:100%;background-color:white;border:3px inset gray;border-bottom:none;font-weight:bold;font-size:25px;display:flex;align-items:center;justify-content:center');
     cardCountHeader.innerHTML = 'Cards - (' + cards.length + ')';
-    wrapperDiv.appendChild(cardCountHeader);
+    document.getElementById('cardDestination').appendChild(cardCountHeader);
 
     // Create div used to display decks
     var cardDestinationElement = document.createElement('div');
     cardDestinationElement.setAttribute('class', 'DefaultDiv');
-    wrapperDiv.appendChild(cardDestinationElement);
+    document.getElementById('cardDestination').appendChild(cardDestinationElement);
 
     // Display cards as either text or images
     if (displayFilter == 'text') {
